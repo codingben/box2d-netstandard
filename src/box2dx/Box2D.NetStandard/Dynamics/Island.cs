@@ -138,11 +138,7 @@ However, we can compute sin+cos of the same angle fast.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Box2DX.Common;
-using Box2DX.Collision;
 
 namespace Box2DX.Dynamics
 {

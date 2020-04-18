@@ -20,9 +20,8 @@
 */
 
 using System;
-
-using Box2DX.Common;
 using Box2DX.Collision;
+using Box2DX.Common;
 
 namespace Box2DX.Dynamics
 {

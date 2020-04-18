@@ -20,8 +20,6 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Box2DX.Collision;
 using Box2DX.Common;
 
