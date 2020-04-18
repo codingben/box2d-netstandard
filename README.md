@@ -5,7 +5,7 @@
 Box2D is a C# port of C++ Box2D by Ihar Kalasouski and supported by Ben Ukhanov.
 
 - The purpose of this repository is to create Box2D .NET Standard library
-- The .NET Standard will support .NET Framework, .NET Core, and [.NET 5 later](https://medium.com/capgemini-dynamics-365-team/future-of-net-net-5-microsoft-build-2019-from-a-net-developer-point-of-view-7a1158fb0691)
+- The .NET Standard supports .NET Framework, .NET Core, and [.NET 5+ later](https://medium.com/capgemini-dynamics-365-team/future-of-net-net-5-microsoft-build-2019-from-a-net-developer-point-of-view-7a1158fb0691)
 - The nuget package is available on nuget.org
 
 ## Source
