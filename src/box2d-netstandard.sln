@@ -5,9 +5,14 @@ VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3E960094-A4E8-4C3C-B291-F3803FE7F9B0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "box2dx", "box2dx", "{3D1CA146-AD8E-4C8F-9D72-FFB11E2148D0}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3D1CA146-AD8E-4C8F-9D72-FFB11E2148D0} = {3E960094-A4E8-4C3C-B291-F3803FE7F9B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6290C06E-B029-4FA4-AB0B-E05D2CBF79B4}
