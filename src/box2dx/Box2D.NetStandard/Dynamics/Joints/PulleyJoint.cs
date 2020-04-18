@@ -38,10 +38,6 @@
 // K = invMass + invI * cross(r, u)^2
 // 0 <= impulse
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Box2DX.Common;
 
 namespace Box2DX.Dynamics

@@ -32,10 +32,6 @@
 // J = [0 0 -1 0 0 1]
 // K = invI1 + invI2
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Box2DX.Common;
 
 namespace Box2DX.Dynamics

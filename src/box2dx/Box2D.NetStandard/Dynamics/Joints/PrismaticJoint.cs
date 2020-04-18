@@ -86,10 +86,6 @@
 // Now compute impulse to be applied:
 // df = f2 - f1
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Box2DX.Common;
 
 namespace Box2DX.Dynamics

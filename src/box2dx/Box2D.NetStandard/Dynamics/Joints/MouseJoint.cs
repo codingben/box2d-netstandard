@@ -27,10 +27,6 @@
 // Identity used:
 // w k % (rx i + ry j) = w * (-ry i + rx j)
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Box2DX.Common;
 
 namespace Box2DX.Dynamics
