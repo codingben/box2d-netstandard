@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/71/trunk/src/Dynamics/Contacts
+END
+CircleContact.cs
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/71/trunk/src/Dynamics/Contacts/CircleContact.cs
+END
+PolyContact.cs
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/71/trunk/src/Dynamics/Contacts/PolyContact.cs
+END
+PolyAndCircleContact.cs
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/71/trunk/src/Dynamics/Contacts/PolyAndCircleContact.cs
+END
+EdgeAndCircleContact.cs
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/71/trunk/src/Dynamics/Contacts/EdgeAndCircleContact.cs
+END
+NullContact.cs
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/68/trunk/src/Dynamics/Contacts/NullContact.cs
+END
+ContactSolver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/71/trunk/src/Dynamics/Contacts/ContactSolver.cs
+END
+PolyAndEdgeContact.cs
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/71/trunk/src/Dynamics/Contacts/PolyAndEdgeContact.cs
+END
+Contact.cs
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/71/trunk/src/Dynamics/Contacts/Contact.cs
+END

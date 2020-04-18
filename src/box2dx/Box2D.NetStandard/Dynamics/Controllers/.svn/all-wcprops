@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/71/trunk/src/Dynamics/Controllers
+END
+Controller.cs
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/71/trunk/src/Dynamics/Controllers/Controller.cs
+END
+ConstantAccelController.cs
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/71/trunk/src/Dynamics/Controllers/ConstantAccelController.cs
+END
+GravityController.cs
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/71/trunk/src/Dynamics/Controllers/GravityController.cs
+END
+ConstantForceController.cs
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/71/trunk/src/Dynamics/Controllers/ConstantForceController.cs
+END
+BuoyancyController.cs
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/71/trunk/src/Dynamics/Controllers/BuoyancyController.cs
+END
+TensorDampingController.cs
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/71/trunk/src/Dynamics/Controllers/TensorDampingController.cs
+END

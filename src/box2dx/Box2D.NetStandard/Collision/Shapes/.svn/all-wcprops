@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/71/trunk/src/Collision/Shapes
+END
+Shape.cs
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/71/trunk/src/Collision/Shapes/Shape.cs
+END
+CircleShape.cs
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/71/trunk/src/Collision/Shapes/CircleShape.cs
+END
+EdgeShape.cs
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/71/trunk/src/Collision/Shapes/EdgeShape.cs
+END
+PolygonShape.cs
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/71/trunk/src/Collision/Shapes/PolygonShape.cs
+END
