@@ -41,10 +41,6 @@ Bullet (http:/www.bulletphysics.com).
 #define ALLOWUNSAFE
 //#define TARGET_FLOAT32_IS_FIXED
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Box2DX.Common;
 
 namespace Box2DX.Collision
