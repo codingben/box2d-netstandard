@@ -8,6 +8,7 @@
     <PackageTags>Box2D, Physics</PackageTags>
     <Description>Box2D is the C# port of C++ Box2D. This package supports .NET Standard 2.0.</Description>
     <PackageProjectUrl>https://github.com/benzuk/box2d-netstandard</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
