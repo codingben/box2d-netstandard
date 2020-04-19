@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Ben Ukhanov</Authors>
-    <Copyright>Copyright © 2008 Ihar Kalasouski</Copyright>
+    <Copyright>Copyright © Ihar Kalasouski 2008</Copyright>
     <PackageTags>Box2D, Physics</PackageTags>
     <Description>Box2D is the C# port of C++ Box2D. This package supports .NET Standard 2.0.</Description>
     <PackageProjectUrl>https://github.com/benzuk/box2d-netstandard</PackageProjectUrl>
