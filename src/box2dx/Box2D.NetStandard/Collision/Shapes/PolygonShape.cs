@@ -397,7 +397,8 @@ namespace Box2DX.Collision
 					}
 					else
 					{
-						//Completely dry
+						// Completely dry
+						// TODO: Shouldn't return break only?
 						c = new Vec2();
 						return 0;
 					}
