@@ -3,4 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="OpenTK.NetStandard" Version="1.0.5.12" />
+  </ItemGroup>
 </Project>
