@@ -3,7 +3,7 @@ using Box2DX.Dynamics;
 
 namespace HelloWorld
 {
-    public interface IPhysicsSimulationWindow
+    public interface IWindow
     {
         void DrawPolygon(Vec2[] vertices, int vertexCount, Color color);
 
