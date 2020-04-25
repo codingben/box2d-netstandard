@@ -1,5 +1,5 @@
 ﻿using Box2DX.Common;
-using Box2DX.Dynamics;
+using Color = Box2DX.Dynamics.Color;
 
 namespace HelloWorld
 {
