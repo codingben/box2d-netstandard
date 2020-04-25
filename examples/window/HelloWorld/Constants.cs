@@ -1,3 +1,7 @@
+/*
+    Window Simulation Copyright © Ben Ukhanov 2020
+*/
+
 namespace HelloWorld
 {
     public static class Constants

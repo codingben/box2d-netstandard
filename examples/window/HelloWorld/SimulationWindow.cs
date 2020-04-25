@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*
+    Window Simulation Copyright © Ben Ukhanov 2020
+*/
+
+using System;
 using System.Collections.Concurrent;
 using Box2DX.Common;
 using OpenTK;

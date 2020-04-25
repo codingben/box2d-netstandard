@@ -1,4 +1,8 @@
-﻿using Box2DX.Dynamics;
+﻿/*
+    Window Simulation Copyright © Ben Ukhanov 2020
+*/
+
+using Box2DX.Dynamics;
 using Box2DX.Common;
 using Color = Box2DX.Dynamics.Color;
 

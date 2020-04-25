@@ -1,4 +1,8 @@
-﻿using OpenTK;
+﻿/*
+    Window Simulation Copyright © Ben Ukhanov 2020
+*/
+
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace HelloWorld
