@@ -50,7 +50,7 @@ namespace HelloWorld
 
             // Instruct the world to perform a single step of simulation. It is
             // generally best to keep the time step and iterations fixed.
-            world.Step(TimeStep, VelocityIterations, PositionIterations);
+            world?.Step(TimeStep, VelocityIterations, PositionIterations);
         }
 
         private static void OnDisposed(object sender, EventArgs eventArgs)
