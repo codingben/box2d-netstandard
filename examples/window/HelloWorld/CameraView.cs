@@ -3,10 +3,8 @@ using OpenTK.Graphics.OpenGL;
 
 namespace HelloWorld
 {
-    public class CameraView
+    public class CameraView : IView
     {
-        public const float MinimumCameraZoom = 0.001f;
-
         public Vector2 Position { get; set; }
 
         public float Zoom { get; set; }
@@ -14,7 +12,7 @@ namespace HelloWorld
         public CameraView()
         {
             Position = Vector2.Zero;
-            Zoom = MinimumCameraZoom;
+            Zoom = Constants.MinimumCameraZoom;
         }
 
         public void Update()
