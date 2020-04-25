@@ -1,7 +1,7 @@
 ﻿using Box2DX.Common;
 using Box2DX.Dynamics;
 
-namespace Physics.Box2D.PhysicsSimulation.Window
+namespace HelloWorld
 {
     public interface IPhysicsSimulationWindow
     {

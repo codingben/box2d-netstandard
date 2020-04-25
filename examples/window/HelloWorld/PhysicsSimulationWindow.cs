@@ -13,7 +13,7 @@ using IComponent = ComponentModel.Common.IComponent;
 using IContainer = ComponentModel.Common.IContainer;
 using Math = System.Math;
 
-namespace Physics.Box2D.PhysicsSimulation.Window
+namespace HelloWorld
 {
     public class PhysicsSimulationWindow : GameWindow, IComponent, IPhysicsSimulationWindow
     {
@@ -220,7 +220,7 @@ namespace Physics.Box2D.PhysicsSimulation.Window
 
                 for (var i = 0; i < K_SEGMENTS; ++i)
                 {
-                    var v = center + radius * new Vec2((float) Math.Cos(theta), (float) Math.Sin(theta));
+                    var v = center + radius * new Vec2((float)Math.Cos(theta), (float)Math.Sin(theta));
                     GL.Vertex2(v.X, v.Y);
                     theta += kIncrement;
                 }
@@ -245,7 +245,7 @@ namespace Physics.Box2D.PhysicsSimulation.Window
 
                 for (var i = 0; i < K_SEGMENTS; ++i)
                 {
-                    var v = center + radius * new Vec2((float) Math.Cos(theta), (float) Math.Sin(theta));
+                    var v = center + radius * new Vec2((float)Math.Cos(theta), (float)Math.Sin(theta));
                     GL.Vertex2(v.X, v.Y);
                     theta += kIncrement;
                 }

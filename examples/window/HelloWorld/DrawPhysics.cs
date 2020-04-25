@@ -2,7 +2,7 @@
 using Box2DX.Common;
 using Color = Box2DX.Dynamics.Color;
 
-namespace Physics.Box2D.PhysicsSimulation.Window
+namespace HelloWorld
 {
     public class DrawPhysics : DebugDraw
     {
