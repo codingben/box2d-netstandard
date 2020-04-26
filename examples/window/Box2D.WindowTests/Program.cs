@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading;
+using Box2D.Window;
 using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
