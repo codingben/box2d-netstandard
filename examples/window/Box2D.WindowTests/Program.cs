@@ -8,7 +8,7 @@ using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
 
-namespace HelloWorld
+namespace Box2D.WindowTests
 {
     public static class Program
     {
