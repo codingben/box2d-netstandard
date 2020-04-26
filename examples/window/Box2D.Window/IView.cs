@@ -4,7 +4,7 @@
 
 using OpenTK;
 
-namespace HelloWorld
+namespace Box2D.Window
 {
     public interface IView
     {

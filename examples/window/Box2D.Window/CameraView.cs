@@ -5,7 +5,7 @@
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace HelloWorld
+namespace Box2D.Window
 {
     public class CameraView : IView
     {

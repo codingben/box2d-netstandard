@@ -2,7 +2,7 @@
     Window Simulation Copyright © Ben Ukhanov 2020
 */
 
-namespace HelloWorld
+namespace Box2D.Window
 {
     public static class Constants
     {

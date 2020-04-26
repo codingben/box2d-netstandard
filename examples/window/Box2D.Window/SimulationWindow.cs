@@ -12,7 +12,7 @@ using OpenTK.Input;
 using Math = System.Math;
 using Color = Box2DX.Dynamics.Color;
 
-namespace HelloWorld
+namespace Box2D.Window
 {
     public class SimulationWindow : GameWindow, IWindow
     {

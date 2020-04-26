@@ -5,7 +5,7 @@
 using Box2DX.Common;
 using Color = Box2DX.Dynamics.Color;
 
-namespace HelloWorld
+namespace Box2D.Window
 {
     public interface IWindow
     {
