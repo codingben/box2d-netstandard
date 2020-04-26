@@ -12,7 +12,12 @@ namespace HelloWorld
 {
     public static class Program
     {
-        private static World world;
+        private static World World { get; }
+
+        static Program()
+        {
+            World = CreateWorld();
+        }
 
         private static void Main()
         {
@@ -27,8 +32,7 @@ namespace HelloWorld
                 physicsDrawer.AppendFlags(DebugDraw.DrawFlags.Aabb);
                 physicsDrawer.AppendFlags(DebugDraw.DrawFlags.Shape);
 
-                world = CreateWorld();
-                world.SetDebugDraw(physicsDrawer);
+                World.SetDebugDraw(physicsDrawer);
 
                 CreateBodies();
 
@@ -50,13 +54,13 @@ namespace HelloWorld
 
             // Instruct the world to perform a single step of simulation. It is
             // generally best to keep the time step and iterations fixed.
-            world?.Step(TimeStep, VelocityIterations, PositionIterations);
+            World?.Step(TimeStep, VelocityIterations, PositionIterations);
         }
 
         private static void OnDisposed(object sender, EventArgs eventArgs)
         {
-            world?.SetDebugDraw(null);
-            world?.Dispose();
+            World?.SetDebugDraw(null);
+            World?.Dispose();
         }
 
         private static void CreateBodies()
@@ -83,7 +87,7 @@ namespace HelloWorld
             boxDefinition.Friction = 0.3f;
             boxDefinition.Restitution = 0.2f;
 
-            var body = world.CreateBody(bodyDefinition);
+            var body = World?.CreateBody(bodyDefinition);
             body.CreateFixture(boxDefinition);
             body.SetMassFromShapes();
 
@@ -99,7 +103,7 @@ namespace HelloWorld
             boxDefinition.SetAsBox(size.X, size.Y);
             boxDefinition.Density = 0.0f;
 
-            var body = world.CreateBody(bodyDefinition);
+            var body = World?.CreateBody(bodyDefinition);
             body.CreateFixture(boxDefinition);
             body.SetMassFromShapes();
         }
