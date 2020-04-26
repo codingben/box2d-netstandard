@@ -155,8 +155,9 @@ namespace HelloWorld
 
                 for (var i = 0; i < vertexCount; i++)
                 {
-                    var v = vertices[i];
-                    GL.Vertex2(v.X, v.Y);
+                    var vertex = vertices[i];
+
+                    GL.Vertex2(vertex.X, vertex.Y);
                 }
 
                 GL.End();
@@ -172,8 +173,9 @@ namespace HelloWorld
 
                 for (var i = 0; i < vertexCount; i++)
                 {
-                    var v = vertices[i];
-                    GL.Vertex2(v.X, v.Y);
+                    var vertex = vertices[i];
+
+                    GL.Vertex2(vertex.X, vertex.Y);
                 }
 
                 GL.End();
@@ -184,21 +186,23 @@ namespace HelloWorld
         {
             drawActions.Enqueue(() =>
             {
-                const float K_SEGMENTS = 16.0f;
-                const int VERTEX_COUNT = 16;
+                const float kSegments = 16.0f;
+                const int VertexCount = 16;
 
-                var kIncrement = 2.0f * Settings.Pi / K_SEGMENTS;
+                var kIncrement = 2.0f * Settings.Pi / kSegments;
                 var theta = 0.0f;
 
                 GL.Color4(color.R, color.G, color.B, 0.5f);
                 GL.Begin(PrimitiveType.LineLoop);
-                GL.VertexPointer(VERTEX_COUNT * 2, VertexPointerType.Float, 0, IntPtr.Zero);
+                GL.VertexPointer(VertexCount * 2, VertexPointerType.Float, 0, IntPtr.Zero);
 
-                for (var i = 0; i < K_SEGMENTS; ++i)
+                for (var i = 0; i < kSegments; ++i)
                 {
-                    var v = center + (radius * new Vec2((float)Math.Cos(theta), (float)Math.Sin(theta)));
+                    var x = (float)Math.Cos(theta);
+                    var y = (float)Math.Sin(theta);
+                    var vertex = center + (radius * new Vec2(x, y));
 
-                    GL.Vertex2(v.X, v.Y);
+                    GL.Vertex2(vertex.X, vertex.Y);
 
                     theta += kIncrement;
                 }
@@ -211,21 +215,23 @@ namespace HelloWorld
         {
             drawActions.Enqueue(() =>
             {
-                const float K_SEGMENTS = 16.0f;
-                const int VERTEX_COUNT = 16;
+                const float kSegments = 16.0f;
+                const int VertexCount = 16;
 
-                var kIncrement = 2.0f * Settings.Pi / K_SEGMENTS;
+                var kIncrement = 2.0f * Settings.Pi / kSegments;
                 var theta = 0.0f;
 
                 GL.Color4(color.R, color.G, color.B, 0.5f);
                 GL.Begin(PrimitiveType.TriangleFan);
-                GL.VertexPointer(VERTEX_COUNT * 2, VertexPointerType.Float, 0, IntPtr.Zero);
+                GL.VertexPointer(VertexCount * 2, VertexPointerType.Float, 0, IntPtr.Zero);
 
-                for (var i = 0; i < K_SEGMENTS; ++i)
+                for (var i = 0; i < kSegments; ++i)
                 {
-                    var v = center + (radius * new Vec2((float)Math.Cos(theta), (float)Math.Sin(theta)));
+                    var x = (float)Math.Cos(theta);
+                    var y = (float)Math.Sin(theta);
+                    var vertex = center + (radius * new Vec2(x, y));
 
-                    GL.Vertex2(v.X, v.Y);
+                    GL.Vertex2(vertex.X, vertex.Y);
 
                     theta += kIncrement;
                 }
@@ -252,23 +258,23 @@ namespace HelloWorld
         {
             drawActions.Enqueue(() =>
             {
-                const float K_AXIS_SCALE = 0.4f;
+                const float kAxisScale = 0.4f;
 
-                var p1 = xf.Position;
+                var a = xf.Position;
 
                 GL.Begin(PrimitiveType.Lines);
                 GL.Color3(1.0f, 0.0f, 0.0f);
-                GL.Vertex2(p1.X, p1.Y);
+                GL.Vertex2(a.X, a.Y);
 
-                var p2 = p1 + (K_AXIS_SCALE * xf.R.Col1);
+                var b = a + (kAxisScale * xf.R.Col1);
 
-                GL.Vertex2(p2.X, p2.Y);
+                GL.Vertex2(b.X, b.Y);
                 GL.Color3(0.0f, 1.0f, 0.0f);
-                GL.Vertex2(p1.X, p1.Y);
+                GL.Vertex2(a.X, a.Y);
 
-                p2 = p1 + (K_AXIS_SCALE * xf.R.Col2);
+                b = a + (kAxisScale * xf.R.Col2);
 
-                GL.Vertex2(p2.X, p2.Y);
+                GL.Vertex2(b.X, b.Y);
                 GL.End();
             });
         }
