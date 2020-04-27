@@ -38,9 +38,9 @@ namespace Box2D.Window
             base.OnMouseWheel(eventArgs);
 
             var value = (float)eventArgs.Value / 1000;
-            if (value < Constants.MinimumCameraZoom)
+            if (value < WindowSettings.MinimumCameraZoom)
             {
-                value = Constants.MinimumCameraZoom;
+                value = WindowSettings.MinimumCameraZoom;
             }
 
             if (view != null)
@@ -78,7 +78,7 @@ namespace Box2D.Window
                         var y = Mouse.GetState().Y;
                         var direction = new Vector2(x, -y) - view.Position;
 
-                        view.Position += direction * Constants.MouseMoveSpeed;
+                        view.Position += direction * WindowSettings.MouseMoveSpeed;
                     }
                 }
                 else
@@ -89,7 +89,7 @@ namespace Box2D.Window
                         var y = GetVertical();
                         var direction = new Vector2(x, y);
 
-                        view.Position += direction * Constants.KeyboardMoveSpeed;
+                        view.Position += direction * WindowSettings.KeyboardMoveSpeed;
                     }
                 }
             }
