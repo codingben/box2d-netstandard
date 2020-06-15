@@ -19,6 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
 using Box2DX.Common;
 
 namespace Box2DX.Collision
@@ -29,32 +30,33 @@ namespace Box2DX.Collision
 	public class CircleShape : Shape
 	{
 		// Position
-		internal Vec2 _position;
+		internal Vector2 _position;
 
 		public CircleShape()			
 		{
 			_type = ShapeType.CircleShape;
 		}
 
-		public override bool TestPoint(XForm transform, Vec2 p)
+		public override bool TestPoint(XForm transform, Vector2 p)
 		{
-			Vec2 center = transform.Position + Common.Math.Mul(transform.R, _position);
-			Vec2 d = p - center;
-			return Vec2.Dot(d, d) <= _radius * _radius;
+			Vector2 center = transform.Position + Common.Math.Mul(transform.R, _position);
+			Vector2 d = p - center;
+			return Vector2.Dot(d, d) <= _radius * _radius;
 		}
 
 		// Collision Detection in Interactive 3D Environments by Gino van den Bergen
 		// From Section 3.1.2
 		// x = s + a * r
 		// norm(x) = radius
-		public override SegmentCollide TestSegment(XForm transform, out float lambda, out Vec2 normal, Segment segment, float maxLambda)
+		public override SegmentCollide TestSegment(XForm transform, out float lambda, out Vector2 normal, Segment segment,
+			float                                          maxLambda)
 		{
 			lambda = 0f;
-			normal = Vec2.Zero;
+			normal = Vector2.Zero;
 
-			Vec2 position = transform.Position + Common.Math.Mul(transform.R, _position);
-			Vec2 s = segment.P1 - position;
-			float b = Vec2.Dot(s, s) - _radius * _radius;
+			Vector2 position = transform.Position + Common.Math.Mul(transform.R, _position);
+			Vector2 s = segment.P1 - position;
+			float b = Vector2.Dot(s, s) - _radius * _radius;
 
 			// Does the segment start inside the circle?
 			if (b < 0.0f)
@@ -64,9 +66,9 @@ namespace Box2DX.Collision
 			}
 
 			// Solve quadratic equation.
-			Vec2 r = segment.P2 - segment.P1;
-			float c = Vec2.Dot(s, r);
-			float rr = Vec2.Dot(r, r);
+			Vector2 r = segment.P2 - segment.P1;
+			float c = Vector2.Dot(s, r);
+			float rr = Vector2.Dot(r, r);
 			float sigma = c * c - rr * b;
 
 			// Check for negative discriminant and short segment.
@@ -83,8 +85,7 @@ namespace Box2DX.Collision
 			{
 				a /= rr;
 				lambda = a;
-				normal = s + a * r;
-				normal.Normalize();
+				normal = Vector2.Normalize(s + a * r);
 				return SegmentCollide.HitCollide;
 			}
 
@@ -95,9 +96,9 @@ namespace Box2DX.Collision
 		{
 			aabb = new AABB();
 
-			Vec2 p = transform.Position + Common.Math.Mul(transform.R, _position);
-			aabb.LowerBound.Set(p.X - _radius, p.Y - _radius);
-			aabb.UpperBound.Set(p.X + _radius, p.Y + _radius);
+			Vector2 p = transform.Position + Common.Math.Mul(transform.R, _position);
+			aabb.LowerBound= new Vector2(p.X - _radius, p.Y - _radius);
+			aabb.UpperBound= new Vector2(p.X + _radius, p.Y + _radius);
 		}
 
 		public override void ComputeMass(out MassData massData, float density)
@@ -108,17 +109,17 @@ namespace Box2DX.Collision
 			massData.Center = _position;
 
 			// inertia about the local origin
-			massData.I = massData.Mass * (0.5f * _radius * _radius + Vec2.Dot(_position, _position));
+			massData.I = massData.Mass * (0.5f * _radius * _radius + Vector2.Dot(_position, _position));
 		}		
 
-		public override float ComputeSubmergedArea(Vec2 normal, float offset, XForm xf, out Vec2 c)
+		public override float ComputeSubmergedArea(Vector2 normal, float offset, XForm xf, out Vector2 c)
 		{
-			Vec2 p = Box2DX.Common.Math.Mul(xf, _position);
-			float l = -(Vec2.Dot(normal, p) - offset);
+			Vector2 p = Box2DX.Common.Math.Mul(xf, _position);
+			float l = -(Vector2.Dot(normal, p) - offset);
 			if (l < -_radius + Box2DX.Common.Settings.FLT_EPSILON)
 			{
 				//Completely dry
-				c = new Vec2();
+				c = new Vector2();
 				return 0;
 			}
 			if (l > _radius)
@@ -144,7 +145,7 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Get the supporting vertex index in the given direction.
 		/// </summary>
-		public override int GetSupport(Vec2 d)
+		public override int GetSupport(Vector2 d)
 		{
 			return 0;
 		}
@@ -152,7 +153,7 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Get the supporting vertex in the given direction.
 		/// </summary>
-		public override Vec2 GetSupportVertex(Vec2 d)
+		public override Vector2 GetSupportVertex(Vector2 d)
 		{
 			return _position;
 		}
@@ -160,15 +161,15 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Get a vertex by index. Used by Distance.
 		/// </summary>
-		public override Vec2 GetVertex(int index)
+		public override Vector2 GetVertex(int index)
 		{
 			Box2DXDebug.Assert(index == 0);
 			return _position;
 		}
 
-		public override float ComputeSweepRadius(Vec2 pivot)
+		public override float ComputeSweepRadius(Vector2 pivot)
 		{
-			return Vec2.Distance(_position, pivot);
+			return Vector2.Distance(_position, pivot);
 		}
 
 		/// <summary>

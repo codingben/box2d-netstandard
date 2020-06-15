@@ -1,4 +1,5 @@
-﻿using Box2DX.Common;
+﻿using System.Numerics;
+using Box2DX.Common;
 
 namespace Box2DX.Dynamics.Controllers
 {
@@ -8,13 +9,13 @@ namespace Box2DX.Dynamics.Controllers
     public class BuoyancyControllerDef
     {
         /// The outer surface normal
-        public Vec2 Normal;
+        public Vector2 Normal;
         /// The height of the fluid surface along the normal
         public float Offset;
         /// The fluid density
         public float Density;
         /// Fluid velocity, for drag calculations
-        public Vec2 Velocity;
+        public Vector2 Velocity;
         /// Linear drag co-efficient
         public float LinearDrag;
         /// Linear drag co-efficient
@@ -24,19 +25,19 @@ namespace Box2DX.Dynamics.Controllers
         /// If true, gravity is taken from the world instead of the gravity parameter.
         public bool UseWorldGravity;
         /// Gravity vector, if the world's gravity is not used
-        public Vec2 Gravity;
+        public Vector2 Gravity;
 
         public BuoyancyControllerDef()
         {
-            Normal = new Vec2(0, 1);
+            Normal = new Vector2(0, 1);
             Offset = 0;
             Density = 0;
-            Velocity = new Vec2(0, 0);
+            Velocity = new Vector2(0, 0);
             LinearDrag = 0;
             AngularDrag = 0;
             UseDensity = false;
             UseWorldGravity = true;
-            Gravity = new Vec2(0, 0);
+            Gravity = new Vector2(0, 0);
         }
     }
 
@@ -46,13 +47,13 @@ namespace Box2DX.Dynamics.Controllers
     public class BuoyancyController : Controller
     {
         /// The outer surface normal
-        public Vec2 Normal;
+        public Vector2 Normal;
         /// The height of the fluid surface along the normal
         public float Offset;
         /// The fluid density
         public float Density;
         /// Fluid velocity, for drag calculations
-        public Vec2 Velocity;
+        public Vector2 Velocity;
         /// Linear drag co-efficient
         public float LinearDrag;
         /// Linear drag co-efficient
@@ -62,7 +63,7 @@ namespace Box2DX.Dynamics.Controllers
         /// If true, gravity is taken from the world instead of the gravity parameter.
         public bool UseWorldGravity;
         /// Gravity vector, if the world's gravity is not used
-        public Vec2 Gravity;
+        public Vector2 Gravity;
 
         public BuoyancyController(BuoyancyControllerDef buoyancyControllerDef)
         {
@@ -96,13 +97,13 @@ namespace Box2DX.Dynamics.Controllers
                     //so unlike most forces, it is safe to ignore sleeping bodes
                     continue;
                 }
-                Vec2 areac = new Vec2(0, 0);
-                Vec2 massc = new Vec2(0, 0);
+                Vector2 areac = new Vector2(0, 0);
+                Vector2 massc = new Vector2(0, 0);
                 float area = 0;
                 float mass = 0;
                 for (Fixture shape = body.GetFixtureList(); shape != null; shape = shape.Next)
                 {
-                    Vec2 sc;
+                    Vector2 sc;
                     float sarea = shape.ComputeSubmergedArea(Normal, Offset, out sc);
                     area += sarea;
                     areac.X += sarea * sc.X;
@@ -123,16 +124,16 @@ namespace Box2DX.Dynamics.Controllers
                 }
                 areac.X /= area;
                 areac.Y /= area;
-                //Vec2 localCentroid = Math.MulT(body.GetXForm(), areac);
+                //Vector2 localCentroid = Math.MulT(body.GetXForm(), areac);
                 massc.X /= mass;
                 massc.Y /= mass;
                 if (area < Settings.FLT_EPSILON)
                     continue;
                 //Buoyancy
-                Vec2 buoyancyForce = -Density * area * Gravity;
+                Vector2 buoyancyForce = -Density * area * Gravity;
                 body.ApplyForce(buoyancyForce, massc);
                 //Linear drag
-                Vec2 dragForce = body.GetLinearVelocityFromWorldPoint(areac) - Velocity;
+                Vector2 dragForce = body.GetLinearVelocityFromWorldPoint(areac) - Velocity;
                 dragForce *= -LinearDrag * area;
                 body.ApplyForce(dragForce, areac);
                 //Angular drag
@@ -145,8 +146,8 @@ namespace Box2DX.Dynamics.Controllers
         public override void Draw(DebugDraw debugDraw)
         {
             float r = 1000;
-            Vec2 p1 = Offset * Normal + Vec2.Cross(Normal, r);
-            Vec2 p2 = Offset * Normal - Vec2.Cross(Normal, r);
+            Vector2 p1 = Offset * Normal + Vectex.Cross(Normal, r);
+            Vector2 p2 = Offset * Normal - Vectex.Cross(Normal, r);
 
             Color color = new Color(0, 0, 0.8f);
 

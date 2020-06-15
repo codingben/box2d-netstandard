@@ -19,12 +19,14 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
+
 namespace Box2DX.Common
 {
 	public struct Sweep
 	{
-		public Vec2 LocalCenter;	//local center of mass position
-		public Vec2 C0, C; //local center of mass position
+		public Vector2 LocalCenter;	//local center of mass position
+		public Vector2 C0, C; //local center of mass position
 		public float A0, A; //world angles
 		public float T0; //time interval = [T0,1], where T0 is in [0,1]
 

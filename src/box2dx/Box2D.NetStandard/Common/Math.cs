@@ -20,6 +20,8 @@
 */
 
 using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Box2DX.Common
 {
@@ -118,12 +120,7 @@ namespace Box2DX.Common
 			return a > 0.0f ? a : -a;
 		}
 
-		public static Vec2 Abs(Vec2 a)
-		{
-			Vec2 b = new Vec2();
-			b.Set(Math.Abs(a.X), Math.Abs(a.Y));
-			return b;
-		}
+		public static Vector2 Abs(Vector2 a) => new Vector2(Math.Abs(a.X), Math.Abs(a.Y));
 
 		public static Mat22 Abs(Mat22 A)
 		{
@@ -142,9 +139,9 @@ namespace Box2DX.Common
 			return a < b ? a : b;
 		}
 
-		public static Vec2 Min(Vec2 a, Vec2 b)
+		public static Vector2 Min(Vector2 a, Vector2 b)
 		{
-			Vec2 c = new Vec2();
+			Vector2 c = new Vector2();
 			c.X = Math.Min(a.X, b.X);
 			c.Y = Math.Min(a.Y, b.Y);
 			return c;
@@ -160,9 +157,9 @@ namespace Box2DX.Common
 			return a > b ? a : b;
 		}
 
-		public static Vec2 Max(Vec2 a, Vec2 b)
+		public static Vector2 Max(Vector2 a, Vector2 b)
 		{
-			Vec2 c = new Vec2();
+			Vector2 c = new Vector2();
 			c.X = Math.Max(a.X, b.X);
 			c.Y = Math.Max(a.Y, b.Y);
 			return c;
@@ -178,7 +175,7 @@ namespace Box2DX.Common
 			return Math.Max(low, Math.Min(a, high));
 		}
 
-		public static Vec2 Clamp(Vec2 a, Vec2 low, Vec2 high)
+		public static Vector2 Clamp(Vector2 a, Vector2 low, Vector2 high)
 		{
 			return Math.Max(low, Math.Min(a, high));
 		}
@@ -194,23 +191,15 @@ namespace Box2DX.Common
 		/// Multiply a matrix times a vector. If a rotation matrix is provided,
 		/// then this transforms the vector from one frame to another.
 		/// </summary>
-		public static Vec2 Mul(Mat22 A, Vec2 v)
-		{
-			Vec2 u = new Vec2();
-			u.Set(A.Col1.X * v.X + A.Col2.X * v.Y, A.Col1.Y * v.X + A.Col2.Y * v.Y);
-			return u;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Mul(Mat22 A, Vector2 v) => new Vector2(A.Col1.X * v.X + A.Col2.X * v.Y, A.Col1.Y * v.X + A.Col2.Y * v.Y);
 
 		/// <summary>
 		/// Multiply a matrix transpose times a vector. If a rotation matrix is provided,
 		/// then this transforms the vector from one frame to another (inverse transform).
 		/// </summary>
-		public static Vec2 MulT(Mat22 A, Vec2 v)
-		{
-			Vec2 u = new Vec2();
-			u.Set(Vec2.Dot(v, A.Col1), Vec2.Dot(v, A.Col2));
-			return u;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 MulT(Mat22 A, Vector2 v) => new Vector2(Vector2.Dot(v, A.Col1), Vector2.Dot(v, A.Col2));
 
 		/// <summary>
 		/// A * B
@@ -227,21 +216,19 @@ namespace Box2DX.Common
 		/// </summary>
 		public static Mat22 MulT(Mat22 A, Mat22 B)
 		{
-			Vec2 c1 = new Vec2();
-			c1.Set(Vec2.Dot(A.Col1, B.Col1), Vec2.Dot(A.Col2, B.Col1));
-			Vec2 c2 = new Vec2();
-			c2.Set(Vec2.Dot(A.Col1, B.Col2), Vec2.Dot(A.Col2, B.Col2));
+			Vector2 c1 = new Vector2(Vector2.Dot(A.Col1, B.Col1), Vector2.Dot(A.Col2, B.Col1));
+			Vector2 c2 = new Vector2(Vector2.Dot(A.Col1, B.Col2), Vector2.Dot(A.Col2, B.Col2));
 			Mat22 C = new Mat22();
 			C.Set(c1, c2);
 			return C;
 		}
 
-		public static Vec2 Mul(XForm T, Vec2 v)
+		public static Vector2 Mul(XForm T, Vector2 v)
 		{
 			return T.Position + Math.Mul(T.R, v);
 		}
 
-		public static Vec2 MulT(XForm T, Vec2 v)
+		public static Vector2 MulT(XForm T, Vector2 v)
 		{
 			return Math.MulT(T.R, v - T.Position);
 		}

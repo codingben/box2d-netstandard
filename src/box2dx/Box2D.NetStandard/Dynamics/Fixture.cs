@@ -20,6 +20,7 @@
 */
 
 using System;
+using System.Numerics;
 using Box2DX.Collision;
 using Box2DX.Common;
 
@@ -112,13 +113,13 @@ namespace Box2DX.Dynamics
 	/// </summary>
 	public class CircleDef : FixtureDef
 	{
-		public Vec2 LocalPosition;
+		public Vector2 LocalPosition;
 		public float Radius;
 
 		public CircleDef()
 		{
 			Type = ShapeType.CircleShape;
-			LocalPosition = Vec2.Zero;
+			LocalPosition = Vector2.Zero;
 			Radius = 1.0f;
 		}
 	}
@@ -138,7 +139,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// The polygon vertices in local coordinates.
 		/// </summary>
-		public Vec2[] Vertices = new Vec2[Settings.MaxPolygonVertices];
+		public Vector2[] Vertices = new Vector2[Settings.MaxPolygonVertices];
 
 		public PolygonDef()
 		{
@@ -154,10 +155,10 @@ namespace Box2DX.Dynamics
 		public void SetAsBox(float hx, float hy)
 		{
 			VertexCount = 4;
-			Vertices[0].Set(-hx, -hy);
-			Vertices[1].Set(hx, -hy);
-			Vertices[2].Set(hx, hy);
-			Vertices[3].Set(-hx, hy);
+			Vertices[0]=new Vector2(-hx, -hy);
+			Vertices[1]=new Vector2(hx, -hy);
+			Vertices[2]=new Vector2(hx, hy);
+			Vertices[3]=new Vector2(-hx, hy);
 		}
 
 
@@ -168,7 +169,7 @@ namespace Box2DX.Dynamics
 		/// <param name="hy">The half-height.</param>
 		/// <param name="center">The center of the box in local coordinates.</param>
 		/// <param name="angle">The rotation of the box in local coordinates.</param>
-		public void SetAsBox(float hx, float hy, Vec2 center, float angle)
+		public void SetAsBox(float hx, float hy, Vector2 center, float angle)
 		{
 			SetAsBox(hx, hy);
 
@@ -196,12 +197,12 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// The start vertex.
 		/// </summary>
-		public Vec2 Vertex1;
+		public Vector2 Vertex1;
 
 		/// <summary>
 		/// The end vertex.
 		/// </summary>
-		public Vec2 Vertex2;
+		public Vector2 Vertex2;
 	}
 
 	/// <summary>
@@ -437,7 +438,7 @@ namespace Box2DX.Dynamics
 		/// <param name="offset">Offset the surface offset along normal.</param>
 		/// <param name="c">Returns the centroid.</param>
 		/// <returns>The total volume less than offset along normal.</returns>
-		public float ComputeSubmergedArea(Vec2 normal, float offset, out Vec2 c)
+		public float ComputeSubmergedArea(Vector2 normal, float offset, out Vector2 c)
 		{
 			return _shape.ComputeSubmergedArea(normal, offset, _body.GetXForm(), out c);
 		}
@@ -446,7 +447,7 @@ namespace Box2DX.Dynamics
 		/// Test a point for containment in this fixture. This only works for convex shapes.
 		/// </summary>
 		/// <param name="p">A point in world coordinates.</param>
-		public bool TestPoint(Vec2 p)
+		public bool TestPoint(Vector2 p)
 		{
 			return _shape.TestPoint(_body.GetXForm(), p);
 		}
@@ -460,7 +461,7 @@ namespace Box2DX.Dynamics
 		/// is not set.</param>
 		/// <param name="segment">Defines the begin and end point of the ray cast.</param>
 		/// <param name="maxLambda">A number typically in the range [0,1].</param>
-		public SegmentCollide TestSegment(out float lambda, out Vec2 normal, Segment segment, float maxLambda)
+		public SegmentCollide TestSegment(out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			return _shape.TestSegment(_body.GetXForm(), out lambda, out normal, segment, maxLambda);
 		}
@@ -468,7 +469,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Get the maximum radius about the parent body's center of mass.
 		/// </summary>
-		public float ComputeSweepRadius(Vec2 pivot)
+		public float ComputeSweepRadius(Vector2 pivot)
 		{
 			return _shape.ComputeSweepRadius(pivot);
 		}

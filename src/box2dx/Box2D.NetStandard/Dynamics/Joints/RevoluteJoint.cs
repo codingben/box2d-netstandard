@@ -32,6 +32,7 @@
 // J = [0 0 -1 0 0 1]
 // K = invI1 + invI2
 
+using System.Numerics;
 using Box2DX.Common;
 
 namespace Box2DX.Dynamics
@@ -57,8 +58,8 @@ namespace Box2DX.Dynamics
 		public RevoluteJointDef()
 		{
 			Type = JointType.RevoluteJoint;
-			LocalAnchor1.Set(0.0f, 0.0f);
-			LocalAnchor2.Set(0.0f, 0.0f);
+			LocalAnchor1=Vector2.Zero;
+			LocalAnchor2=Vector2.Zero;
 			ReferenceAngle = 0.0f;
 			LowerAngle = 0.0f;
 			UpperAngle = 0.0f;
@@ -72,7 +73,7 @@ namespace Box2DX.Dynamics
 		/// Initialize the bodies, anchors, and reference angle using the world
 		/// anchor.
 		/// </summary>
-		public void Initialize(Body body1, Body body2, Vec2 anchor)
+		public void Initialize(Body body1, Body body2, Vector2 anchor)
 		{
 			Body1 = body1;
 			Body2 = body2;
@@ -84,12 +85,12 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// The local anchor point relative to body1's origin.
 		/// </summary>
-		public Vec2 LocalAnchor1;
+		public Vector2 LocalAnchor1;
 
 		/// <summary>
 		/// The local anchor point relative to body2's origin.
 		/// </summary>
-		public Vec2 LocalAnchor2;
+		public Vector2 LocalAnchor2;
 
 		/// <summary>
 		/// The body2 angle minus body1 angle in the reference state (radians).
@@ -138,8 +139,8 @@ namespace Box2DX.Dynamics
 	/// </summary>
 	public class RevoluteJoint : Joint
 	{
-		public Vec2 _localAnchor1;	// relative
-		public Vec2 _localAnchor2;
+		public Vector2 _localAnchor1;	// relative
+		public Vector2 _localAnchor2;
 		public Vec3 _impulse;
 		public float _motorImpulse;
 		public Mat33 _mass; //effective mass for p2p constraint.
@@ -155,19 +156,19 @@ namespace Box2DX.Dynamics
 		public float _upperAngle;
 		public LimitState _limitState;
 
-		public override Vec2 Anchor1
+		public override Vector2 Anchor1
 		{
 			get { return _body1.GetWorldPoint(_localAnchor1); }
 		}
 
-		public override Vec2 Anchor2
+		public override Vector2 Anchor2
 		{
 			get { return _body2.GetWorldPoint(_localAnchor2); }
 		}
 
-		public override Vec2 GetReactionForce(float inv_dt)
+		public override Vector2 GetReactionForce(float inv_dt)
 		{
-			Vec2 P = new Vec2(_impulse.X, _impulse.Y);
+			Vector2 P = new Vector2(_impulse.X, _impulse.Y);
 			return inv_dt * P;
 		}
 
@@ -331,8 +332,8 @@ namespace Box2DX.Dynamics
 			}
 
 			// Compute the effective mass matrix.
-			Vec2 r1 = Box2DXMath.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-			Vec2 r2 = Box2DXMath.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = Box2DXMath.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = Box2DXMath.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
 
 			// J = [-I -r1_skew I r2_skew]
 			//     [ 0       -1 0       1]
@@ -403,13 +404,13 @@ namespace Box2DX.Dynamics
 				_impulse *= step.DtRatio;
 				_motorImpulse *= step.DtRatio;
 
-				Vec2 P = new Vec2(_impulse.X, _impulse.Y);
+				Vector2 P = new Vector2(_impulse.X, _impulse.Y);
 
 				b1._linearVelocity -= m1 * P;
-				b1._angularVelocity -= i1 * (Vec2.Cross(r1, P) + _motorImpulse + _impulse.Z);
+				b1._angularVelocity -= i1 * (Vectex.Cross(r1, P) + _motorImpulse + _impulse.Z);
 
 				b2._linearVelocity += m2 * P;
-				b2._angularVelocity += i2 * (Vec2.Cross(r2, P) + _motorImpulse + _impulse.Z);
+				b2._angularVelocity += i2 * (Vectex.Cross(r2, P) + _motorImpulse + _impulse.Z);
 			}
 			else
 			{
@@ -423,9 +424,9 @@ namespace Box2DX.Dynamics
 			Body b1 = _body1;
 			Body b2 = _body2;
 
-			Vec2 v1 = b1._linearVelocity;
+			Vector2 v1 = b1._linearVelocity;
 			float w1 = b1._angularVelocity;
-			Vec2 v2 = b2._linearVelocity;
+			Vector2 v2 = b2._linearVelocity;
 			float w2 = b2._angularVelocity;
 
 			float m1 = b1._invMass, m2 = b2._invMass;
@@ -448,11 +449,11 @@ namespace Box2DX.Dynamics
 			//Solve limit constraint.
 			if (_enableLimit && _limitState != LimitState.InactiveLimit)
 			{
-				Vec2 r1 = Box2DXMath.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-				Vec2 r2 = Box2DXMath.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+				Vector2 r1 = Box2DXMath.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
+				Vector2 r2 = Box2DXMath.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
 
 				// Solve point-to-point constraint
-				Vec2 Cdot1 = v2 + Vec2.Cross(w2, r2) - v1 - Vec2.Cross(w1, r1);
+				Vector2 Cdot1 = v2 + Vectex.Cross(w2, r2) - v1 - Vectex.Cross(w1, r1);
 				float Cdot2 = w2 - w1;
 				Vec3 Cdot = new Vec3(Cdot1.X, Cdot1.Y, Cdot2);
 
@@ -467,7 +468,7 @@ namespace Box2DX.Dynamics
 					float newImpulse = _impulse.Z + impulse.Z;
 					if (newImpulse < 0.0f)
 					{
-						Vec2 reduced = _mass.Solve22(-Cdot1);
+						Vector2 reduced = _mass.Solve22(-Cdot1);
 						impulse.X = reduced.X;
 						impulse.Y = reduced.Y;
 						impulse.Z = -_impulse.Z;
@@ -481,7 +482,7 @@ namespace Box2DX.Dynamics
 					float newImpulse = _impulse.Z + impulse.Z;
 					if (newImpulse > 0.0f)
 					{
-						Vec2 reduced = _mass.Solve22(-Cdot1);
+						Vector2 reduced = _mass.Solve22(-Cdot1);
 						impulse.X = reduced.X;
 						impulse.Y = reduced.Y;
 						impulse.Z = -_impulse.Z;
@@ -491,31 +492,31 @@ namespace Box2DX.Dynamics
 					}
 				}
 
-				Vec2 P = new Vec2(impulse.X, impulse.Y);
+				Vector2 P = new Vector2(impulse.X, impulse.Y);
 
 				v1 -= m1 * P;
-				w1 -= i1 * (Vec2.Cross(r1, P) + impulse.Z);
+				w1 -= i1 * (Vectex.Cross(r1, P) + impulse.Z);
 
 				v2 += m2 * P;
-				w2 += i2 * (Vec2.Cross(r2, P) + impulse.Z);
+				w2 += i2 * (Vectex.Cross(r2, P) + impulse.Z);
 			}
 			else
 			{
-				Vec2 r1 = Box2DXMath.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-				Vec2 r2 = Box2DXMath.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+				Vector2 r1 = Box2DXMath.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
+				Vector2 r2 = Box2DXMath.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
 
 				// Solve point-to-point constraint
-				Vec2 Cdot = v2 + Vec2.Cross(w2, r2) - v1 - Vec2.Cross(w1, r1);
-				Vec2 impulse = _mass.Solve22(-Cdot);
+				Vector2 Cdot = v2 + Vectex.Cross(w2, r2) - v1 - Vectex.Cross(w1, r1);
+				Vector2 impulse = _mass.Solve22(-Cdot);
 
 				_impulse.X += impulse.X;
 				_impulse.Y += impulse.Y;
 
 				v1 -= m1 * impulse;
-				w1 -= i1 * Vec2.Cross(r1, impulse);
+				w1 -= i1 * Vectex.Cross(r1, impulse);
 
 				v2 += m2 * impulse;
-				w2 += i2 * Vec2.Cross(r2, impulse);
+				w2 += i2 * Vectex.Cross(r2, impulse);
 			}
 
 			b1._linearVelocity = v1;
@@ -575,10 +576,10 @@ namespace Box2DX.Dynamics
 
 			// Solve point-to-point constraint.
 			{
-				Vec2 r1 = Box2DXMath.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-				Vec2 r2 = Box2DXMath.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+				Vector2 r1 = Box2DXMath.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
+				Vector2 r2 = Box2DXMath.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
 
-				Vec2 C = b2._sweep.C + r2 - b1._sweep.C - r1;
+				Vector2 C = b2._sweep.C + r2 - b1._sweep.C - r1;
 				positionError = C.Length();
 
 				float invMass1 = b1._invMass, invMass2 = b2._invMass;
@@ -589,11 +590,11 @@ namespace Box2DX.Dynamics
 				if (C.LengthSquared() > k_allowedStretch * k_allowedStretch)
 				{
 					// Use a particle solution (no rotation).
-					Vec2 u = C; u.Normalize();
+					Vector2 u = Vector2.Normalize(C);
 					float k = invMass1 + invMass2;
 					Box2DXDebug.Assert(k > Settings.FLT_EPSILON);
 					float m = 1.0f / k;
-					Vec2 impulse = m * (-C);
+					Vector2 impulse = m * (-C);
 					float k_beta = 0.5f;
 					b1._sweep.C -= k_beta * invMass1 * impulse;
 					b2._sweep.C += k_beta * invMass2 * impulse;
@@ -614,13 +615,13 @@ namespace Box2DX.Dynamics
 				K3.Col1.Y = -invI2 * r2.X * r2.Y; K3.Col2.Y = invI2 * r2.X * r2.X;
 
 				Mat22 K = K1 + K2 + K3;
-				Vec2 impulse_ = K.Solve(-C);
+				Vector2 impulse_ = K.Solve(-C);
 
 				b1._sweep.C -= b1._invMass * impulse_;
-				b1._sweep.A -= b1._invI * Vec2.Cross(r1, impulse_);
+				b1._sweep.A -= b1._invI * Vectex.Cross(r1, impulse_);
 
 				b2._sweep.C += b2._invMass * impulse_;
-				b2._sweep.A += b2._invI * Vec2.Cross(r2, impulse_);
+				b2._sweep.A += b2._invI * Vectex.Cross(r2, impulse_);
 
 				b1.SynchronizeTransform();
 				b2.SynchronizeTransform();

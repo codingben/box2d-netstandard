@@ -19,6 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
+
 namespace Box2DX.Common
 {
 	/// <summary>
@@ -26,12 +28,12 @@ namespace Box2DX.Common
 	/// </summary>
 	public struct Mat22
 	{
-		public Vec2 Col1, Col2;
+		public Vector2 Col1, Col2;
 
 		/// <summary>
 		/// Construct this matrix using columns.
 		/// </summary>
-		public Mat22(Vec2 c1, Vec2 c2)
+		public Mat22(Vector2 c1, Vector2 c2)
 		{
 			Col1 = c1;
 			Col2 = c2;
@@ -60,7 +62,7 @@ namespace Box2DX.Common
 		/// <summary>
 		/// Initialize this matrix using columns.
 		/// </summary>
-		public void Set(Vec2 c1, Vec2 c2)
+		public void Set(Vector2 c1, Vector2 c2)
 		{
 			Col1 = c1;
 			Col2 = c2;
@@ -122,13 +124,13 @@ namespace Box2DX.Common
 		/// Solve A * x = b, where b is a column vector. This is more efficient
 		/// than computing the inverse in one-shot cases.
 		/// </summary>
-		public Vec2 Solve(Vec2 b)
+		public Vector2 Solve(Vector2 b)
 		{
 			float a11 = Col1.X, a12 = Col2.X, a21 = Col1.Y, a22 = Col2.Y;
 			float det = a11 * a22 - a12 * a21;
 			Box2DXDebug.Assert(det != 0.0f);
 			det = 1.0f / det;
-			Vec2 x = new Vec2();
+			Vector2 x = new Vector2();
 			x.X = det * (a22 * b.X - a12 * b.Y);
 			x.Y = det * (a11 * b.Y - a21 * b.X);
 			return x;

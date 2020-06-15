@@ -19,6 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
+
 namespace Box2DX.Common
 {
 	/// <summary>
@@ -27,7 +29,7 @@ namespace Box2DX.Common
 	/// </summary>
 	public struct XForm
 	{
-		public Vec2 Position;
+		public Vector2 Position;
 		public Mat22 R;
 
 		/// <summary>
@@ -35,7 +37,7 @@ namespace Box2DX.Common
 		/// </summary>
 		/// <param name="position"></param>
 		/// <param name="R"></param>
-		public XForm(Vec2 position, Mat22 rotation)
+		public XForm(Vector2 position, Mat22 rotation)
 		{
 			Position = position;
 			R = rotation;
@@ -46,12 +48,12 @@ namespace Box2DX.Common
 		/// </summary>
 		public void SetIdentity()
 		{
-			Position.SetZero();
+			Position = Vector2.Zero;
 			R.SetIdentity();
 		}
 
 		/// Set this based on the position and angle.
-		public void Set(Vec2 p, float angle)
+		public void Set(Vector2 p, float angle)
 		{
 			Position = p;
 			R.Set(angle);
@@ -63,6 +65,6 @@ namespace Box2DX.Common
 			return Math.Atan2(R.Col1.Y, R.Col1.X);
 		}
 
-		public static XForm Identity { get { return new XForm(Vec2.Zero, Mat22.Identity); } }
+		public static XForm Identity { get { return new XForm(Vector2.Zero, Mat22.Identity); } }
 	}
 }

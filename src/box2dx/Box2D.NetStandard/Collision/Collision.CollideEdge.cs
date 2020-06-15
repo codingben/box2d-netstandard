@@ -19,6 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
 using Box2DX.Common;
 
 namespace Box2DX.Collision
@@ -29,28 +30,27 @@ namespace Box2DX.Collision
 		public static void CollideEdgeAndCircle(ref Manifold manifold, EdgeShape edge, XForm transformA, CircleShape circle, XForm transformB)
 		{
 			manifold.PointCount = 0;
-			Vec2 cLocal = Common.Math.MulT(transformA, Common.Math.Mul(transformB, circle._position));
-			Vec2 normal = edge._normal;
-			Vec2 v1 = edge._v1;
-			Vec2 v2 = edge._v2;
+			Vector2 cLocal = Common.Math.MulT(transformA, Common.Math.Mul(transformB, circle._position));
+			Vector2 normal = edge._normal;
+			Vector2 v1 = edge._v1;
+			Vector2 v2 = edge._v2;
 			float radius = edge._radius + circle._radius;
 
 			// Barycentric coordinates
-			float u1 = Vec2.Dot(cLocal - v1, v2 - v1);
-			float u2 = Vec2.Dot(cLocal - v2, v1 - v2);
+			float u1 = Vector2.Dot(cLocal - v1, v2 - v1);
+			float u2 = Vector2.Dot(cLocal - v2, v1 - v2);
 
 			if (u1 <= 0.0f)
 			{
 				// Behind v1
-				if (Vec2.DistanceSquared(cLocal, v1) > radius * radius)
+				if (Vector2.DistanceSquared(cLocal, v1) > radius * radius)
 				{
 					return;
 				}
 
 				manifold.PointCount = 1;
 				manifold.Type = ManifoldType.FaceA;
-				manifold.LocalPlaneNormal = cLocal - v1;
-				manifold.LocalPlaneNormal.Normalize();
+				manifold.LocalPlaneNormal = Vector2.Normalize( cLocal - v1);
 				manifold.LocalPoint = v1;
 				manifold.Points[0].LocalPoint = circle._position;
 				manifold.Points[0].ID.Key = 0;
@@ -58,22 +58,21 @@ namespace Box2DX.Collision
 			else if (u2 <= 0.0f)
 			{
 				// Ahead of v2
-				if (Vec2.DistanceSquared(cLocal, v2) > radius * radius)
+				if (Vector2.DistanceSquared(cLocal, v2) > radius * radius)
 				{
 					return;
 				}
 
 				manifold.PointCount = 1;
 				manifold.Type = ManifoldType.FaceA;
-				manifold.LocalPlaneNormal = cLocal - v2;
-				manifold.LocalPlaneNormal.Normalize();
+				manifold.LocalPlaneNormal = Vector2.Normalize(cLocal - v2);
 				manifold.LocalPoint = v2;
 				manifold.Points[0].LocalPoint = circle._position;
 				manifold.Points[0].ID.Key = 0;
 			}
 			else
 			{
-				float separation = Vec2.Dot(cLocal - v1, normal);
+				float separation = Vector2.Dot(cLocal - v1, normal);
 				if (separation < -radius || radius < separation)
 				{
 					return;

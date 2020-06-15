@@ -19,6 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
+
 namespace Box2DX.Common
 {
 	/// <summary>
@@ -67,13 +69,13 @@ namespace Box2DX.Common
 		/// than computing the inverse in one-shot cases. Solve only the upper
 		/// 2-by-2 matrix equation.
 		/// </summary>
-		public Vec2 Solve22(Vec2 b)
+		public Vector2 Solve22(Vector2 b)
 		{
 			float a11 = Col1.X, a12 = Col2.X, a21 = Col1.Y, a22 = Col2.Y;
 			float det = a11 * a22 - a12 * a21;
 			Box2DXDebug.Assert(det != 0.0f);
 			det = 1.0f / det;
-			Vec2 x = new Vec2();
+			Vector2 x = new Vector2();
 			x.X = det * (a22 * b.X - a12 * b.Y);
 			x.Y = det * (a11 * b.Y - a21 * b.X);
 			return x;

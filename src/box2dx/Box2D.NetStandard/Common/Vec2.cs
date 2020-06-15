@@ -19,6 +19,10 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+
 namespace Box2DX.Common
 {
 	/// <summary>
@@ -26,6 +30,9 @@ namespace Box2DX.Common
 	/// </summary>
 	public struct Vec2
 	{
+		public static implicit operator Vector2(Vec2 src) => new Vector2(src.X,src.Y);
+		public static implicit operator Vec2(Vector2 src) => new Vec2(src.X,src.Y);
+		
 		public float X, Y;
 
 		public float this[int i]
@@ -222,5 +229,52 @@ namespace Box2DX.Common
 			Vec2 c = a - b;
 			return Vec2.Dot(c, c);
 		}
+	}
+	
+	public static class Vectex // vector extensions
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float GetIdx(in this Vector2 candidate, in int n) => n == 0 ? candidate.X : candidate.Y;
+		
+		[Obsolete("Cannot mutate vector", true)]
+		public static void SetIdx(this Vector2 candidate, in int n, in float val) {
+			if (n == 0)
+				candidate.X = val;
+			else
+				candidate.Y = val;
+		}
+
+		[Obsolete("Cannot mutate vector. Get length (if required) then normalize.", true)]
+		public static float Normalize(this Vector2 candidate) {
+			float len = candidate.Length();
+			Vector2 tmp = Vector2.Normalize(candidate);
+			candidate.X = tmp.X;
+			candidate.Y = tmp.Y;
+			return len;
+		}
+
+		[Obsolete("Cannot mutate source vector",true)]
+		public static void Set(this Vector2 candidate, in float x, in float y) {
+			candidate.X = x;
+			candidate.Y = y;
+		}
+
+		[Obsolete("Cannot mutate source vector", true)]
+		public static void SetZero(this Vector2 candidate) {
+			candidate.X = 0;
+			candidate.Y = 0;
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Cross(float s, Vector2 a) => new Vector2(-s * a.Y, s * a.X);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Cross(Vector2 a, float s) => new Vec2(s * a.Y, -s * a.X);
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float Cross(Vector2 a, Vector2 b) => a.X * b.Y - a.Y * b.X;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsValid(this Vector2 candidate) => Math.IsValid(candidate.X) && Math.IsValid(candidate.Y);
 	}
 }

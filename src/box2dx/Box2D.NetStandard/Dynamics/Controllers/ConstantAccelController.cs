@@ -16,6 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
 using Box2DX.Common;
 
 namespace Box2DX.Dynamics.Controllers
@@ -27,7 +28,7 @@ namespace Box2DX.Dynamics.Controllers
         /// <summary>
         /// The force to apply
         /// </summary>
-        public Vec2 A;
+        public Vector2 A;
     }
 
     public class ConstantAccelController : Controller
@@ -35,7 +36,7 @@ namespace Box2DX.Dynamics.Controllers
         /// <summary>
         /// The force to apply
         /// </summary>
-        public Vec2 A;
+        public Vector2 A;
 
         public ConstantAccelController(ConstantAccelControllerDef def)
         {

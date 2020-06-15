@@ -41,6 +41,7 @@ Bullet (http:/www.bulletphysics.com).
 #define ALLOWUNSAFE
 //#define TARGET_FLOAT32_IS_FIXED
 
+using System.Numerics;
 using Box2DX.Common;
 
 namespace Box2DX.Collision
@@ -112,7 +113,7 @@ namespace Box2DX.Collision
 		public int _queryResultCount;
 
 		public AABB _worldAABB;
-		public Vec2 _quantizationFactor;
+		public Vector2 _quantizationFactor;
 		public int _proxyCount;
 		public ushort _timeStamp;
 
@@ -127,7 +128,7 @@ namespace Box2DX.Collision
 			_worldAABB = worldAABB;
 			_proxyCount = 0;
 
-			Vec2 d = worldAABB.UpperBound - worldAABB.LowerBound;
+			Vector2 d = worldAABB.UpperBound - worldAABB.LowerBound;
 			_quantizationFactor.X = (float)BROADPHASE_MAX / d.X;
 			_quantizationFactor.Y = (float)BROADPHASE_MAX / d.Y;
 
@@ -165,7 +166,7 @@ namespace Box2DX.Collision
 		// is the number of proxies that are out of range.
 		public bool InRange(AABB aabb)
 		{
-			Vec2 d = Common.Math.Max(aabb.LowerBound - _worldAABB.UpperBound, _worldAABB.LowerBound - aabb.UpperBound);
+			Vector2 d = Common.Math.Max(aabb.LowerBound - _worldAABB.UpperBound, _worldAABB.LowerBound - aabb.UpperBound);
 			return Common.Math.Max(d.X, d.Y) < 0.0f;
 		}
 
@@ -951,8 +952,8 @@ namespace Box2DX.Collision
 			Box2DXDebug.Assert(aabb.UpperBound.X >= aabb.LowerBound.X);
 			Box2DXDebug.Assert(aabb.UpperBound.Y >= aabb.LowerBound.Y);
 
-			Vec2 minVertex = Common.Math.Clamp(aabb.LowerBound, _worldAABB.LowerBound, _worldAABB.UpperBound);
-			Vec2 maxVertex = Common.Math.Clamp(aabb.UpperBound, _worldAABB.LowerBound, _worldAABB.UpperBound);
+			Vector2 minVertex = Vector2.Clamp(aabb.LowerBound, _worldAABB.LowerBound, _worldAABB.UpperBound);
+			Vector2 maxVertex = Vector2.Clamp(aabb.UpperBound, _worldAABB.LowerBound, _worldAABB.UpperBound);
 
 			// Bump lower bounds downs and upper bounds up. This ensures correct sorting of
 			// lower/upper bounds that would have equal values.

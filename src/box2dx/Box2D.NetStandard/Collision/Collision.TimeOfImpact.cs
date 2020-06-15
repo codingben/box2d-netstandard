@@ -19,6 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
 using Box2DX.Common;
 
 namespace Box2DX.Collision
@@ -56,29 +57,27 @@ namespace Box2DX.Collision
 			if (count == 1)
 			{
 				FaceType = Type.Points;
-				Vec2 localPointA = ShapeA.GetVertex(cache->IndexA[0]);
-				Vec2 localPointB = ShapeB.GetVertex(cache->IndexB[0]);
-				Vec2 pointA = Common.Math.Mul(transformA, localPointA);
-				Vec2 pointB = Common.Math.Mul(transformB, localPointB);
-				Axis = pointB - pointA;
-				Axis.Normalize();
+				Vector2 localPointA = ShapeA.GetVertex(cache->IndexA[0]);
+				Vector2 localPointB = ShapeB.GetVertex(cache->IndexB[0]);
+				Vector2 pointA = Common.Math.Mul(transformA, localPointA);
+				Vector2 pointB = Common.Math.Mul(transformB, localPointB);
+				Axis = Vector2.Normalize(pointB - pointA);
 			}
 			else if (cache->IndexB[0] == cache->IndexB[1])
 			{
 				// Two points on A and one on B
 				FaceType = Type.FaceA;
-				Vec2 localPointA1 = ShapeA.GetVertex(cache->IndexA[0]);
-				Vec2 localPointA2 = ShapeA.GetVertex(cache->IndexA[1]);
-				Vec2 localPointB = ShapeB.GetVertex(cache->IndexB[0]);
+				Vector2 localPointA1 = ShapeA.GetVertex(cache->IndexA[0]);
+				Vector2 localPointA2 = ShapeA.GetVertex(cache->IndexA[1]);
+				Vector2 localPointB = ShapeB.GetVertex(cache->IndexB[0]);
 				LocalPoint = 0.5f * (localPointA1 + localPointA2);
-				Axis = Vec2.Cross(localPointA2 - localPointA1, 1.0f);
-				Axis.Normalize();
+				Axis = Vector2.Normalize( Vectex.Cross(localPointA2 - localPointA1, 1.0f));
 
-				Vec2 normal = Common.Math.Mul(transformA.R, Axis);
-				Vec2 pointA = Common.Math.Mul(transformA, LocalPoint);
-				Vec2 pointB = Common.Math.Mul(transformB, localPointB);
+				Vector2 normal = Common.Math.Mul(transformA.R, Axis);
+				Vector2 pointA = Common.Math.Mul(transformA, LocalPoint);
+				Vector2 pointB = Common.Math.Mul(transformB, localPointB);
 
-				float s = Vec2.Dot(pointB - pointA, normal);
+				float s = Vector2.Dot(pointB - pointA, normal);
 				if (s < 0.0f)
 				{
 					Axis = -Axis;
@@ -89,18 +88,17 @@ namespace Box2DX.Collision
 				// Two points on B and one or two points on A.
 				// We ignore the second point on A.
 				FaceType = Type.FaceB;
-				Vec2 localPointA = shapeA.GetVertex(cache->IndexA[0]);
-				Vec2 localPointB1 = shapeB.GetVertex(cache->IndexB[0]);
-				Vec2 localPointB2 = shapeB.GetVertex(cache->IndexB[1]);
+				Vector2 localPointA = shapeA.GetVertex(cache->IndexA[0]);
+				Vector2 localPointB1 = shapeB.GetVertex(cache->IndexB[0]);
+				Vector2 localPointB2 = shapeB.GetVertex(cache->IndexB[1]);
 				LocalPoint = 0.5f * (localPointB1 + localPointB2);
-				Axis = Vec2.Cross(localPointB2 - localPointB1, 1.0f);
-				Axis.Normalize();
+				Axis = Vector2.Normalize(Vectex.Cross(localPointB2 - localPointB1, 1.0f));
 
-				Vec2 normal = Common.Math.Mul(transformB.R, Axis);
-				Vec2 pointB = Common.Math.Mul(transformB, LocalPoint);
-				Vec2 pointA = Common.Math.Mul(transformA, localPointA);
+				Vector2 normal = Common.Math.Mul(transformB.R, Axis);
+				Vector2 pointB = Common.Math.Mul(transformB, LocalPoint);
+				Vector2 pointA = Common.Math.Mul(transformA, localPointA);
 
-				float s = Vec2.Dot(pointA - pointB, normal);
+				float s = Vector2.Dot(pointA - pointB, normal);
 				if (s < 0.0f)
 				{
 					Axis = -Axis;
@@ -114,41 +112,41 @@ namespace Box2DX.Collision
 			{
 				case Type.Points:
 					{
-						Vec2 axisA = Common.Math.MulT(transformA.R, Axis);
-						Vec2 axisB = Common.Math.MulT(transformB.R, -Axis);
-						Vec2 localPointA = ShapeA.GetSupportVertex(axisA);
-						Vec2 localPointB = ShapeB.GetSupportVertex(axisB);
-						Vec2 pointA = Common.Math.Mul(transformA, localPointA);
-						Vec2 pointB = Common.Math.Mul(transformB, localPointB);
-						float separation = Vec2.Dot(pointB - pointA, Axis);
+						Vector2 axisA = Common.Math.MulT(transformA.R, Axis);
+						Vector2 axisB = Common.Math.MulT(transformB.R, -Axis);
+						Vector2 localPointA = ShapeA.GetSupportVertex(axisA);
+						Vector2 localPointB = ShapeB.GetSupportVertex(axisB);
+						Vector2 pointA = Common.Math.Mul(transformA, localPointA);
+						Vector2 pointB = Common.Math.Mul(transformB, localPointB);
+						float separation = Vector2.Dot(pointB - pointA, Axis);
 						return separation;
 					}
 
 				case Type.FaceA:
 					{
-						Vec2 normal = Common.Math.Mul(transformA.R, Axis);
-						Vec2 pointA = Common.Math.Mul(transformA, LocalPoint);
+						Vector2 normal = Common.Math.Mul(transformA.R, Axis);
+						Vector2 pointA = Common.Math.Mul(transformA, LocalPoint);
 
-						Vec2 axisB = Common.Math.MulT(transformB.R, -normal);
+						Vector2 axisB = Common.Math.MulT(transformB.R, -normal);
 
-						Vec2 localPointB = ShapeB.GetSupportVertex(axisB);
-						Vec2 pointB = Common.Math.Mul(transformB, localPointB);
+						Vector2 localPointB = ShapeB.GetSupportVertex(axisB);
+						Vector2 pointB = Common.Math.Mul(transformB, localPointB);
 
-						float separation = Vec2.Dot(pointB - pointA, normal);
+						float separation = Vector2.Dot(pointB - pointA, normal);
 						return separation;
 					}
 
 				case Type.FaceB:
 					{
-						Vec2 normal = Common.Math.Mul(transformB.R, Axis);
-						Vec2 pointB = Common.Math.Mul(transformB, LocalPoint);
+						Vector2 normal = Common.Math.Mul(transformB.R, Axis);
+						Vector2 pointB = Common.Math.Mul(transformB, LocalPoint);
 
-						Vec2 axisA = Common.Math.MulT(transformA.R, -normal);
+						Vector2 axisA = Common.Math.MulT(transformA.R, -normal);
 
-						Vec2 localPointA = ShapeA.GetSupportVertex(axisA);
-						Vec2 pointA = Common.Math.Mul(transformA, localPointA);
+						Vector2 localPointA = ShapeA.GetSupportVertex(axisA);
+						Vector2 pointA = Common.Math.Mul(transformA, localPointA);
 
-						float separation = Vec2.Dot(pointA - pointB, normal);
+						float separation = Vector2.Dot(pointA - pointB, normal);
 						return separation;
 					}
 
@@ -161,8 +159,8 @@ namespace Box2DX.Collision
 		internal Shape ShapeA;
 		internal Shape ShapeB;
 		internal Type FaceType;
-		internal Vec2 LocalPoint;
-		internal Vec2 Axis;
+		internal Vector2 LocalPoint;
+		internal Vector2 Axis;
 	}
 
 	public partial class Collision
