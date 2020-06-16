@@ -81,7 +81,6 @@ namespace Box2DX.Dynamics
 			for (int i = 0; i < _constraintCount; i++)
 				_constraints[i] = new ContactConstraint();
 
-			int count = 0;
 			for (int i = 0; i < _constraintCount; ++i)
 			{
 				Contact contact = contacts[i];

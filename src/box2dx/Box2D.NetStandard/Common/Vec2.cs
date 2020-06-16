@@ -30,8 +30,9 @@ namespace Box2DX.Common
 	/// </summary>
 	[Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
 	public struct Vec2 {
+		[Obsolete("Warning: Implicit cast from Vec2 to System.Numerics.Vector2. You are advised to change your code to expect Vector2.")]
 		public static implicit operator Vector2(Vec2 src) => new Vector2(src.X, src.Y);
-		[Obsolete("Warning: Implicit cast from System.Numerics.Vector2. It is advised to change your code to expect Vector2.")]
+		[Obsolete("Warning: Implicit cast from System.Numerics.Vector2 to Vec2. You are advised to change your code to expect Vector2.")]
 		public static implicit operator Vec2(Vector2 src) => new Vec2(src.X, src.Y);
 
 		public float X, Y;
@@ -222,7 +223,7 @@ namespace Box2DX.Common
 		public static Vector2 Cross(float s, Vector2 a) => new Vector2(-s * a.Y, s * a.X);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Vector2 Cross(Vector2 a, float s) => new Vec2(s * a.Y, -s * a.X);
+		public static Vector2 Cross(Vector2 a, float s) => new Vector2(s * a.Y, -s * a.X);
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Cross(Vector2 a, Vector2 b) => a.X * b.Y - a.Y * b.X;
