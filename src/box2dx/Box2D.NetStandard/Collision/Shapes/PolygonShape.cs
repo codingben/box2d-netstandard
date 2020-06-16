@@ -21,8 +21,11 @@
 
 #define DEBUG
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Collision
 {
@@ -53,7 +56,7 @@ namespace Box2DX.Collision
 		/// </summary>
 		public void Set(Vector2[] vertices, int count)
 		{
-			Box2DXDebug.Assert(3 <= count && count <= Settings.MaxPolygonVertices);
+			Debug.Assert(3 <= count && count <= Settings.MaxPolygonVertices);
 			_vertexCount = count;
 
 			int i;
@@ -69,7 +72,7 @@ namespace Box2DX.Collision
 				int i1 = i;
 				int i2 = i + 1 < count ? i + 1 : 0;
 				Vector2 edge = _vertices[i2] - _vertices[i1];
-				Box2DXDebug.Assert(edge.LengthSquared() > Settings.FLT_EPSILON_SQUARED);
+				Debug.Assert(edge.LengthSquared() > Settings.FLT_EPSILON_SQUARED);
 				_normals[i] = Vector2.Normalize(Vectex.Cross(edge, 1.0f));
 			}
 
@@ -95,7 +98,7 @@ namespace Box2DX.Collision
 					// Your polygon is non-convex (it has an indentation) or
 					// has colinear edges.
 					float s = Vectex.Cross(edge, r);
-					Box2DXDebug.Assert(s > 0.0f);
+					Debug.Assert(s > 0.0f);
 				}
 			}
 #endif
@@ -142,8 +145,8 @@ namespace Box2DX.Collision
 			// Transform vertices and normals.
 			for (int i = 0; i < _vertexCount; ++i)
 			{
-				_vertices[i] = Common.Math.Mul(xf, _vertices[i]);
-				_normals[i] = Common.Math.Mul(xf.R, _normals[i]);
+				_vertices[i] = Math.Mul(xf, _vertices[i]);
+				_normals[i] = Math.Mul(xf.R, _normals[i]);
 			}
 		}
 
@@ -159,7 +162,7 @@ namespace Box2DX.Collision
 
 		public override bool TestPoint(XForm xf, Vector2 p)
 		{
-			Vector2 pLocal = Common.Math.MulT(xf.R, p - xf.Position);
+			Vector2 pLocal = Math.MulT(xf.R, p - xf.Position);
 
 			int vc = _vertexCount;
 			for (int i = 0; i < vc; ++i)
@@ -182,8 +185,8 @@ namespace Box2DX.Collision
 
 			float lower = 0.0f, upper = maxLambda;
 
-			Vector2 p1 = Common.Math.MulT(xf.R, segment.P1 - xf.Position);
-			Vector2 p2 = Common.Math.MulT(xf.R, segment.P2 - xf.Position);
+			Vector2 p1 = Math.MulT(xf.R, segment.P1 - xf.Position);
+			Vector2 p2 = Math.MulT(xf.R, segment.P2 - xf.Position);
 			Vector2 d = p2 - p1;
 			int index = -1;
 
@@ -229,12 +232,12 @@ namespace Box2DX.Collision
 				}
 			}
 
-			Box2DXDebug.Assert(0.0f <= lower && lower <= maxLambda);
+			Debug.Assert(0.0f <= lower && lower <= maxLambda);
 
 			if (index >= 0)
 			{
 				lambda = lower;
-				normal = Common.Math.Mul(xf.R, _normals[index]);
+				normal = Math.Mul(xf.R, _normals[index]);
 				return SegmentCollide.HitCollide;
 			}
 
@@ -244,14 +247,14 @@ namespace Box2DX.Collision
 
 		public override void ComputeAABB(out AABB aabb, XForm xf)
 		{
-			Vector2 lower = Common.Math.Mul(xf, _vertices[0]);
+			Vector2 lower = Math.Mul(xf, _vertices[0]);
 			Vector2 upper = lower;
 
 			for (int i = 1; i < _vertexCount; ++i)
 			{
-				Vector2 v = Common.Math.Mul(xf, _vertices[i]);
-				lower = Common.Math.Min(lower, v);
-				upper = Common.Math.Max(upper, v);
+				Vector2 v = Math.Mul(xf, _vertices[i]);
+				lower = Vector2.Min(lower, v);
+				upper = Vector2.Max(upper, v);
 			}
 
 			Vector2 r = new Vector2(_radius);
@@ -285,7 +288,7 @@ namespace Box2DX.Collision
 			//
 			// The rest of the derivation is handled by computer algebra.
 
-			Box2DXDebug.Assert(_vertexCount >= 3);
+			Debug.Assert(_vertexCount >= 3);
 
 			Vector2 center = new Vector2(0);
 			float area = 0.0f;
@@ -338,7 +341,7 @@ namespace Box2DX.Collision
 			massData.Mass = denstity * area;
 
 			// Center of mass
-			Box2DXDebug.Assert(area > Common.Settings.FLT_EPSILON);
+			Debug.Assert(area > Settings.FLT_EPSILON);
 			center *= 1.0f / area;
 			massData.Center = center;
 
@@ -349,10 +352,10 @@ namespace Box2DX.Collision
 		public override float ComputeSubmergedArea(Vector2 normal, float offset, XForm xf, out Vector2 c)
 		{
 			//Transform plane into shape co-ordinates
-			Vector2 normalL = Box2DX.Common.Math.MulT(xf.R, normal);
+			Vector2 normalL = Math.MulT(xf.R, normal);
 			float offsetL = offset - Vector2.Dot(normal, xf.Position);
 
-			float[] depths = new float[Common.Settings.MaxPolygonVertices];
+			float[] depths = new float[Settings.MaxPolygonVertices];
 			int diveCount = 0;
 			int intoIndex = -1;
 			int outoIndex = -1;
@@ -362,7 +365,7 @@ namespace Box2DX.Collision
 			for (i = 0; i < _vertexCount; i++)
 			{
 				depths[i] = Vector2.Dot(normalL, _vertices[i]) - offsetL;
-				bool isSubmerged = depths[i] < -Common.Settings.FLT_EPSILON;
+				bool isSubmerged = depths[i] < -Settings.FLT_EPSILON;
 				if (i > 0)
 				{
 					if (isSubmerged)
@@ -392,7 +395,7 @@ namespace Box2DX.Collision
 						//Completely submerged
 						MassData md;
 						ComputeMass(out md, 1f);
-						c = Common.Math.Mul(xf, md.Center);
+						c = Math.Mul(xf, md.Center);
 						return md.Mass;
 					}
 					else
@@ -464,7 +467,7 @@ namespace Box2DX.Collision
 			//Normalize and transform centroid
 			center *= 1.0f / area;
 
-			c = Common.Math.Mul(xf, center);
+			c = Math.Mul(xf, center);
 
 			return area;
 		}
@@ -472,14 +475,14 @@ namespace Box2DX.Collision
 		public override float ComputeSweepRadius(Vector2 pivot)
 		{
 			int vCount = _vertexCount;
-			Box2DXDebug.Assert(vCount > 0);
+			Debug.Assert(vCount > 0);
 			float sr = Vector2.DistanceSquared(_vertices[0], pivot);
 			for (int i = 1; i < vCount; ++i)
 			{
-				sr = Common.Math.Max(sr, Vector2.DistanceSquared(_vertices[i], pivot));
+				sr = MathF.Max(sr, Vector2.DistanceSquared(_vertices[i], pivot));
 			}
 
-			return Common.Math.Sqrt(sr);
+			return MathF.Sqrt(sr);
 		}
 
 		/// <summary>
@@ -521,13 +524,13 @@ namespace Box2DX.Collision
 
 		public override Vector2 GetVertex(int index)
 		{
-			Box2DXDebug.Assert(0 <= index && index < _vertexCount);
+			Debug.Assert(0 <= index && index < _vertexCount);
 			return _vertices[index];
 		}
 
 		public static Vector2 ComputeCentroid(Vector2[] vs, int count)
 		{
-			Box2DXDebug.Assert(count >= 3);
+			Debug.Assert(count >= 3);
 
 			Vector2 c = new Vector2(0f);
 			float area = 0f;
@@ -566,7 +569,7 @@ namespace Box2DX.Collision
 			}
 
 			// Centroid
-			Box2DXDebug.Assert(area > Common.Settings.FLT_EPSILON);
+			Debug.Assert(area > Settings.FLT_EPSILON);
 			c *= 1.0f / area;
 			return c;
 		}

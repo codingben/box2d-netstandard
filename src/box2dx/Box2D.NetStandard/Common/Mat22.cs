@@ -19,7 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Box2DX.Common
 {
@@ -52,6 +54,7 @@ namespace Box2DX.Common
 		/// Construct this matrix using an angle. 
 		/// This matrix becomes an orthonormal rotation matrix.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Mat22(float angle)
 		{
 			float c = (float)System.Math.Cos(angle), s = (float)System.Math.Sin(angle);
@@ -62,6 +65,7 @@ namespace Box2DX.Common
 		/// <summary>
 		/// Initialize this matrix using columns.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set(Vector2 c1, Vector2 c2)
 		{
 			Col1 = c1;
@@ -72,6 +76,7 @@ namespace Box2DX.Common
 		/// Initialize this matrix using an angle.
 		/// This matrix becomes an orthonormal rotation matrix.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Set(float angle)
 		{
 			float c = (float)System.Math.Cos(angle), s = (float)System.Math.Sin(angle);
@@ -82,6 +87,7 @@ namespace Box2DX.Common
 		/// <summary>
 		/// Set this to the identity matrix.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetIdentity()
 		{
 			Col1.X = 1.0f; Col2.X = 0.0f;
@@ -91,6 +97,7 @@ namespace Box2DX.Common
 		/// <summary>
 		/// Set this matrix to all zeros.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetZero()
 		{
 			Col1.X = 0.0f; Col2.X = 0.0f;
@@ -100,10 +107,8 @@ namespace Box2DX.Common
 		/// <summary>
 		/// Extract the angle from this matrix (assumed to be a rotation matrix).
 		/// </summary>
-		public float GetAngle()
-		{
-			return (float)System.Math.Atan2(Col1.Y, Col1.X);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetAngle() => (float)System.Math.Atan2(Col1.Y, Col1.X);
 
 		/// <summary>
 		/// Compute the inverse of this matrix, such that inv(A) * A = identity.
@@ -113,7 +118,7 @@ namespace Box2DX.Common
 			float a = Col1.X, b = Col2.X, c = Col1.Y, d = Col2.Y;
 			Mat22 B = new Mat22();
 			float det = a * d - b * c;
-			Box2DXDebug.Assert(det != 0.0f);
+			Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
 			B.Col1.X = det * d; B.Col2.X = -det * b;
 			B.Col1.Y = -det * c; B.Col2.Y = det * a;
@@ -128,7 +133,7 @@ namespace Box2DX.Common
 		{
 			float a11 = Col1.X, a12 = Col2.X, a21 = Col1.Y, a22 = Col2.Y;
 			float det = a11 * a22 - a12 * a21;
-			Box2DXDebug.Assert(det != 0.0f);
+			Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
 			Vector2 x = new Vector2();
 			x.X = det * (a22 * b.X - a12 * b.Y);
@@ -136,13 +141,12 @@ namespace Box2DX.Common
 			return x;
 		}
 
-		public static Mat22 Identity { get { return new Mat22(1, 0, 0, 1); } }
-
-		public static Mat22 operator +(Mat22 A, Mat22 B)
-		{
-			Mat22 C = new Mat22();
-			C.Set(A.Col1 + B.Col1, A.Col2 + B.Col2);
-			return C;
+		public static Mat22 Identity {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new Mat22(1, 0, 0, 1);
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Mat22 operator +(Mat22 A, Mat22 B) => new Mat22(A.Col1 + B.Col1, A.Col2 + B.Col2);
 	}
 }

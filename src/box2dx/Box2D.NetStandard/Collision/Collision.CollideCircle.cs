@@ -31,8 +31,8 @@ namespace Box2DX.Collision
 		{
 			manifold.PointCount = 0;
 
-			Vector2 p1 = Common.Math.Mul(xf1, circle1._position);
-			Vector2 p2 = Common.Math.Mul(xf2, circle2._position);
+			Vector2 p1 = Math.Mul(xf1, circle1._position);
+			Vector2 p2 = Math.Mul(xf2, circle2._position);
 
 			Vector2 d = p2 - p1;
 			float distSqr = Vector2.Dot(d, d);
@@ -57,8 +57,8 @@ namespace Box2DX.Collision
 			manifold.PointCount = 0;
 
 			// Compute circle position in the frame of the polygon.
-			Vector2 c = Common.Math.Mul(xf2, circle._position);
-			Vector2 cLocal = Common.Math.MulT(xf1, c);
+			Vector2 c = Math.Mul(xf2, circle._position);
+			Vector2 cLocal = Math.MulT(xf1, c);
 
 			// Find the min separating edge.
 			int normalIndex = 0;
@@ -91,7 +91,7 @@ namespace Box2DX.Collision
 			Vector2 v2 = vertices[vertIndex2];
 
 			// If the center is inside the polygon ...
-			if (separation < Common.Settings.FLT_EPSILON)
+			if (separation < Settings.FLT_EPSILON)
 			{
 				manifold.PointCount = 1;
 				manifold.Type = ManifoldType.FaceA;

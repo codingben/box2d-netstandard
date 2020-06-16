@@ -41,8 +41,11 @@ Bullet (http:/www.bulletphysics.com).
 #define ALLOWUNSAFE
 //#define TARGET_FLOAT32_IS_FIXED
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Collision
 {
@@ -67,9 +70,9 @@ namespace Box2DX.Collision
 		public Bound Clone()
 		{
 			Bound newBound = new Bound();
-			newBound.Value = this.Value;
-			newBound.ProxyId = this.ProxyId;
-			newBound.StabbingCount = this.StabbingCount;
+			newBound.Value = Value;
+			newBound.ProxyId = ProxyId;
+			newBound.StabbingCount = StabbingCount;
 			return newBound;
 		}
 	}
@@ -95,7 +98,7 @@ namespace Box2DX.Collision
 #if TARGET_FLOAT32_IS_FIXED
 		public static readonly ushort BROADPHASE_MAX = (Common.Math.USHRT_MAX/2);
 #else
-		public static readonly ushort BROADPHASE_MAX = Common.Math.USHRT_MAX;
+		public static readonly ushort BROADPHASE_MAX = Math.USHRT_MAX;
 #endif
 
 		public static readonly ushort Invalid = BROADPHASE_MAX;
@@ -124,7 +127,7 @@ namespace Box2DX.Collision
 			_pairManager = new PairManager();
 			_pairManager.Initialize(this, callback);
 
-			Box2DXDebug.Assert(worldAABB.IsValid);
+			Debug.Assert(worldAABB.IsValid);
 			_worldAABB = worldAABB;
 			_proxyCount = 0;
 
@@ -137,13 +140,13 @@ namespace Box2DX.Collision
 				_proxyPool[i] = new Proxy();
 				_proxyPool[i].Next = (ushort)(i + 1);
 				_proxyPool[i].TimeStamp = 0;
-				_proxyPool[i].OverlapCount = BroadPhase.Invalid;
+				_proxyPool[i].OverlapCount = Invalid;
 				_proxyPool[i].UserData = null;
 			}
 			_proxyPool[Settings.MaxProxies - 1] = new Proxy();
 			_proxyPool[Settings.MaxProxies - 1].Next = PairManager.NullProxy;
 			_proxyPool[Settings.MaxProxies - 1].TimeStamp = 0;
-			_proxyPool[Settings.MaxProxies - 1].OverlapCount = BroadPhase.Invalid;
+			_proxyPool[Settings.MaxProxies - 1].OverlapCount = Invalid;
 			_proxyPool[Settings.MaxProxies - 1].UserData = null;
 			_freeProxy = 0;
 
@@ -166,15 +169,15 @@ namespace Box2DX.Collision
 		// is the number of proxies that are out of range.
 		public bool InRange(AABB aabb)
 		{
-			Vector2 d = Common.Math.Max(aabb.LowerBound - _worldAABB.UpperBound, _worldAABB.LowerBound - aabb.UpperBound);
-			return Common.Math.Max(d.X, d.Y) < 0.0f;
+			Vector2 d = Vector2.Max(aabb.LowerBound - _worldAABB.UpperBound, _worldAABB.LowerBound - aabb.UpperBound);
+			return MathF.Max(d.X, d.Y) < 0.0f;
 		}
 
 		// Create and destroy proxies. These call Flush first.
 		public ushort CreateProxy(AABB aabb, object userData)
 		{
-			Box2DXDebug.Assert(_proxyCount < Settings.MaxProxies);
-			Box2DXDebug.Assert(_freeProxy != PairManager.NullProxy);
+			Debug.Assert(_proxyCount < Settings.MaxProxies);
+			Debug.Assert(_freeProxy != PairManager.NullProxy);
 
 			ushort proxyId = _freeProxy;
 			Proxy proxy = _proxyPool[proxyId];
@@ -252,13 +255,13 @@ namespace Box2DX.Collision
 
 			++_proxyCount;
 
-			Box2DXDebug.Assert(_queryResultCount < Settings.MaxProxies);
+			Debug.Assert(_queryResultCount < Settings.MaxProxies);
 
 			// Create pairs if the AABB is in range.
 			for (int i = 0; i < _queryResultCount; ++i)
 			{
-				Box2DXDebug.Assert(_queryResults[i] < Settings.MaxProxies);
-				Box2DXDebug.Assert(_proxyPool[_queryResults[i]].IsValid);
+				Debug.Assert(_queryResults[i] < Settings.MaxProxies);
+				Debug.Assert(_proxyPool[_queryResults[i]].IsValid);
 
 				_pairManager.AddBufferedPair(proxyId, _queryResults[i]);
 			}
@@ -279,9 +282,9 @@ namespace Box2DX.Collision
 
 		public void DestroyProxy(int proxyId)
 		{
-			Box2DXDebug.Assert(0 < _proxyCount && _proxyCount <= Settings.MaxProxies);
+			Debug.Assert(0 < _proxyCount && _proxyCount <= Settings.MaxProxies);
 			Proxy proxy = _proxyPool[proxyId];
-			Box2DXDebug.Assert(proxy.IsValid);
+			Debug.Assert(proxy.IsValid);
 
 			int boundCount = 2 * _proxyCount;
 
@@ -341,11 +344,11 @@ namespace Box2DX.Collision
 				Query(out lowerIndex, out upperIndex, lowerValue, upperValue, bounds, boundCount - 2, axis);
 			}
 
-			Box2DXDebug.Assert(_queryResultCount < Settings.MaxProxies);
+			Debug.Assert(_queryResultCount < Settings.MaxProxies);
 
 			for (int i = 0; i < _queryResultCount; ++i)
 			{
-				Box2DXDebug.Assert(_proxyPool[_queryResults[i]].IsValid);
+				Debug.Assert(_proxyPool[_queryResults[i]].IsValid);
 				_pairManager.RemoveBufferedPair(proxyId, _queryResults[i]);
 			}
 
@@ -357,11 +360,11 @@ namespace Box2DX.Collision
 
 			// Return the proxy to the pool.
 			proxy.UserData = null;
-			proxy.OverlapCount = BroadPhase.Invalid;
-			proxy.LowerBounds[0] = BroadPhase.Invalid;
-			proxy.LowerBounds[1] = BroadPhase.Invalid;
-			proxy.UpperBounds[0] = BroadPhase.Invalid;
-			proxy.UpperBounds[1] = BroadPhase.Invalid;
+			proxy.OverlapCount = Invalid;
+			proxy.LowerBounds[0] = Invalid;
+			proxy.LowerBounds[1] = Invalid;
+			proxy.UpperBounds[0] = Invalid;
+			proxy.UpperBounds[1] = Invalid;
 
 			proxy.Next = _freeProxy;
 			_freeProxy = (ushort)proxyId;
@@ -379,13 +382,13 @@ namespace Box2DX.Collision
 		{
 			if (proxyId == PairManager.NullProxy || Settings.MaxProxies <= proxyId)
 			{
-				Box2DXDebug.Assert(false);
+				Debug.Assert(false);
 				return;
 			}
 
 			if (aabb.IsValid == false)
 			{
-				Box2DXDebug.Assert(false);
+				Debug.Assert(false);
 				return;
 			}
 
@@ -456,7 +459,7 @@ namespace Box2DX.Collision
 						}
 
 						--proxy.LowerBounds[axis];
-						Common.Math.Swap<Bound>(ref bounds[index], ref bounds[index - 1]);
+						Math.Swap<Bound>(ref bounds[index], ref bounds[index - 1]);
 						--index;
 					}
 				}
@@ -491,7 +494,7 @@ namespace Box2DX.Collision
 						}
 
 						++proxy.UpperBounds[axis];
-						Common.Math.Swap<Bound>(ref bounds[index], ref bounds[index + 1]);
+						Math.Swap<Bound>(ref bounds[index], ref bounds[index + 1]);
 						++index;
 					}
 				}
@@ -531,7 +534,7 @@ namespace Box2DX.Collision
 						}
 
 						++proxy.LowerBounds[axis];
-						Common.Math.Swap<Bound>(ref bounds[index], ref bounds[index + 1]);
+						Math.Swap<Bound>(ref bounds[index], ref bounds[index + 1]);
 						++index;
 					}
 				}
@@ -567,7 +570,7 @@ namespace Box2DX.Collision
 						}
 
 						--proxy.UpperBounds[axis];
-						Common.Math.Swap<Bound>(ref bounds[index], ref bounds[index - 1]);
+						Math.Swap<Bound>(ref bounds[index], ref bounds[index - 1]);
 						--index;
 					}
 				}
@@ -608,14 +611,14 @@ namespace Box2DX.Collision
 			Query(out lowerIndex, out upperIndex, lowerValues[0], upperValues[0], _bounds[0], 2 * _proxyCount, 0);
 			Query(out lowerIndex, out upperIndex, lowerValues[1], upperValues[1], _bounds[1], 2 * _proxyCount, 1);
 
-			Box2DXDebug.Assert(_queryResultCount < Settings.MaxProxies);
+			Debug.Assert(_queryResultCount < Settings.MaxProxies);
 
 			int count = 0;
 			for (int i = 0; i < _queryResultCount && count < maxCount; ++i, ++count)
 			{
-				Box2DXDebug.Assert(_queryResults[i] < Settings.MaxProxies);
+				Debug.Assert(_queryResults[i] < Settings.MaxProxies);
 				Proxy proxy = _proxyPool[_queryResults[i]];
-				Box2DXDebug.Assert(proxy.IsValid);
+				Debug.Assert(proxy.IsValid);
 				userData[i] = proxy.UserData;
 			}
 
@@ -648,7 +651,7 @@ namespace Box2DX.Collision
 			int sx = dx < -Settings.FLT_EPSILON ? -1 : (dx > Settings.FLT_EPSILON ? 1 : 0);
 			int sy = dy < -Settings.FLT_EPSILON ? -1 : (dy > Settings.FLT_EPSILON ? 1 : 0);
 
-			Box2DXDebug.Assert(sx != 0 || sy != 0);
+			Debug.Assert(sx != 0 || sy != 0);
 
 			float p1x = (segment.P1.X - _worldAABB.LowerBound.X) * _quantizationFactor.X;
 			float p1y = (segment.P1.Y - _worldAABB.LowerBound.Y) * _quantizationFactor.Y;
@@ -899,9 +902,9 @@ namespace Box2DX.Collision
 			int count = 0;
 			for (int i = 0; i < _queryResultCount && count < maxCount; ++i, ++count)
 			{
-				Box2DXDebug.Assert(_queryResults[i] < Settings.MaxProxies);
+				Debug.Assert(_queryResults[i] < Settings.MaxProxies);
 				Proxy proxy_ = _proxyPool[_queryResults[i]];
-				Box2DXDebug.Assert(proxy_.IsValid);
+				Debug.Assert(proxy_.IsValid);
 				userData[i] = proxy_.UserData;
 			}
 
@@ -924,22 +927,22 @@ namespace Box2DX.Collision
 				for (int i = 0; i < boundCount; ++i)
 				{
 					Bound bound = bounds[i];
-					Box2DXDebug.Assert(i == 0 || bounds[i - 1].Value <= bound.Value);
-					Box2DXDebug.Assert(bound.ProxyId != PairManager.NullProxy);
-					Box2DXDebug.Assert(_proxyPool[bound.ProxyId].IsValid);
+					Debug.Assert(i == 0 || bounds[i - 1].Value <= bound.Value);
+					Debug.Assert(bound.ProxyId != PairManager.NullProxy);
+					Debug.Assert(_proxyPool[bound.ProxyId].IsValid);
 
 					if (bound.IsLower == true)
 					{
-						Box2DXDebug.Assert(_proxyPool[bound.ProxyId].LowerBounds[axis] == i);
+						Debug.Assert(_proxyPool[bound.ProxyId].LowerBounds[axis] == i);
 						++stabbingCount;
 					}
 					else
 					{
-						Box2DXDebug.Assert(_proxyPool[bound.ProxyId].UpperBounds[axis] == i);
+						Debug.Assert(_proxyPool[bound.ProxyId].UpperBounds[axis] == i);
 						--stabbingCount;
 					}
 
-					Box2DXDebug.Assert(bound.StabbingCount == stabbingCount);
+					Debug.Assert(bound.StabbingCount == stabbingCount);
 				}
 			}
 		}
@@ -949,8 +952,8 @@ namespace Box2DX.Collision
 			lowerValues = new ushort[2];
 			upperValues = new ushort[2];
 
-			Box2DXDebug.Assert(aabb.UpperBound.X >= aabb.LowerBound.X);
-			Box2DXDebug.Assert(aabb.UpperBound.Y >= aabb.LowerBound.Y);
+			Debug.Assert(aabb.UpperBound.X >= aabb.LowerBound.X);
+			Debug.Assert(aabb.UpperBound.Y >= aabb.LowerBound.Y);
 
 			Vector2 minVertex = Vector2.Clamp(aabb.LowerBound, _worldAABB.LowerBound, _worldAABB.UpperBound);
 			Vector2 maxVertex = Vector2.Clamp(aabb.UpperBound, _worldAABB.LowerBound, _worldAABB.UpperBound);
@@ -972,10 +975,10 @@ namespace Box2DX.Collision
 			{
 				Bound[] bounds = _bounds[axis];
 
-				Box2DXDebug.Assert(p1.LowerBounds[axis] < 2 * _proxyCount);
-				Box2DXDebug.Assert(p1.UpperBounds[axis] < 2 * _proxyCount);
-				Box2DXDebug.Assert(p2.LowerBounds[axis] < 2 * _proxyCount);
-				Box2DXDebug.Assert(p2.UpperBounds[axis] < 2 * _proxyCount);
+				Debug.Assert(p1.LowerBounds[axis] < 2 * _proxyCount);
+				Debug.Assert(p1.UpperBounds[axis] < 2 * _proxyCount);
+				Debug.Assert(p2.LowerBounds[axis] < 2 * _proxyCount);
+				Debug.Assert(p2.UpperBounds[axis] < 2 * _proxyCount);
 
 				if (bounds[p1.LowerBounds[axis]].Value > bounds[p2.UpperBounds[axis]].Value)
 					return false;
@@ -993,8 +996,8 @@ namespace Box2DX.Collision
 			{
 				Bound[] bounds = _bounds[axis];
 
-				Box2DXDebug.Assert(p.LowerBounds[axis] < 2 * _proxyCount);
-				Box2DXDebug.Assert(p.UpperBounds[axis] < 2 * _proxyCount);
+				Debug.Assert(p.LowerBounds[axis] < 2 * _proxyCount);
+				Debug.Assert(p.UpperBounds[axis] < 2 * _proxyCount);
 
 				if (b.LowerValues[axis] > bounds[p.UpperBounds[axis]].Value)
 					return false;
@@ -1033,7 +1036,7 @@ namespace Box2DX.Collision
 				// Find the s overlaps.
 				while (s != 0)
 				{
-					Box2DXDebug.Assert(i >= 0);
+					Debug.Assert(i >= 0);
 
 					if (bounds[i].IsLower)
 					{
@@ -1065,7 +1068,7 @@ namespace Box2DX.Collision
 			else
 			{
 				proxy.OverlapCount = 2;
-				Box2DXDebug.Assert(_queryResultCount < Settings.MaxProxies);
+				Debug.Assert(_queryResultCount < Settings.MaxProxies);
 				_queryResults[_queryResultCount] = (ushort)proxyId;
 				++_queryResultCount;
 				qi2++;

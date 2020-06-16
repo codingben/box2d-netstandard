@@ -27,6 +27,7 @@
 // Identity used:
 // w k % (rx i + ry j) = w * (-ry i + rx j)
 
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Common;
 
@@ -127,7 +128,7 @@ namespace Box2DX.Dynamics
 			: base(def)
 		{
 			_target = def.Target;
-			_localAnchor = Common.Math.MulT(_body2.GetXForm(), _target);
+			_localAnchor = Math.MulT(_body2.GetXForm(), _target);
 
 			_maxForce = def.MaxForce;
 			_impulse=Vector2.Zero;
@@ -157,12 +158,12 @@ namespace Box2DX.Dynamics
 			// magic formulas
 			// gamma has units of inverse mass.
 			// beta has units of inverse time.
-			Box2DXDebug.Assert(d + step.Dt * k > Settings.FLT_EPSILON);
+			Debug.Assert(d + step.Dt * k > Settings.FLT_EPSILON);
 			_gamma = 1.0f / (step.Dt * (d + step.Dt * k));
 			_beta = step.Dt * k * _gamma;
 
 			// Compute the effective mass matrix.
-			Vector2 r = Common.Math.Mul(b.GetXForm().R, _localAnchor - b.GetLocalCenter());
+			Vector2 r = Math.Mul(b.GetXForm().R, _localAnchor - b.GetLocalCenter());
 
 			// K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
 			//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
@@ -199,11 +200,11 @@ namespace Box2DX.Dynamics
 		{
 			Body b = _body2;
 
-			Vector2 r = Common.Math.Mul(b.GetXForm().R, _localAnchor - b.GetLocalCenter());
+			Vector2 r = Math.Mul(b.GetXForm().R, _localAnchor - b.GetLocalCenter());
 
 			// Cdot = v + cross(w, r)
 			Vector2 Cdot = b._linearVelocity + Vectex.Cross(b._angularVelocity, r);
-			Vector2 impulse = Box2DX.Common.Math.Mul(_mass, -(Cdot + _beta * _C + _gamma * _impulse));
+			Vector2 impulse = Math.Mul(_mass, -(Cdot + _beta * _C + _gamma * _impulse));
 
 			Vector2 oldImpulse = _impulse;
 			_impulse += impulse;

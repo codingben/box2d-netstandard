@@ -39,6 +39,7 @@
 // J = [ug cross(r, ug)]
 // K = J * invM * JT = invMass + invI * cross(r, ug)^2
 
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Common;
 
@@ -130,7 +131,7 @@ namespace Box2DX.Dynamics
 		public override float GetReactionTorque(float inv_dt)
 		{
 			// TODO_ERIN not tested
-			Vector2 r = Common.Math.Mul(_body2.GetXForm().R, _localAnchor2 - _body2.GetLocalCenter());
+			Vector2 r = Math.Mul(_body2.GetXForm().R, _localAnchor2 - _body2.GetLocalCenter());
 			Vector2 P = _impulse * _J.Linear2;
 			float L = _impulse * _J.Angular2 - Vectex.Cross(r, P);
 			return inv_dt * L;
@@ -147,10 +148,10 @@ namespace Box2DX.Dynamics
 			JointType type1 = def.Joint1.GetType();
 			JointType type2 = def.Joint2.GetType();
 
-			Box2DXDebug.Assert(type1 == JointType.RevoluteJoint || type1 == JointType.PrismaticJoint);
-			Box2DXDebug.Assert(type2 == JointType.RevoluteJoint || type2 == JointType.PrismaticJoint);
-			Box2DXDebug.Assert(def.Joint1.GetBody1().IsStatic());
-			Box2DXDebug.Assert(def.Joint2.GetBody1().IsStatic());
+			Debug.Assert(type1 == JointType.RevoluteJoint || type1 == JointType.PrismaticJoint);
+			Debug.Assert(type2 == JointType.RevoluteJoint || type2 == JointType.PrismaticJoint);
+			Debug.Assert(def.Joint1.GetBody1().IsStatic());
+			Debug.Assert(def.Joint2.GetBody1().IsStatic());
 
 			_revolute1 = null;
 			_prismatic1 = null;
@@ -217,8 +218,8 @@ namespace Box2DX.Dynamics
 			}
 			else
 			{
-				Vector2 ug = Common.Math.Mul(g1.GetXForm().R, _prismatic1._localXAxis1);
-				Vector2 r = Common.Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
+				Vector2 ug = Math.Mul(g1.GetXForm().R, _prismatic1._localXAxis1);
+				Vector2 r = Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
 				float crug = Vectex.Cross(r, ug);
 				_J.Linear1 = -ug;
 				_J.Angular1 = -crug;
@@ -232,8 +233,8 @@ namespace Box2DX.Dynamics
 			}
 			else
 			{
-				Vector2 ug = Common.Math.Mul(g2.GetXForm().R, _prismatic2._localXAxis1);
-				Vector2 r = Common.Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+				Vector2 ug = Math.Mul(g2.GetXForm().R, _prismatic2._localXAxis1);
+				Vector2 r = Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
 				float crug = Vectex.Cross(r, ug);
 				_J.Linear2 = -_ratio * ug;
 				_J.Angular2 = -_ratio * crug;
@@ -241,7 +242,7 @@ namespace Box2DX.Dynamics
 			}
 
 			// Compute effective mass.
-			Box2DXDebug.Assert(K > 0.0f);
+			Debug.Assert(K > 0.0f);
 			_mass = 1.0f / K;
 
 			if (step.WarmStarting)

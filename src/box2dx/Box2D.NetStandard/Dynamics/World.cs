@@ -20,6 +20,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Collision;
 using Box2DX.Common;
@@ -136,8 +137,9 @@ namespace Box2DX.Dynamics
 		public void Dispose()
 		{
 			DestroyBody(_groundBody);
-			if (_broadPhase is IDisposable)
-				(_broadPhase as IDisposable).Dispose();
+			// BroadPhase class is not IDisposable
+			// if (_broadPhase is IDisposable)
+			// 	(_broadPhase as IDisposable).Dispose();
 			_broadPhase = null;
 		}
 
@@ -199,7 +201,7 @@ namespace Box2DX.Dynamics
 		/// <returns></returns>
 		public Body CreateBody(BodyDef def)
 		{
-			Box2DXDebug.Assert(_lock == false);
+			Debug.Assert(_lock == false);
 			if (_lock == true)
 			{
 				return null;
@@ -229,8 +231,8 @@ namespace Box2DX.Dynamics
 		/// <param name="b"></param>
 		public void DestroyBody(Body b)
 		{
-			Box2DXDebug.Assert(_bodyCount > 0);
-			Box2DXDebug.Assert(_lock == false);
+			Debug.Assert(_bodyCount > 0);
+			Debug.Assert(_lock == false);
 			if (_lock == true)
 			{
 				return;
@@ -310,7 +312,7 @@ namespace Box2DX.Dynamics
 		/// <returns></returns>
 		public Joint CreateJoint(JointDef def)
 		{
-			Box2DXDebug.Assert(_lock == false);
+			Debug.Assert(_lock == false);
 
 			Joint j = Joint.Create(def);
 
@@ -362,7 +364,7 @@ namespace Box2DX.Dynamics
 		/// <param name="j"></param>
 		public void DestroyJoint(Joint j)
 		{
-			Box2DXDebug.Assert(_lock == false);
+			Debug.Assert(_lock == false);
 
 			bool collideConnected = j._collideConnected;
 
@@ -430,7 +432,7 @@ namespace Box2DX.Dynamics
 
 			Joint.Destroy(j);
 
-			Box2DXDebug.Assert(_jointCount > 0);
+			Debug.Assert(_jointCount > 0);
 			--_jointCount;
 
 			// If the joint prevents collisions, then reset collision filtering.
@@ -461,7 +463,7 @@ namespace Box2DX.Dynamics
 
 		public void RemoveController(Controllers.Controller controller)
 		{
-			Box2DXDebug.Assert(_controllerCount > 0);
+			Debug.Assert(_controllerCount > 0);
 			if (controller._next != null)
 				controller._next._prev = controller._prev;
 			if (controller._prev != null)
@@ -516,7 +518,7 @@ namespace Box2DX.Dynamics
 		/// </summary>		
 		public void Refilter(Fixture fixture)
 		{
-			Box2DXDebug.Assert(_lock == false);
+			Debug.Assert(_lock == false);
 			fixture.RefilterProxy(_broadPhase, fixture.Body.GetXForm());
 		}
 
@@ -695,7 +697,7 @@ namespace Box2DX.Dynamics
 			if (count == 0)
 				return null;
 
-			Box2DXDebug.Assert(count == 1);
+			Debug.Assert(count == 1);
 
 			//Redundantly do TestSegment a second time, as the previous one's results are inaccessible
 
@@ -796,7 +798,7 @@ namespace Box2DX.Dynamics
 								continue;
 							}
 
-							Box2DXDebug.Assert(stackCount < stackSize);
+							Debug.Assert(stackCount < stackSize);
 							stack[stackCount++] = other;
 							other._flags |= Body.BodyFlags.Island;
 						}
@@ -818,7 +820,7 @@ namespace Box2DX.Dynamics
 								continue;
 							}
 
-							Box2DXDebug.Assert(stackCount < stackSize);
+							Debug.Assert(stackCount < stackSize);
 							stack[stackCount++] = other;
 							other._flags |= Body.BodyFlags.Island;
 						}
@@ -954,19 +956,19 @@ namespace Box2DX.Dynamics
 							b2._sweep.Advance(t0);
 						}
 
-						Box2DXDebug.Assert(t0 < 1.0f);
+						Debug.Assert(t0 < 1.0f);
 
 						// Compute the time of impact.
 						toi = c.ComputeTOI(b1._sweep, b2._sweep);
 						//b2TimeOfImpact(c->m_fixtureA->GetShape(), b1->m_sweep, c->m_fixtureB->GetShape(), b2->m_sweep);
 
-						Box2DXDebug.Assert(0.0f <= toi && toi <= 1.0f);
+						Debug.Assert(0.0f <= toi && toi <= 1.0f);
 
 						// If the TOI is in range ...
 						if (0.0f < toi && toi < 1.0f)
 						{
 							// Interpolate on the actual range.
-							toi = Common.Math.Min((1.0f - toi) * t0 + toi, 1.0f);
+							toi = MathF.Min((1.0f - toi) * t0 + toi, 1.0f);
 						}
 
 
@@ -1258,7 +1260,7 @@ namespace Box2DX.Dynamics
 						int vertexCount = poly._vertexCount;
 						Vector2[] localVertices = poly._vertices;
 
-						Box2DXDebug.Assert(vertexCount <= Settings.MaxPolygonVertices);
+						Debug.Assert(vertexCount <= Settings.MaxPolygonVertices);
 						Vector2[] vertices = new Vector2[Settings.MaxPolygonVertices];
 
 						for (int i = 0; i < vertexCount; ++i)
@@ -1417,7 +1419,7 @@ namespace Box2DX.Dynamics
 		private static float RaycastSortKey(object data)
 		{
 			Fixture fixture = data as Fixture;
-			Box2DXDebug.Assert(fixture != null);
+			Debug.Assert(fixture != null);
 			Body body = fixture.Body;
 			World world = body.GetWorld();
 

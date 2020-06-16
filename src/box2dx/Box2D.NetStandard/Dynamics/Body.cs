@@ -20,7 +20,9 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2DX.Collision;
 using Box2DX.Common;
 
@@ -186,7 +188,7 @@ namespace Box2DX.Dynamics
 
 		internal Body(BodyDef bd, World world)
 		{
-			Box2DXDebug.Assert(world._lock == false);
+			Debug.Assert(world._lock == false);
 
 			_flags = 0;
 
@@ -272,7 +274,7 @@ namespace Box2DX.Dynamics
 
 		public void Dispose()
 		{
-			Box2DXDebug.Assert(_world._lock == false);
+			Debug.Assert(_world._lock == false);
 			// shapes and joints are destroyed in World.Destroy
 		}
 
@@ -308,6 +310,7 @@ namespace Box2DX.Dynamics
 
 		// This is used to prevent connected bodies from colliding.
 		// It may lie, depending on the collideConnected flag.
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal bool IsConnected(Body other)
 		{
 			for (JointEdge jn = _jointList; jn != null; jn = jn.Next)
@@ -326,7 +329,7 @@ namespace Box2DX.Dynamics
 		/// <param name="def">The fixture definition.</param>
 		public Fixture CreateFixture(FixtureDef def)
 		{
-			Box2DXDebug.Assert(_world._lock == false);
+			Debug.Assert(_world._lock == false);
 			if (_world._lock == true)
 			{
 				return null;
@@ -355,16 +358,16 @@ namespace Box2DX.Dynamics
 		/// <param name="fixture">The fixture to be removed.</param>
 		public void DestroyFixture(Fixture fixture)
 		{
-			Box2DXDebug.Assert(_world._lock == false);
+			Debug.Assert(_world._lock == false);
 			if (_world._lock == true)
 			{
 				return;
 			}
 
-			Box2DXDebug.Assert(fixture.Body == this);
+			Debug.Assert(fixture.Body == this);
 
 			// Remove the fixture from this body's singly linked list.
-			Box2DXDebug.Assert(_fixtureCount > 0);
+			Debug.Assert(_fixtureCount > 0);
 			Fixture node = _fixtureList;
 			bool found = false;
 			while (node != null)
@@ -381,7 +384,7 @@ namespace Box2DX.Dynamics
 			}
 
 			// You tried to remove a shape that is not attached to this body.
-			Box2DXDebug.Assert(found);
+			Debug.Assert(found);
 
 			BroadPhase broadPhase = _world._broadPhase;
 
@@ -401,7 +404,7 @@ namespace Box2DX.Dynamics
 		/// <param name="massData">The mass properties.</param>
 		public void SetMass(MassData massData)
 		{
-			Box2DXDebug.Assert(_world._lock == false);
+			Debug.Assert(_world._lock == false);
 			if (_world._lock == true)
 			{
 				return;
@@ -457,7 +460,7 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public void SetMassFromShapes()
 		{
-			Box2DXDebug.Assert(_world._lock == false);
+			Debug.Assert(_world._lock == false);
 			if (_world._lock == true)
 			{
 				return;
@@ -490,7 +493,7 @@ namespace Box2DX.Dynamics
 			{
 				// Center the inertia about the center of mass.
 				_I -= _mass * Vector2.Dot(center, center);
-				Box2DXDebug.Assert(_I > 0.0f);
+				Debug.Assert(_I > 0.0f);
 				_invI = 1.0f / _I;
 			}
 			else
@@ -534,7 +537,7 @@ namespace Box2DX.Dynamics
 		/// body is automatically frozen.</returns>
 		public bool SetXForm(Vector2 position, float angle)
 		{
-			Box2DXDebug.Assert(_world._lock == false);
+			Debug.Assert(_world._lock == false);
 			if (_world._lock == true)
 			{
 				return true;
@@ -587,109 +590,85 @@ namespace Box2DX.Dynamics
 		/// <param name="xf">The transform of position and angle to set the body to.</param>
 		/// <returns>False if the movement put a shape outside the world. In this case the
 		/// body is automatically frozen.</returns>
-		public bool SetXForm(XForm xf)
-		{
-			return SetXForm(xf.Position, xf.GetAngle());
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool SetXForm(XForm xf) => SetXForm(xf.Position, xf.GetAngle());
 
 		/// <summary>
 		/// Get the body transform for the body's origin.
 		/// </summary>
 		/// <returns>Return the world transform of the body's origin.</returns>
-		public XForm GetXForm()
-		{
-			return _xf;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public XForm GetXForm() => _xf;
 
 		/// <summary>
 		/// Set the world body origin position.
 		/// </summary>
 		/// <param name="position">The new position of the body.</param>
-		public void SetPosition(Vector2 position)
-		{
-			SetXForm(position, GetAngle());
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetPosition(Vector2 position) => SetXForm(position, GetAngle());
 
 		/// <summary>
 		/// Set the world body angle.
 		/// </summary>
 		/// <param name="angle">The new angle of the body.</param>
-		public void SetAngle(float angle)
-		{
-			SetXForm(GetPosition(), angle);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetAngle(float angle) => SetXForm(GetPosition(), angle);
 
 		/// <summary>
 		/// Get the world body origin position.
 		/// </summary>
 		/// <returns>Return the world position of the body's origin.</returns>
-		public Vector2 GetPosition()
-		{
-			return _xf.Position;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetPosition() => _xf.Position;
 
 		/// <summary>
 		/// Get the angle in radians.
 		/// </summary>
 		/// <returns>Return the current world rotation angle in radians.</returns>
-		public float GetAngle()
-		{
-			return _sweep.A;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetAngle() => _sweep.A;
 
 		/// <summary>
 		/// Get the world position of the center of mass.
 		/// </summary>
 		/// <returns></returns>
-		public Vector2 GetWorldCenter()
-		{
-			return _sweep.C;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetWorldCenter() => _sweep.C;
 
 		/// <summary>
 		/// Get the local position of the center of mass.
 		/// </summary>
 		/// <returns></returns>
-		public Vector2 GetLocalCenter()
-		{
-			return _sweep.LocalCenter;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetLocalCenter() => _sweep.LocalCenter;
 
 		/// <summary>
 		/// Set the linear velocity of the center of mass.
 		/// </summary>
 		/// <param name="v">The new linear velocity of the center of mass.</param>
-		public void SetLinearVelocity(Vector2 v)
-		{
-			_linearVelocity = v;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetLinearVelocity(Vector2 v) => _linearVelocity = v;
 
 		/// <summary>
 		/// Get the linear velocity of the center of mass.
 		/// </summary>
 		/// <returns>Return the linear velocity of the center of mass.</returns>
-		public Vector2 GetLinearVelocity()
-		{
-			return _linearVelocity;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetLinearVelocity() => _linearVelocity;
 
 		/// <summary>
 		/// Set the angular velocity.
 		/// </summary>
 		/// <param name="omega">The new angular velocity in radians/second.</param>
-		public void SetAngularVelocity(float w)
-		{
-			_angularVelocity = w;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetAngularVelocity(float w) => _angularVelocity = w;
 
 		/// <summary>
 		/// Get the angular velocity.
 		/// </summary>
 		/// <returns>Return the angular velocity in radians/second.</returns>
-		public float GetAngularVelocity()
-		{
-			return _angularVelocity;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetAngularVelocity() => _angularVelocity;
 
 		/// <summary>
 		/// Apply a force at a world point. If the force is not
@@ -698,6 +677,7 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		/// <param name="force">The world force vector, usually in Newtons (N).</param>
 		/// <param name="point">The world position of the point of application.</param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public void ApplyForce(Vector2 force, Vector2 point)
 		{
 			if (IsSleeping())
@@ -714,6 +694,7 @@ namespace Box2DX.Dynamics
 		/// This wakes up the body.
 		/// </summary>
 		/// <param name="torque">Torque about the z-axis (out of the screen), usually in N-m.</param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ApplyTorque(float torque)
 		{
 			if (IsSleeping())
@@ -730,6 +711,7 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		/// <param name="impulse">The world impulse vector, usually in N-seconds or kg-m/s.</param>
 		/// <param name="point">The world position of the point of application.</param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void ApplyImpulse(Vector2 impulse, Vector2 point)
 		{
 			if (IsSleeping())
@@ -744,24 +726,21 @@ namespace Box2DX.Dynamics
 		/// Get the total mass of the body.
 		/// </summary>
 		/// <returns>Return the mass, usually in kilograms (kg).</returns>
-		public float GetMass()
-		{
-			return _mass;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetMass() => _mass;
 
 		/// <summary>
 		/// Get the central rotational inertia of the body.
 		/// </summary>
 		/// <returns>Return the rotational inertia, usually in kg-m^2.</returns>
-		public float GetInertia()
-		{
-			return _I;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]		
+		public float GetInertia() => _I;
 
 		/// <summary>
 		/// Get the mass data of the body.
 		/// </summary>
 		/// <returns>A struct containing the mass, inertia and center of the body.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public MassData GetMassData()
 		{
 			MassData massData = new MassData();
@@ -776,94 +755,73 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		/// <param name="localPoint">A point on the body measured relative the the body's origin.</param>
 		/// <returns>Return the same point expressed in world coordinates.</returns>
-		public Vector2 GetWorldPoint(Vector2 localPoint)
-		{
-			return Common.Math.Mul(_xf, localPoint);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetWorldPoint(Vector2 localPoint) => Common.Math.Mul(_xf, localPoint);
 
 		/// <summary>
 		/// Get the world coordinates of a vector given the local coordinates.
 		/// </summary>
 		/// <param name="localVector">A vector fixed in the body.</param>
 		/// <returns>Return the same vector expressed in world coordinates.</returns>
-		public Vector2 GetWorldVector(Vector2 localVector)
-		{
-			return Common.Math.Mul(_xf.R, localVector);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetWorldVector(Vector2 localVector) => Common.Math.Mul(_xf.R, localVector);
 
 		/// <summary>
 		/// Gets a local point relative to the body's origin given a world point.
 		/// </summary>
 		/// <param name="worldPoint">A point in world coordinates.</param>
 		/// <returns>Return the corresponding local point relative to the body's origin.</returns>
-		public Vector2 GetLocalPoint(Vector2 worldPoint)
-		{
-			return Common.Math.MulT(_xf, worldPoint);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetLocalPoint(Vector2 worldPoint) => Common.Math.MulT(_xf, worldPoint);
 
 		/// <summary>
 		/// Gets a local vector given a world vector.
 		/// </summary>
 		/// <param name="worldVector">A vector in world coordinates.</param>
 		/// <returns>Return the corresponding local vector.</returns>
-		public Vector2 GetLocalVector(Vector2 worldVector)
-		{
-			return Common.Math.MulT(_xf.R, worldVector);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetLocalVector(Vector2 worldVector) => Common.Math.MulT(_xf.R, worldVector);
 
 		/// <summary>
 		/// Get the world linear velocity of a world point attached to this body.
 		/// </summary>
 		/// <param name="worldPoint">A point in world coordinates.</param>
 		/// <returns>The world velocity of a point.</returns>
-		public Vector2 GetLinearVelocityFromWorldPoint(Vector2 worldPoint)
-		{
-			return _linearVelocity + Vectex.Cross(_angularVelocity, worldPoint - _sweep.C);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetLinearVelocityFromWorldPoint(Vector2 worldPoint) => _linearVelocity + Vectex.Cross(_angularVelocity, worldPoint - _sweep.C);
 
 		/// <summary>
 		/// Get the world velocity of a local point.
 		/// </summary>
 		/// <param name="localPoint">A point in local coordinates.</param>
 		/// <returns>The world velocity of a point.</returns>
-		public Vector2 GetLinearVelocityFromLocalPoint(Vector2 localPoint)
-		{
-			return GetLinearVelocityFromWorldPoint(GetWorldPoint(localPoint));
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetLinearVelocityFromLocalPoint(Vector2 localPoint) => GetLinearVelocityFromWorldPoint(GetWorldPoint(localPoint));
 
-		public float GetLinearDamping()
-		{
-			return _linearDamping;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetLinearDamping() => _linearDamping;
 
-		public void SetLinearDamping(float linearDamping)
-		{
-			_linearDamping = linearDamping;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetLinearDamping(float linearDamping) => _linearDamping = linearDamping;
 
-		public float GetAngularDamping()
-		{
-			return _angularDamping;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetAngularDamping() => _angularDamping;
 
-		public void SetAngularDamping(float angularDamping)
-		{
-			_angularDamping = angularDamping;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetAngularDamping(float angularDamping) => _angularDamping = angularDamping;
 
 		/// <summary>
 		/// Is this body treated like a bullet for continuous collision detection?
 		/// </summary>
 		/// <returns></returns>
-		public bool IsBullet()
-		{
-			return (_flags & BodyFlags.Bullet) == BodyFlags.Bullet;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsBullet() => (_flags & BodyFlags.Bullet) == BodyFlags.Bullet;
 
 		/// <summary>
 		/// Should this body be treated like a bullet for continuous collision detection?
 		/// </summary>
 		/// <param name="flag"></param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetBullet(bool flag)
 		{
 			if (flag)
@@ -876,10 +834,8 @@ namespace Box2DX.Dynamics
 			}
 		}
 
-		public bool IsFixedRotation()
-		{
-			return (_flags & BodyFlags.FixedRotation) == BodyFlags.FixedRotation;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsFixedRotation() => (_flags & BodyFlags.FixedRotation) == BodyFlags.FixedRotation;
 
 		public void SetFixedRotation(bool fixedr)
 		{
@@ -905,10 +861,8 @@ namespace Box2DX.Dynamics
 		/// Is this body static (immovable)?
 		/// </summary>
 		/// <returns></returns>
-		public bool IsStatic()
-		{
-			return _type == BodyType.Static;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsStatic() => _type == BodyType.Static;
 
 		public void SetStatic()
 		{
@@ -930,38 +884,31 @@ namespace Box2DX.Dynamics
 		/// Is this body dynamic (movable)?
 		/// </summary>
 		/// <returns></returns>
-		public bool IsDynamic()
-		{
-			return _type == BodyType.Dynamic;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsDynamic() => _type == BodyType.Dynamic;
 
 		/// <summary>
 		/// Is this body frozen?
 		/// </summary>
 		/// <returns></returns>
-		public bool IsFrozen()
-		{
-			return (_flags & BodyFlags.Frozen) == BodyFlags.Frozen;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsFrozen() => (_flags & BodyFlags.Frozen) == BodyFlags.Frozen;
 
 		/// <summary>
 		/// Is this body sleeping (not simulating).
 		/// </summary>
 		/// <returns></returns>
-		public bool IsSleeping()
-		{
-			return (_flags & BodyFlags.Sleep) == BodyFlags.Sleep;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsSleeping() => (_flags & BodyFlags.Sleep) == BodyFlags.Sleep;
 
-		public bool IsAllowSleeping()
-		{
-			return (_flags & BodyFlags.AllowSleep) == BodyFlags.AllowSleep;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsAllowSleeping() => (_flags & BodyFlags.AllowSleep) == BodyFlags.AllowSleep;
 
 		/// <summary>
 		/// You can disable sleeping on this body.
 		/// </summary>
 		/// <param name="flag"></param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void AllowSleeping(bool flag)
 		{
 			if (flag)
@@ -978,6 +925,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Wake up this body so it will begin simulating.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public void WakeUp()
 		{
 			_flags &= ~BodyFlags.Sleep;
@@ -988,6 +936,7 @@ namespace Box2DX.Dynamics
 		/// Put this body to sleep so it will stop simulating.
 		/// This also sets the velocity to zero.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void PutToSleep()
 		{
 			_flags |= BodyFlags.Sleep;
@@ -1002,61 +951,56 @@ namespace Box2DX.Dynamics
 		/// Get the list of all fixtures attached to this body.
 		/// </summary>
 		/// <returns></returns>
-		public Fixture GetFixtureList()
-		{
-			return _fixtureList;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Fixture GetFixtureList() => _fixtureList;
 
 		/// <summary>
 		/// Get the list of all joints attached to this body.
 		/// </summary>
 		/// <returns></returns>
-		public JointEdge GetJointList()
-		{
-			return _jointList;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public JointEdge GetJointList() => _jointList;
 
-		public Controllers.ControllerEdge GetControllerList()
-		{
-			return _controllerList;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Controllers.ControllerEdge GetControllerList() => _controllerList;
 
 		/// <summary>
 		/// Get the next body in the world's body list.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetNext()
-		{
-			return _next;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Body GetNext() => _next;
 
 		/// <summary>
 		/// Get the user data pointer that was provided in the body definition.
 		/// </summary>
 		/// <returns></returns>
-		public object GetUserData()
-		{
-			return _userData;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public object GetUserData() => _userData;
 
 		/// <summary>
 		/// Set the user data. Use this to store your application specific data.
 		/// </summary>
 		/// <param name="data"></param>
-		public void SetUserData(object data) { _userData = data; }
+		/// [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetUserData(object data) => _userData = data;
 
 		/// <summary>
 		/// Get the parent world of this body.
 		/// </summary>
 		/// <returns></returns>
-		public World GetWorld() { return _world; }
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public World GetWorld() => _world;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void SynchronizeTransform()
 		{
 			_xf.R.Set(_sweep.A);
 			_xf.Position = _sweep.C - Common.Math.Mul(_xf.R, _sweep.LocalCenter);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void Advance(float t)
 		{
 			// Advance to the new safe time.

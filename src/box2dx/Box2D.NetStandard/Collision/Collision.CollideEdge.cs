@@ -30,7 +30,7 @@ namespace Box2DX.Collision
 		public static void CollideEdgeAndCircle(ref Manifold manifold, EdgeShape edge, XForm transformA, CircleShape circle, XForm transformB)
 		{
 			manifold.PointCount = 0;
-			Vector2 cLocal = Common.Math.MulT(transformA, Common.Math.Mul(transformB, circle._position));
+			Vector2 cLocal = Math.MulT(transformA, Math.Mul(transformB, circle._position));
 			Vector2 normal = edge._normal;
 			Vector2 v1 = edge._v1;
 			Vector2 v2 = edge._v2;

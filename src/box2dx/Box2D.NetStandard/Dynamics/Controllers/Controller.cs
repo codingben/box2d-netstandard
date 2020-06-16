@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Box2DX.Dynamics.Controllers
 {
@@ -96,7 +97,7 @@ namespace Box2DX.Dynamics.Controllers
         public void RemoveBody(Body body)
         {
             //Assert that the controller is not empty
-            Box2DXDebug.Assert(_bodyCount > 0);
+            Debug.Assert(_bodyCount > 0);
 
             //Find the corresponding edge
             ControllerEdge edge = _bodyList;
@@ -104,7 +105,7 @@ namespace Box2DX.Dynamics.Controllers
                 edge = edge.nextBody;
 
             //Assert that we are removing a body that is currently attached to the controller
-            Box2DXDebug.Assert(edge != null);
+            Debug.Assert(edge != null);
 
             //Remove edge from controller list
             if (edge.prevBody != null)

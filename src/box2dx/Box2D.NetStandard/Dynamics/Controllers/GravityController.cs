@@ -16,6 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.Numerics;
 using Box2DX.Common;
 using Math = Box2DX.Common.Math;
@@ -68,7 +69,7 @@ namespace Box2DX.Dynamics.Controllers
                         if (r2 < Settings.FLT_EPSILON)
                             continue;
 
-                        Vector2 f = G / r2 / Math.Sqrt(r2) * body1.GetMass() * body2.GetMass() * d;
+                        Vector2 f = G / r2 / MathF.Sqrt(r2) * body1.GetMass() * body2.GetMass() * d;
                         body1.ApplyForce(f, body1.GetWorldCenter());
                         body2.ApplyForce(-1.0f * f, body2.GetWorldCenter());
                     }

@@ -42,7 +42,7 @@ namespace Box2DX.Common
 			xf.R.Set(angle);
 
 			// Shift to origin
-			xf.Position -= Common.Math.Mul(xf.R, LocalCenter);
+			xf.Position -= Math.Mul(xf.R, LocalCenter);
 		}
 
 		/// <summary>

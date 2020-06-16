@@ -19,6 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Diagnostics;
 using Box2DX.Collision;
 using Box2DX.Common;
 
@@ -29,8 +30,8 @@ namespace Box2DX.Dynamics
 		public PolygonContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA, fixtureB)
 		{
-			Box2DXDebug.Assert(fixtureA.ShapeType == ShapeType.PolygonShape);
-			Box2DXDebug.Assert(fixtureB.ShapeType == ShapeType.PolygonShape);
+			Debug.Assert(fixtureA.ShapeType == ShapeType.PolygonShape);
+			Debug.Assert(fixtureB.ShapeType == ShapeType.PolygonShape);
 			CollideShapeFunction = CollidePolygons;
 		}
 
@@ -39,12 +40,12 @@ namespace Box2DX.Dynamics
 			Collision.Collision.CollidePolygons(ref manifold, (PolygonShape)shape1, xf1, (PolygonShape)shape2, xf2);
 		}
 
-		new public static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		public new static Contact Create(Fixture fixtureA, Fixture fixtureB)
 		{
 			return new PolygonContact(fixtureA, fixtureB);
 		}
 
-		new public static void Destroy(ref Contact contact)
+		public new static void Destroy(ref Contact contact)
 		{
 			contact = null;
 		}

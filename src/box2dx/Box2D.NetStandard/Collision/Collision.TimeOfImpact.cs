@@ -19,8 +19,11 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Collision
 {
@@ -52,15 +55,15 @@ namespace Box2DX.Collision
 			ShapeA = shapeA;
 			ShapeB = shapeB;
 			int count = cache->Count;
-			Box2DXDebug.Assert(0 < count && count < 3);
+			Debug.Assert(0 < count && count < 3);
 
 			if (count == 1)
 			{
 				FaceType = Type.Points;
 				Vector2 localPointA = ShapeA.GetVertex(cache->IndexA[0]);
 				Vector2 localPointB = ShapeB.GetVertex(cache->IndexB[0]);
-				Vector2 pointA = Common.Math.Mul(transformA, localPointA);
-				Vector2 pointB = Common.Math.Mul(transformB, localPointB);
+				Vector2 pointA = Math.Mul(transformA, localPointA);
+				Vector2 pointB = Math.Mul(transformB, localPointB);
 				Axis = Vector2.Normalize(pointB - pointA);
 			}
 			else if (cache->IndexB[0] == cache->IndexB[1])
@@ -73,9 +76,9 @@ namespace Box2DX.Collision
 				LocalPoint = 0.5f * (localPointA1 + localPointA2);
 				Axis = Vector2.Normalize( Vectex.Cross(localPointA2 - localPointA1, 1.0f));
 
-				Vector2 normal = Common.Math.Mul(transformA.R, Axis);
-				Vector2 pointA = Common.Math.Mul(transformA, LocalPoint);
-				Vector2 pointB = Common.Math.Mul(transformB, localPointB);
+				Vector2 normal = Math.Mul(transformA.R, Axis);
+				Vector2 pointA = Math.Mul(transformA, LocalPoint);
+				Vector2 pointB = Math.Mul(transformB, localPointB);
 
 				float s = Vector2.Dot(pointB - pointA, normal);
 				if (s < 0.0f)
@@ -94,9 +97,9 @@ namespace Box2DX.Collision
 				LocalPoint = 0.5f * (localPointB1 + localPointB2);
 				Axis = Vector2.Normalize(Vectex.Cross(localPointB2 - localPointB1, 1.0f));
 
-				Vector2 normal = Common.Math.Mul(transformB.R, Axis);
-				Vector2 pointB = Common.Math.Mul(transformB, LocalPoint);
-				Vector2 pointA = Common.Math.Mul(transformA, localPointA);
+				Vector2 normal = Math.Mul(transformB.R, Axis);
+				Vector2 pointB = Math.Mul(transformB, LocalPoint);
+				Vector2 pointA = Math.Mul(transformA, localPointA);
 
 				float s = Vector2.Dot(pointA - pointB, normal);
 				if (s < 0.0f)
@@ -112,25 +115,25 @@ namespace Box2DX.Collision
 			{
 				case Type.Points:
 					{
-						Vector2 axisA = Common.Math.MulT(transformA.R, Axis);
-						Vector2 axisB = Common.Math.MulT(transformB.R, -Axis);
+						Vector2 axisA = Math.MulT(transformA.R, Axis);
+						Vector2 axisB = Math.MulT(transformB.R, -Axis);
 						Vector2 localPointA = ShapeA.GetSupportVertex(axisA);
 						Vector2 localPointB = ShapeB.GetSupportVertex(axisB);
-						Vector2 pointA = Common.Math.Mul(transformA, localPointA);
-						Vector2 pointB = Common.Math.Mul(transformB, localPointB);
+						Vector2 pointA = Math.Mul(transformA, localPointA);
+						Vector2 pointB = Math.Mul(transformB, localPointB);
 						float separation = Vector2.Dot(pointB - pointA, Axis);
 						return separation;
 					}
 
 				case Type.FaceA:
 					{
-						Vector2 normal = Common.Math.Mul(transformA.R, Axis);
-						Vector2 pointA = Common.Math.Mul(transformA, LocalPoint);
+						Vector2 normal = Math.Mul(transformA.R, Axis);
+						Vector2 pointA = Math.Mul(transformA, LocalPoint);
 
-						Vector2 axisB = Common.Math.MulT(transformB.R, -normal);
+						Vector2 axisB = Math.MulT(transformB.R, -normal);
 
 						Vector2 localPointB = ShapeB.GetSupportVertex(axisB);
-						Vector2 pointB = Common.Math.Mul(transformB, localPointB);
+						Vector2 pointB = Math.Mul(transformB, localPointB);
 
 						float separation = Vector2.Dot(pointB - pointA, normal);
 						return separation;
@@ -138,20 +141,20 @@ namespace Box2DX.Collision
 
 				case Type.FaceB:
 					{
-						Vector2 normal = Common.Math.Mul(transformB.R, Axis);
-						Vector2 pointB = Common.Math.Mul(transformB, LocalPoint);
+						Vector2 normal = Math.Mul(transformB.R, Axis);
+						Vector2 pointB = Math.Mul(transformB, LocalPoint);
 
-						Vector2 axisA = Common.Math.MulT(transformA.R, -normal);
+						Vector2 axisA = Math.MulT(transformA.R, -normal);
 
 						Vector2 localPointA = ShapeA.GetSupportVertex(axisA);
-						Vector2 pointA = Common.Math.Mul(transformA, localPointA);
+						Vector2 pointA = Math.Mul(transformA, localPointA);
 
 						float separation = Vector2.Dot(pointA - pointB, normal);
 						return separation;
 					}
 
 				default:
-					Box2DXDebug.Assert(false);
+					Debug.Assert(false);
 					return 0.0f;
 			}
 		}
@@ -185,8 +188,8 @@ namespace Box2DX.Collision
 			Sweep sweepA = input.SweepA;
 			Sweep sweepB = input.SweepB;
 
-			Box2DXDebug.Assert(sweepA.T0 == sweepB.T0);
-			Box2DXDebug.Assert(1.0f - sweepA.T0 > Common.Settings.FLT_EPSILON);
+			Debug.Assert(sweepA.T0 == sweepB.T0);
+			Debug.Assert(1.0f - sweepA.T0 > Settings.FLT_EPSILON);
 
 			float radius = shapeA._radius + shapeB._radius;
 			float tolerance = input.Tolerance;
@@ -241,11 +244,11 @@ namespace Box2DX.Collision
 					// to create additional clearance.
 					if (separation > radius)
 					{
-						target = Common.Math.Max(radius - tolerance, 0.75f * radius);
+						target = MathF.Max(radius - tolerance, 0.75f * radius);
 					}
 					else
 					{
-						target = Common.Math.Max(separation - tolerance, 0.02f * radius);
+						target = MathF.Max(separation - tolerance, 0.02f * radius);
 					}
 				}
 
@@ -326,7 +329,7 @@ namespace Box2DX.Collision
 
 						float f = fcn.Evaluate(xfA, xfB);
 
-						if (Common.Math.Abs(f - target) < 0.025f * tolerance)
+						if (MathF.Abs(f - target) < 0.025f * tolerance)
 						{
 							newAlpha = x;
 							break;
@@ -346,14 +349,14 @@ namespace Box2DX.Collision
 
 						++rootIterCount;
 
-						Box2DXDebug.Assert(rootIterCount < 50);
+						Debug.Assert(rootIterCount < 50);
 					}
 
-					MaxToiRootIters = Common.Math.Max(MaxToiRootIters, rootIterCount);
+					MaxToiRootIters = System.Math.Max(MaxToiRootIters, rootIterCount);
 				}
 
 				// Ensure significant advancement.
-				if (newAlpha < (1.0f + 100.0f * Common.Settings.FLT_EPSILON) * alpha)
+				if (newAlpha < (1.0f + 100.0f * Settings.FLT_EPSILON) * alpha)
 				{
 					break;
 				}
@@ -368,7 +371,7 @@ namespace Box2DX.Collision
 				}
 			}
 
-			MaxToiIters = Common.Math.Max(MaxToiIters, iter);
+			MaxToiIters = System.Math.Max(MaxToiIters, iter);
 
 			return alpha;
 		}

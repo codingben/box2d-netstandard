@@ -20,6 +20,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using Box2DX.Collision;
 using Box2DX.Common;
 
@@ -130,8 +131,8 @@ namespace Box2DX.Dynamics
 		public static void AddType(ContactCreateFcn createFcn, ContactDestroyFcn destoryFcn,
 					  ShapeType type1, ShapeType type2)
 		{
-			Box2DXDebug.Assert(ShapeType.UnknownShape < type1 && type1 < ShapeType.ShapeTypeCount);
-			Box2DXDebug.Assert(ShapeType.UnknownShape < type2 && type2 < ShapeType.ShapeTypeCount);
+			Debug.Assert(ShapeType.UnknownShape < type1 && type1 < ShapeType.ShapeTypeCount);
+			Debug.Assert(ShapeType.UnknownShape < type2 && type2 < ShapeType.ShapeTypeCount);
 
 			if (s_registers[(int)type1] == null)
 				s_registers[(int)type1] = new ContactRegister[(int)ShapeType.ShapeTypeCount];
@@ -169,8 +170,8 @@ namespace Box2DX.Dynamics
 			ShapeType type1 = fixtureA.ShapeType;
 			ShapeType type2 = fixtureB.ShapeType;
 
-			Box2DXDebug.Assert(ShapeType.UnknownShape < type1 && type1 < ShapeType.ShapeTypeCount);
-			Box2DXDebug.Assert(ShapeType.UnknownShape < type2 && type2 < ShapeType.ShapeTypeCount);
+			Debug.Assert(ShapeType.UnknownShape < type1 && type1 < ShapeType.ShapeTypeCount);
+			Debug.Assert(ShapeType.UnknownShape < type2 && type2 < ShapeType.ShapeTypeCount);
 
 			ContactCreateFcn createFcn = s_registers[(int)type1][(int)type2].CreateFcn;
 			if (createFcn != null)
@@ -192,7 +193,7 @@ namespace Box2DX.Dynamics
 
 		public static void Destroy(ref Contact contact)
 		{
-			Box2DXDebug.Assert(s_initialized == true);
+			Debug.Assert(s_initialized == true);
 
 			if (contact._manifold.PointCount > 0)
 			{
@@ -203,8 +204,8 @@ namespace Box2DX.Dynamics
 			ShapeType typeA = contact.FixtureA.ShapeType;
 			ShapeType typeB = contact.FixtureB.ShapeType;
 
-			Box2DXDebug.Assert(ShapeType.UnknownShape < typeA && typeA < ShapeType.ShapeTypeCount);
-			Box2DXDebug.Assert(ShapeType.UnknownShape < typeB && typeB < ShapeType.ShapeTypeCount);
+			Debug.Assert(ShapeType.UnknownShape < typeA && typeA < ShapeType.ShapeTypeCount);
+			Debug.Assert(ShapeType.UnknownShape < typeB && typeB < ShapeType.ShapeTypeCount);
 
 			ContactDestroyFcn destroyFcn = s_registers[(int)typeA][(int)typeB].DestroyFcn;
 			destroyFcn(ref contact);
@@ -292,7 +293,7 @@ namespace Box2DX.Dynamics
 			Body bodyA = _fixtureA.Body;
 			Body bodyB = _fixtureB.Body;
 
-			Box2DXDebug.Assert(CollideShapeFunction!=null);
+			Debug.Assert(CollideShapeFunction!=null);
 
 			CollideShapeFunction(ref _manifold, _fixtureA.Shape, bodyA.GetXForm(), _fixtureB.Shape, bodyB.GetXForm());
 		}
@@ -304,7 +305,7 @@ namespace Box2DX.Dynamics
 			input.SweepB = sweepB;
 			input.SweepRadiusA = _fixtureA.ComputeSweepRadius(sweepA.LocalCenter);
 			input.SweepRadiusB = _fixtureB.ComputeSweepRadius(sweepB.LocalCenter);
-			input.Tolerance = Common.Settings.LinearSlop;
+			input.Tolerance = Settings.LinearSlop;
 
 			return Collision.Collision.TimeOfImpact(input, _fixtureA.Shape, _fixtureB.Shape);
 		}

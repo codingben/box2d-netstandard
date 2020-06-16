@@ -19,6 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2DX.Common;
@@ -287,7 +288,7 @@ namespace Box2DX.Dynamics
 					}
 					break;
 				default:
-					Box2DXDebug.Assert(false);
+					Debug.Assert(false);
 					break;
 			}
 
@@ -309,7 +310,7 @@ namespace Box2DX.Dynamics
 		internal void ComputeXForm(ref XForm xf, Vector2 center, Vector2 localCenter, float angle)
 		{
 			xf.R.Set(angle);
-			xf.Position = center - Box2DX.Common.Math.Mul(xf.R, localCenter);
+			xf.Position = center - Math.Mul(xf.R, localCenter);
 		}
 	}
 }

@@ -19,6 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Diagnostics;
 using Box2DX.Collision;
 using Box2DX.Common;
 
@@ -29,8 +30,8 @@ namespace Box2DX.Dynamics
 		public EdgeAndCircleContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA, fixtureB)
 		{
-			Box2DXDebug.Assert(fixtureA.ShapeType == ShapeType.EdgeShape);
-			Box2DXDebug.Assert(fixtureB.ShapeType == ShapeType.CircleShape);
+			Debug.Assert(fixtureA.ShapeType == ShapeType.EdgeShape);
+			Debug.Assert(fixtureB.ShapeType == ShapeType.CircleShape);
 			_manifold.PointCount = 0;
 			_manifold.Points[0].NormalImpulse = 0.0f;
 			_manifold.Points[0].TangentImpulse = 0.0f;
@@ -42,12 +43,12 @@ namespace Box2DX.Dynamics
 			Collision.Collision.CollideEdgeAndCircle(ref manifold, (EdgeShape)shape1, xf1, (CircleShape)shape2, xf2);
 		}
 
-		new public static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		public new static Contact Create(Fixture fixtureA, Fixture fixtureB)
 		{
 			return new EdgeAndCircleContact(fixtureA, fixtureB);
 		}
 
-		new public static void Destroy(ref Contact contact)
+		public new static void Destroy(ref Contact contact)
 		{
 			contact = null;
 		}

@@ -203,7 +203,7 @@ namespace Box2DX.Common
 		public static float DistanceSquared(Vec2 a, Vec2 b)
 		{
 			Vec2 c = a - b;
-			return Vec2.Dot(c, c);
+			return Dot(c, c);
 		}
 
 		internal static Vec2[] ConvertArray(Vector2[] vertices) {

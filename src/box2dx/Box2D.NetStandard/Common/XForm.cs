@@ -19,7 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Box2DX.Common
 {
@@ -62,9 +64,12 @@ namespace Box2DX.Common
 		/// Calculate the angle that the rotation matrix represents.
 		public float GetAngle()
 		{
-			return Math.Atan2(R.Col1.Y, R.Col1.X);
+			return MathF.Atan2(R.Col1.Y, R.Col1.X);
 		}
 
-		public static XForm Identity { get { return new XForm(Vector2.Zero, Mat22.Identity); } }
+		public static XForm Identity {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => new XForm(Vector2.Zero, Mat22.Identity);
+		}
 	}
 }

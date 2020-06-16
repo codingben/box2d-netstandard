@@ -79,8 +79,12 @@
 // Now compute impulse to be applied:
 // df = f2 - f1
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Dynamics
 {
@@ -268,8 +272,8 @@ namespace Box2DX.Dynamics
 			Body b1 = _body1;
 			Body b2 = _body2;
 
-			Vector2 r1 = Box2DX.Common.Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-			Vector2 r2 = Box2DX.Common.Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
 			Vector2 p1 = b1._sweep.C + r1;
 			Vector2 p2 = b2._sweep.C + r2;
 			Vector2 d = p2 - p1;
@@ -287,14 +291,13 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Is the joint limit enabled?
 		/// </summary>
-		public bool IsLimitEnabled()
-		{
-			return _enableLimit;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsLimitEnabled() => _enableLimit;
 
 		/// <summary>
 		/// Enable/disable the joint limit.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnableLimit(bool flag)
 		{
 			_body1.WakeUp();
@@ -305,25 +308,22 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Get the lower joint limit, usually in meters.
 		/// </summary>
-		public float GetLowerLimit()
-		{
-			return _lowerTranslation;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetLowerLimit() => _lowerTranslation;
 
 		/// <summary>
 		/// Get the upper joint limit, usually in meters.
 		/// </summary>
-		public float GetUpperLimit()
-		{
-			return _upperTranslation;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetUpperLimit() => _upperTranslation;
 
 		/// <summary>
 		/// Set the joint limits, usually in meters.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public void SetLimits(float lower, float upper)
 		{
-			Box2DXDebug.Assert(lower <= upper);
+			Debug.Assert(lower <= upper);
 			_body1.WakeUp();
 			_body2.WakeUp();
 			_lowerTranslation = lower;
@@ -333,14 +333,13 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Is the joint motor enabled?
 		/// </summary>
-		public bool IsMotorEnabled()
-		{
-			return _enableMotor;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool IsMotorEnabled() => _enableMotor;
 
 		/// <summary>
 		/// Enable/disable the joint motor.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
 		public void EnableMotor(bool flag)
 		{
 			_body1.WakeUp();
@@ -351,6 +350,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Set the motor speed, usually in meters per second.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetMotorSpeed(float speed)
 		{
 			_body1.WakeUp();
@@ -361,6 +361,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Set the maximum motor force, usually in N.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetMaxMotorForce(float force)
 		{
 			_body1.WakeUp();
@@ -371,18 +372,14 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Get the current motor force, usually in N.
 		/// </summary>
-		public float GetMotorForce()
-		{
-			return _motorImpulse;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetMotorForce() => _motorImpulse;
 
 		/// <summary>
 		/// Get the motor speed, usually in meters per second.
 		/// </summary>
-		public float GetMotorSpeed()
-		{
-			return _motorSpeed;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float GetMotorSpeed() => _motorSpeed;
 
 		internal override void InitVelocityConstraints(TimeStep step)
 		{
@@ -396,8 +393,8 @@ namespace Box2DX.Dynamics
 			XForm xf2 = b2.GetXForm();
 
 			// Compute the effective masses.
-			Vector2 r1 = Box2DX.Common.Math.Mul(xf1.R, _localAnchor1 - _localCenter1);
-			Vector2 r2 = Box2DX.Common.Math.Mul(xf2.R, _localAnchor2 - _localCenter2);
+			Vector2 r1 = Math.Mul(xf1.R, _localAnchor1 - _localCenter1);
+			Vector2 r2 = Math.Mul(xf2.R, _localAnchor2 - _localCenter2);
 			Vector2 d = b2._sweep.C + r2 - b1._sweep.C - r1;
 
 			_invMass1 = b1._invMass;
@@ -407,18 +404,18 @@ namespace Box2DX.Dynamics
 
 			// Compute motor Jacobian and effective mass.
 			{
-				_axis = Box2DX.Common.Math.Mul(xf1.R, _localXAxis1);
+				_axis = Math.Mul(xf1.R, _localXAxis1);
 				_a1 = Vectex.Cross(d + r1, _axis);
 				_a2 = Vectex.Cross(r2, _axis);
 
 				_motorMass = _invMass1 + _invMass2 + _invI1 * _a1 * _a1 + _invI2 * _a2 * _a2;
-				Box2DXDebug.Assert(_motorMass > Settings.FLT_EPSILON);
+				Debug.Assert(_motorMass > Settings.FLT_EPSILON);
 				_motorMass = 1.0f / _motorMass;
 			}
 
 			// Prismatic constraint.
 			{
-				_perp = Box2DX.Common.Math.Mul(xf1.R, _localYAxis1);
+				_perp = Math.Mul(xf1.R, _localYAxis1);
 
 				_s1 = Vectex.Cross(d + r1, _perp);
 				_s2 = Vectex.Cross(r2, _perp);
@@ -438,7 +435,7 @@ namespace Box2DX.Dynamics
 			if (_enableLimit)
 			{
 				float jointTranslation = Vector2.Dot(_axis, d);
-				if (Box2DX.Common.Math.Abs(_upperTranslation - _lowerTranslation) < 2.0f * Settings.LinearSlop)
+				if (MathF.Abs(_upperTranslation - _lowerTranslation) < 2.0f * Settings.LinearSlop)
 				{
 					_limitState = LimitState.EqualLimits;
 				}
@@ -514,7 +511,7 @@ namespace Box2DX.Dynamics
 				float impulse = _motorMass * (_motorSpeed - Cdot);
 				float oldImpulse = _motorImpulse;
 				float maxImpulse = step.Dt * _maxMotorForce;
-				_motorImpulse = Box2DX.Common.Math.Clamp(_motorImpulse + impulse, -maxImpulse, maxImpulse);
+				_motorImpulse =System.Math.Clamp(_motorImpulse + impulse, -maxImpulse, maxImpulse);
 				impulse = _motorImpulse - oldImpulse;
 
 				Vector2 P = impulse * _axis;
@@ -542,11 +539,11 @@ namespace Box2DX.Dynamics
 
 				if (_limitState == LimitState.AtLowerLimit)
 				{
-					_impulse.Y = Box2DX.Common.Math.Max(_impulse.Y, 0.0f);
+					_impulse.Y = MathF.Max(_impulse.Y, 0.0f);
 				}
 				else if (_limitState == LimitState.AtUpperLimit)
 				{
-					_impulse.Y = Box2DX.Common.Math.Min(_impulse.Y, 0.0f);
+					_impulse.Y = MathF.Min(_impulse.Y, 0.0f);
 				}
 
 				// f2(1) = invK(1,1) * (-Cdot(1) - K(1,2) * (f2(2) - f1(2))) + f1(1)
@@ -607,42 +604,42 @@ namespace Box2DX.Dynamics
 
 			Mat22 R1 = new Mat22(a1), R2 = new Mat22(a2);
 
-			Vector2 r1 = Box2DX.Common.Math.Mul(R1, _localAnchor1 - _localCenter1);
-			Vector2 r2 = Box2DX.Common.Math.Mul(R2, _localAnchor2 - _localCenter2);
+			Vector2 r1 = Math.Mul(R1, _localAnchor1 - _localCenter1);
+			Vector2 r2 = Math.Mul(R2, _localAnchor2 - _localCenter2);
 			Vector2 d = c2 + r2 - c1 - r1;
 
 			if (_enableLimit)
 			{
-				_axis = Box2DX.Common.Math.Mul(R1, _localXAxis1);
+				_axis = Math.Mul(R1, _localXAxis1);
 
 				_a1 = Vectex.Cross(d + r1, _axis);
 				_a2 = Vectex.Cross(r2, _axis);
 
 				float translation = Vector2.Dot(_axis, d);
-				if (Box2DX.Common.Math.Abs(_upperTranslation - _lowerTranslation) < 2.0f * Settings.LinearSlop)
+				if (MathF.Abs(_upperTranslation - _lowerTranslation) < 2.0f * Settings.LinearSlop)
 				{
 					// Prevent large angular corrections
-					C2 = Box2DX.Common.Math.Clamp(translation, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
-					linearError = Box2DX.Common.Math.Abs(translation);
+					C2 = System.Math.Clamp(translation, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
+					linearError = MathF.Abs(translation);
 					active = true;
 				}
 				else if (translation <= _lowerTranslation)
 				{
 					// Prevent large linear corrections and allow some slop.
-					C2 = Box2DX.Common.Math.Clamp(translation - _lowerTranslation + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
+					C2 = System.Math.Clamp(translation - _lowerTranslation + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
 					linearError = _lowerTranslation - translation;
 					active = true;
 				}
 				else if (translation >= _upperTranslation)
 				{
 					// Prevent large linear corrections and allow some slop.
-					C2 = Box2DX.Common.Math.Clamp(translation - _upperTranslation - Settings.LinearSlop, 0.0f, Settings.MaxLinearCorrection);
+					C2 = System.Math.Clamp(translation - _upperTranslation - Settings.LinearSlop, 0.0f, Settings.MaxLinearCorrection);
 					linearError = translation - _upperTranslation;
 					active = true;
 				}
 			}
 
-			_perp = Box2DX.Common.Math.Mul(R1, _localYAxis1);
+			_perp = Math.Mul(R1, _localYAxis1);
 
 			_s1 = Vectex.Cross(d + r1, _perp);
 			_s2 = Vectex.Cross(r2, _perp);
@@ -651,7 +648,7 @@ namespace Box2DX.Dynamics
 			float C1;
 			C1 = Vector2.Dot(_perp, d);
 
-			linearError = Box2DX.Common.Math.Max(linearError, Box2DX.Common.Math.Abs(C1));
+			linearError = MathF.Max(linearError, MathF.Abs(C1));
 			angularError = 0.0f;
 
 			if (active)
@@ -666,10 +663,8 @@ namespace Box2DX.Dynamics
 				_K.Col1=new Vector2(k11, k12);
 				_K.Col2=new Vector2(k12, k22);
 
-				Vector2 C = new Vector2();
-				C.X = C1;
-				C.Y = C2;
-
+				Vector2 C = new Vector2(C1,C2);
+				
 				impulse = _K.Solve(-C);
 			}
 			else

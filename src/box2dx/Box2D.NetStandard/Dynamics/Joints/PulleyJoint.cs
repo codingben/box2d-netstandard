@@ -38,12 +38,15 @@
 // K = invMass + invI * cross(r, u)^2
 // 0 <= impulse
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Dynamics
 {
-	using Box2DXMath = Box2DX.Common.Math;
+	using Box2DXMath = Math;
 	using SystemMath = System.Math;
 
 	/// <summary>
@@ -85,7 +88,7 @@ namespace Box2DX.Dynamics
 			Vector2 d2 = anchor2 - groundAnchor2;
 			Length2 = d2.Length();
 			Ratio = ratio;
-			Box2DXDebug.Assert(ratio > Settings.FLT_EPSILON);
+			Debug.Assert(ratio > Settings.FLT_EPSILON);
 			float C = Length1 + ratio * Length2;
 			MaxLength1 = C - ratio * PulleyJoint.MinPulleyLength;
 			MaxLength2 = (C - PulleyJoint.MinPulleyLength) / ratio;
@@ -260,13 +263,13 @@ namespace Box2DX.Dynamics
 			_localAnchor1 = def.LocalAnchor1;
 			_localAnchor2 = def.LocalAnchor2;
 
-			Box2DXDebug.Assert(def.Ratio != 0.0f);
+			Debug.Assert(def.Ratio != 0.0f);
 			_ratio = def.Ratio;
 
 			_constant = def.Length1 + _ratio * def.Length2;
 
-			_maxLength1 = Common.Math.Min(def.MaxLength1, _constant - _ratio * PulleyJoint.MinPulleyLength);
-			_maxLength2 = Common.Math.Min(def.MaxLength2, (_constant - PulleyJoint.MinPulleyLength) / _ratio);
+			_maxLength1 = MathF.Min(def.MaxLength1, _constant - _ratio * MinPulleyLength);
+			_maxLength2 = MathF.Min(def.MaxLength2, (_constant - MinPulleyLength) / _ratio);
 
 			_impulse = 0.0f;
 			_limitImpulse1 = 0.0f;
@@ -350,9 +353,9 @@ namespace Box2DX.Dynamics
 			_limitMass1 = b1._invMass + b1._invI * cr1u1 * cr1u1;
 			_limitMass2 = b2._invMass + b2._invI * cr2u2 * cr2u2;
 			_pulleyMass = _limitMass1 + _ratio * _ratio * _limitMass2;
-			Box2DXDebug.Assert(_limitMass1 > Settings.FLT_EPSILON);
-			Box2DXDebug.Assert(_limitMass2 > Settings.FLT_EPSILON);
-			Box2DXDebug.Assert(_pulleyMass > Settings.FLT_EPSILON);
+			Debug.Assert(_limitMass1 > Settings.FLT_EPSILON);
+			Debug.Assert(_limitMass2 > Settings.FLT_EPSILON);
+			Debug.Assert(_pulleyMass > Settings.FLT_EPSILON);
 			_limitMass1 = 1.0f / _limitMass1;
 			_limitMass2 = 1.0f / _limitMass2;
 			_pulleyMass = 1.0f / _pulleyMass;
@@ -396,7 +399,7 @@ namespace Box2DX.Dynamics
 				float Cdot = -Vector2.Dot(_u1, v1) - _ratio * Vector2.Dot(_u2, v2);
 				float impulse = _pulleyMass * (-Cdot);
 				float oldImpulse = _impulse;
-				_impulse = Box2DX.Common.Math.Max(0.0f, _impulse + impulse);
+				_impulse = MathF.Max(0.0f, _impulse + impulse);
 				impulse = _impulse - oldImpulse;
 
 				Vector2 P1 = -impulse * _u1;
@@ -414,7 +417,7 @@ namespace Box2DX.Dynamics
 				float Cdot = -Vector2.Dot(_u1, v1);
 				float impulse = -_limitMass1 * Cdot;
 				float oldImpulse = _limitImpulse1;
-				_limitImpulse1 = Box2DX.Common.Math.Max(0.0f, _limitImpulse1 + impulse);
+				_limitImpulse1 = MathF.Max(0.0f, _limitImpulse1 + impulse);
 				impulse = _limitImpulse1 - oldImpulse;
 
 				Vector2 P1 = -impulse * _u1;
@@ -429,7 +432,7 @@ namespace Box2DX.Dynamics
 				float Cdot = -Vector2.Dot(_u2, v2);
 				float impulse = -_limitMass2 * Cdot;
 				float oldImpulse = _limitImpulse2;
-				_limitImpulse2 = Box2DX.Common.Math.Max(0.0f, _limitImpulse2 + impulse);
+				_limitImpulse2 = MathF.Max(0.0f, _limitImpulse2 + impulse);
 				impulse = _limitImpulse2 - oldImpulse;
 
 				Vector2 P2 = -impulse * _u2;
@@ -482,9 +485,9 @@ namespace Box2DX.Dynamics
 				}
 
 				float C = _constant - length1 - _ratio * length2;
-				linearError = Box2DXMath.Max(linearError, -C);
+				linearError = MathF.Max(linearError, -C);
 
-				C = Box2DXMath.Clamp(C + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
+				C = System.Math.Clamp(C + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
 				float impulse = -_pulleyMass * C;
 
 				Vector2 P1 = -impulse * _u1;
@@ -517,8 +520,8 @@ namespace Box2DX.Dynamics
 				}
 
 				float C = _maxLength1 - length1;
-				linearError = Box2DXMath.Max(linearError, -C);
-				C = Box2DXMath.Clamp(C + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
+				linearError = MathF.Max(linearError, -C);
+				C = System.Math.Clamp(C + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
 				float impulse = -_limitMass1 * C;
 
 				Vector2 P1 = -impulse * _u1;
@@ -546,8 +549,8 @@ namespace Box2DX.Dynamics
 				}
 
 				float C = _maxLength2 - length2;
-				linearError = Box2DXMath.Max(linearError, -C);
-				C = Box2DXMath.Clamp(C + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
+				linearError = MathF.Max(linearError, -C);
+				C = System.Math.Clamp(C + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
 				float impulse = -_limitMass2 * C;
 
 				Vector2 P2 = -impulse * _u2;

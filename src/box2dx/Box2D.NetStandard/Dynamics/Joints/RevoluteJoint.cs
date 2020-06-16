@@ -32,12 +32,16 @@
 // J = [0 0 -1 0 0 1]
 // K = invI1 + invI2
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Dynamics
 {
-	using Box2DXMath = Box2DX.Common.Math;
+	using Box2DXMath = Math;
 	using SystemMath = System.Math;
 
 	/// <summary>
@@ -156,32 +160,20 @@ namespace Box2DX.Dynamics
 		public float _upperAngle;
 		public LimitState _limitState;
 
-		public override Vector2 Anchor1
-		{
-			get { return _body1.GetWorldPoint(_localAnchor1); }
-		}
+		public override Vector2 Anchor1 => _body1.GetWorldPoint(_localAnchor1);
 
-		public override Vector2 Anchor2
-		{
-			get { return _body2.GetWorldPoint(_localAnchor2); }
-		}
+		public override Vector2 Anchor2 => _body2.GetWorldPoint(_localAnchor2);
 
-		public override Vector2 GetReactionForce(float inv_dt)
-		{
-			Vector2 P = new Vector2(_impulse.X, _impulse.Y);
-			return inv_dt * P;
-		}
+		public override Vector2 GetReactionForce(float inv_dt) => inv_dt * new Vector2(_impulse.X, _impulse.Y);
 
-		public override float GetReactionTorque(float inv_dt)
-		{
-			return inv_dt * _impulse.Z;
-		}
+		public override float GetReactionTorque(float inv_dt) => inv_dt * _impulse.Z;
 
 		/// <summary>
 		/// Get the current joint angle in radians.
 		/// </summary>
 		public float JointAngle
 		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
 				Body b1 = _body1;
@@ -196,6 +188,7 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public float JointSpeed
 		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
 				Body b1 = _body1;
@@ -209,12 +202,14 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public bool IsLimitEnabled
 		{
-			get { return _enableLimit; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _enableLimit;
 		}
 
 		/// <summary>
 		/// Enable/disable the joint limit.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnableLimit(bool flag)
 		{
 			_body1.WakeUp();
@@ -227,7 +222,8 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public float LowerLimit
 		{
-			get { return _lowerAngle; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _lowerAngle;
 		}
 
 		/// <summary>
@@ -235,15 +231,17 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public float UpperLimit
 		{
-			get { return _upperAngle; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _upperAngle;
 		}
 
 		/// <summary>
 		/// Set the joint limits in radians.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetLimits(float lower, float upper)
 		{
-			Box2DXDebug.Assert(lower <= upper);
+			Debug.Assert(lower <= upper);
 			_body1.WakeUp();
 			_body2.WakeUp();
 			_lowerAngle = lower;
@@ -255,12 +253,14 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public bool IsMotorEnabled
 		{
-			get { return _enableMotor; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _enableMotor;
 		}
 
 		/// <summary>
 		/// Enable/disable the joint motor.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnableMotor(bool flag)
 		{
 			_body1.WakeUp();
@@ -273,7 +273,9 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public float MotorSpeed
 		{
-			get { return _motorSpeed; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _motorSpeed;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
 				_body1.WakeUp();
@@ -285,6 +287,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Set the maximum motor torque, usually in N-m.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetMaxMotorTorque(float torque)
 		{
 			_body1.WakeUp();
@@ -297,7 +300,8 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public float MotorTorque
 		{
-			get { return _motorImpulse; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _motorImpulse;
 		}
 
 		public RevoluteJoint(RevoluteJointDef def)
@@ -328,7 +332,7 @@ namespace Box2DX.Dynamics
 			{
 				// You cannot create a rotation limit between bodies that
 				// both have fixed rotation.
-				Box2DXDebug.Assert(b1._invI > 0.0f || b2._invI > 0.0f);
+				Debug.Assert(b1._invI > 0.0f || b2._invI > 0.0f);
 			}
 
 			// Compute the effective mass matrix.
@@ -367,7 +371,7 @@ namespace Box2DX.Dynamics
 			if (_enableLimit)
 			{
 				float jointAngle = b2._sweep.A - b1._sweep.A - _referenceAngle;
-				if (Box2DXMath.Abs(_upperAngle - _lowerAngle) < 2.0f * Settings.AngularSlop)
+				if (MathF.Abs(_upperAngle - _lowerAngle) < 2.0f * Settings.AngularSlop)
 				{
 					_limitState = LimitState.EqualLimits;
 				}
@@ -439,7 +443,7 @@ namespace Box2DX.Dynamics
 				float impulse = _motorMass * (-Cdot);
 				float oldImpulse = _motorImpulse;
 				float maxImpulse = step.Dt * _maxMotorTorque;
-				_motorImpulse = Box2DXMath.Clamp(_motorImpulse + impulse, -maxImpulse, maxImpulse);
+				_motorImpulse = System.Math.Clamp(_motorImpulse + impulse, -maxImpulse, maxImpulse);
 				impulse = _motorImpulse - oldImpulse;
 
 				w1 -= i1 * impulse;
@@ -544,9 +548,9 @@ namespace Box2DX.Dynamics
 				if (_limitState == LimitState.EqualLimits)
 				{
 					// Prevent large angular corrections
-					float C = Box2DXMath.Clamp(angle, -Settings.MaxAngularCorrection, Settings.MaxAngularCorrection);
+					float C = System.Math.Clamp(angle, -Settings.MaxAngularCorrection, Settings.MaxAngularCorrection);
 					limitImpulse = -_motorMass * C;
-					angularError = Box2DXMath.Abs(C);
+					angularError = MathF.Abs(C);
 				}
 				else if (_limitState == LimitState.AtLowerLimit)
 				{
@@ -554,7 +558,7 @@ namespace Box2DX.Dynamics
 					angularError = -C;
 
 					// Prevent large angular corrections and allow some slop.
-					C = Box2DXMath.Clamp(C + Settings.AngularSlop, -Settings.MaxAngularCorrection, 0.0f);
+					C = System.Math.Clamp(C + Settings.AngularSlop, -Settings.MaxAngularCorrection, 0.0f);
 					limitImpulse = -_motorMass * C;
 				}
 				else if (_limitState == LimitState.AtUpperLimit)
@@ -563,7 +567,7 @@ namespace Box2DX.Dynamics
 					angularError = C;
 
 					// Prevent large angular corrections and allow some slop.
-					C = Box2DXMath.Clamp(C - Settings.AngularSlop, 0.0f, Settings.MaxAngularCorrection);
+					C = System.Math.Clamp(C - Settings.AngularSlop, 0.0f, Settings.MaxAngularCorrection);
 					limitImpulse = -_motorMass * C;
 				}
 
@@ -592,7 +596,7 @@ namespace Box2DX.Dynamics
 					// Use a particle solution (no rotation).
 					Vector2 u = Vector2.Normalize(C);
 					float k = invMass1 + invMass2;
-					Box2DXDebug.Assert(k > Settings.FLT_EPSILON);
+					Debug.Assert(k > Settings.FLT_EPSILON);
 					float m = 1.0f / k;
 					Vector2 impulse = m * (-C);
 					float k_beta = 0.5f;

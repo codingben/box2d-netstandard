@@ -138,7 +138,9 @@ However, we can compute sin+cos of the same angle fast.
 */
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2DX.Common;
 
 namespace Box2DX.Dynamics
@@ -205,6 +207,7 @@ namespace Box2DX.Dynamics
 			_bodies = null;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
 			_bodyCount = 0;
@@ -237,8 +240,8 @@ namespace Box2DX.Dynamics
 				// v2 = exp(-c * dt) * v1
 				// Taylor expansion:
 				// v2 = (1.0f - c * dt) * v1
-				b._linearVelocity *= Common.Math.Clamp(1.0f - step.Dt * b._linearDamping, 0.0f, 1.0f);
-				b._angularVelocity *= Common.Math.Clamp(1.0f - step.Dt * b._angularDamping, 0.0f, 1.0f);
+				b._linearVelocity *=  System.Math.Clamp(1.0f - step.Dt * b._linearDamping, 0.0f, 1.0f);
+				b._angularVelocity *= System.Math.Clamp(1.0f - step.Dt * b._angularDamping, 0.0f, 1.0f);
 			}
 
 			ContactSolver contactSolver = new ContactSolver(step, _contacts, _contactCount);
@@ -367,7 +370,7 @@ namespace Box2DX.Dynamics
 					else
 					{
 						b._sleepTime += step.Dt;
-						minSleepTime = Common.Math.Min(minSleepTime, b._sleepTime);
+						minSleepTime = MathF.Min(minSleepTime, b._sleepTime);
 					}
 				}
 
@@ -475,22 +478,25 @@ namespace Box2DX.Dynamics
 			Report(contactSolver._constraints);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(Body body)
 		{
-			Box2DXDebug.Assert(_bodyCount < _bodyCapacity);
+			Debug.Assert(_bodyCount < _bodyCapacity);
 			body._islandIndex = _bodyCount;
 			_bodies[_bodyCount++] = body;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(Contact contact)
 		{
-			Box2DXDebug.Assert(_contactCount < _contactCapacity);
+			Debug.Assert(_contactCount < _contactCapacity);
 			_contacts[_contactCount++] = contact;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(Joint joint)
 		{
-			Box2DXDebug.Assert(_jointCount < _jointCapacity);
+			Debug.Assert(_jointCount < _jointCapacity);
 			_joints[_jointCount++] = joint;
 		}
 

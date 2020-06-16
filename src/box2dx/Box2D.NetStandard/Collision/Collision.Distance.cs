@@ -22,6 +22,7 @@
 #define DEBUG
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Common;
 
@@ -36,8 +37,8 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Length or area.
 		/// </summary>
-		public Single Metric;
-		public UInt16 Count;
+		public float Metric;
+		public ushort Count;
 		/// <summary>
 		/// Vertices on shape A.
 		/// </summary>
@@ -60,24 +61,20 @@ namespace Box2DX.Collision
 
 	public struct IndexArray
 	{
-		private Byte I0, I1, I2;
+		private byte I0, I1, I2;
 
-		public Byte this[int index]
+		public byte this[int index]
 		{
 			get
 			{
-#if DEBUG
-				Box2DXDebug.Assert(index >= 0 && index < 3);
-#endif
+				Debug.Assert(index >= 0 && index < 3);
 				if (index == 0) return I0;
 				else if (index == 1) return I1;
 				else return I2;
 			}
 			set
 			{
-#if DEBUG
-				Box2DXDebug.Assert(index >= 0 && index < 3);
-#endif
+				Debug.Assert(index >= 0 && index < 3);
 				if (index == 0) I0 = value;
 				else if (index == 1) I1 = value;
 				else I2 = value;
@@ -136,7 +133,7 @@ namespace Box2DX.Collision
 
 		internal unsafe void ReadCache(SimplexCache* cache, Shape shapeA, XForm transformA, Shape shapeB, XForm transformB)
 		{
-			Box2DXDebug.Assert(0 <= cache->Count && cache->Count <= 3);
+			Debug.Assert(0 <= cache->Count && cache->Count <= 3);
 
 			// Copy data from cache.
 			_count = cache->Count;
@@ -165,7 +162,7 @@ namespace Box2DX.Collision
 				{
 					float metric1 = cache->Metric;
 					float metric2 = GetMetric();
-					if (metric2 < 0.5f * metric1 || 2.0f * metric1 < metric2 || metric2 < Common.Settings.FLT_EPSILON)
+					if (metric2 < 0.5f * metric1 || 2.0f * metric1 < metric2 || metric2 < Settings.FLT_EPSILON)
 					{
 						// Reset the simplex.
 						_count = 0;
@@ -191,7 +188,7 @@ namespace Box2DX.Collision
 		internal unsafe void WriteCache(SimplexCache* cache)
 		{
 			cache->Metric = GetMetric();
-			cache->Count = (UInt16)_count;
+			cache->Count = (ushort)_count;
 			SimplexVertex** vertices = stackalloc SimplexVertex*[3];
 			fixed (SimplexVertex* v1Ptr = &_v1, v2Ptr = &_v2, v3Ptr = &_v3)
 			{
@@ -200,8 +197,8 @@ namespace Box2DX.Collision
 				vertices[2] = v3Ptr;
 				for (int i = 0; i < _count; ++i)
 				{
-					cache->IndexA[i] = (Byte)(vertices[i]->indexA);
-					cache->IndexB[i] = (Byte)(vertices[i]->indexB);
+					cache->IndexA[i] = (byte)(vertices[i]->indexA);
+					cache->IndexB[i] = (byte)(vertices[i]->indexB);
 				}
 			}
 		}
@@ -211,9 +208,7 @@ namespace Box2DX.Collision
 			switch (_count)
 			{
 				case 0:
-#if DEBUG
-					Box2DXDebug.Assert(false);
-#endif
+					Debug.Assert(false);
 					return Vector2.Zero;
 				case 1:
 					return _v1.w;
@@ -222,9 +217,7 @@ namespace Box2DX.Collision
 				case 3:
 					return Vector2.Zero;
 				default:
-#if DEBUG
-					Box2DXDebug.Assert(false);
-#endif
+					Debug.Assert(false);
 					return Vector2.Zero;
 			}
 		}
@@ -234,7 +227,7 @@ namespace Box2DX.Collision
 			switch (_count)
 			{
 				case 0:
-					Box2DXDebug.Assert(false);
+					Debug.Assert(false);
 					break;
 
 				case 1:
@@ -253,7 +246,7 @@ namespace Box2DX.Collision
 					break;
 
 				default:
-					Box2DXDebug.Assert(false);
+					Debug.Assert(false);
 					break;
 			}
 		}
@@ -263,9 +256,7 @@ namespace Box2DX.Collision
 			switch (_count)
 			{
 				case 0:
-#if DEBUG
-					Box2DXDebug.Assert(false);
-#endif
+					Debug.Assert(false);
 					return 0.0f;
 
 				case 1:
@@ -278,9 +269,7 @@ namespace Box2DX.Collision
 					return Vectex.Cross(_v2.w - _v1.w, _v3.w - _v1.w);
 
 				default:
-#if DEBUG
-					Box2DXDebug.Assert(false);
-#endif
+					Debug.Assert(false);
 					return 0.0f;
 			}
 		}
@@ -514,9 +503,7 @@ namespace Box2DX.Collision
 						break;
 
 					default:
-#if DEBUG
-						Box2DXDebug.Assert(false);
-#endif
+						Debug.Assert(false);
 						break;
 				}
 
@@ -531,7 +518,7 @@ namespace Box2DX.Collision
 				float distanceSqr = p.LengthSquared();
 
 				// Ensure the search direction is numerically fit.
-				if (distanceSqr < Common.Settings.FLT_EPSILON_SQUARED)
+				if (distanceSqr < Settings.FLT_EPSILON_SQUARED)
 				{
 					// The origin is probably contained by a line segment
 					// or triangle. Thus the shapes are overlapped.
@@ -606,7 +593,7 @@ namespace Box2DX.Collision
 				float rA = shapeA._radius;
 				float rB = shapeB._radius;
 
-				if (output.Distance > rA + rB && output.Distance > Common.Settings.FLT_EPSILON)
+				if (output.Distance > rA + rB && output.Distance > Settings.FLT_EPSILON)
 				{
 					// Shapes are still no overlapped.
 					// Move the witness points to the outer surface.

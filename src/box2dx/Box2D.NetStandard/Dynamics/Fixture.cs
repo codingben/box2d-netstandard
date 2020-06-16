@@ -20,7 +20,9 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2DX.Collision;
 using Box2DX.Common;
 
@@ -216,7 +218,7 @@ namespace Box2DX.Dynamics
 	{
 		protected ShapeType _type;
 		protected bool _isSensor;
-		protected UInt16 _proxyId;
+		protected ushort _proxyId;
 
 		internal Body _body;
 		protected Shape _shape;
@@ -231,28 +233,43 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Is this fixture a sensor (non-solid)?
 		/// </summary>
-		public bool IsSensor { get { return _isSensor; } }
+		public bool IsSensor {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _isSensor;
+		}
 
 		/// <summary>
 		/// Get the child shape. You can modify the child shape, however you should not change the
 		/// number of vertices because this will crash some collision caching mechanisms.
 		/// </summary>
-		public Shape Shape { get { return _shape; } }
+		public Shape Shape {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _shape;
+		}
 
 		/// <summary>
 		/// Get the type of this shape. You can use this to down cast to the concrete shape.
 		/// </summary>
-		public ShapeType ShapeType { get { return _type; } }
+		public ShapeType ShapeType {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _type;
+		}
 
 		/// <summary>
 		/// Get the next fixture in the parent body's fixture list.
 		/// </summary>
-		public Fixture Next { get { return _next; } }
+		public Fixture Next {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _next;
+		}
 
 		/// <summary>
 		/// Get the parent body of this fixture. This is NULL if the fixture is not attached.
 		/// </summary>
-		public Body Body { get { return _body; } }
+		public Body Body {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _body;
+		}
 
 		/// <summary>
 		/// User data that was assigned in the fixture definition. Use this to
@@ -328,7 +345,7 @@ namespace Box2DX.Dynamics
 					break;
 
 				default:
-					Box2DXDebug.Assert(false);
+					Debug.Assert(false);
 					break;
 			}
 
@@ -339,7 +356,7 @@ namespace Box2DX.Dynamics
 			bool inRange = broadPhase.InRange(aabb);
 
 			// You are creating a shape outside the world box.
-			Box2DXDebug.Assert(inRange);
+			Debug.Assert(inRange);
 
 			if (inRange)
 			{
@@ -417,8 +434,8 @@ namespace Box2DX.Dynamics
 
 		public virtual void Dispose()
 		{
-			Box2DXDebug.Assert(_proxyId == PairManager.NullProxy);
-			Box2DXDebug.Assert(_shape == null);
+			Debug.Assert(_proxyId == PairManager.NullProxy);
+			Debug.Assert(_shape == null);
 		}
 
 		/// <summary>
@@ -426,10 +443,8 @@ namespace Box2DX.Dynamics
 		/// The inertia tensor is computed about the local origin, not the centroid.
 		/// </summary>
 		/// <param name="massData">Returns the mass data for this shape.</param>
-		public void ComputeMass(out MassData massData)
-		{
-			_shape.ComputeMass(out massData, Density);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void ComputeMass(out MassData massData) => _shape.ComputeMass(out massData, Density);
 
 		/// <summary>
 		/// Compute the volume and centroid of this fixture intersected with a half plane.
@@ -438,19 +453,15 @@ namespace Box2DX.Dynamics
 		/// <param name="offset">Offset the surface offset along normal.</param>
 		/// <param name="c">Returns the centroid.</param>
 		/// <returns>The total volume less than offset along normal.</returns>
-		public float ComputeSubmergedArea(Vector2 normal, float offset, out Vector2 c)
-		{
-			return _shape.ComputeSubmergedArea(normal, offset, _body.GetXForm(), out c);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float ComputeSubmergedArea(Vector2 normal, float offset, out Vector2 c) => _shape.ComputeSubmergedArea(normal, offset, _body.GetXForm(), out c);
 
 		/// <summary>
 		/// Test a point for containment in this fixture. This only works for convex shapes.
 		/// </summary>
 		/// <param name="p">A point in world coordinates.</param>
-		public bool TestPoint(Vector2 p)
-		{
-			return _shape.TestPoint(_body.GetXForm(), p);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool TestPoint(Vector2 p) => _shape.TestPoint(_body.GetXForm(), p);
 
 		/// <summary>
 		/// Perform a ray cast against this shape.
@@ -461,17 +472,13 @@ namespace Box2DX.Dynamics
 		/// is not set.</param>
 		/// <param name="segment">Defines the begin and end point of the ray cast.</param>
 		/// <param name="maxLambda">A number typically in the range [0,1].</param>
-		public SegmentCollide TestSegment(out float lambda, out Vector2 normal, Segment segment, float maxLambda)
-		{
-			return _shape.TestSegment(_body.GetXForm(), out lambda, out normal, segment, maxLambda);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public SegmentCollide TestSegment(out float lambda, out Vector2 normal, Segment segment, float maxLambda) => _shape.TestSegment(_body.GetXForm(), out lambda, out normal, segment, maxLambda);
 
 		/// <summary>
 		/// Get the maximum radius about the parent body's center of mass.
 		/// </summary>
-		public float ComputeSweepRadius(Vector2 pivot)
-		{
-			return _shape.ComputeSweepRadius(pivot);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float ComputeSweepRadius(Vector2 pivot) => _shape.ComputeSweepRadius(pivot);
 	}
 }

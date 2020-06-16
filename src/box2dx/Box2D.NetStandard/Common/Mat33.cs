@@ -19,6 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Diagnostics;
 using System.Numerics;
 
 namespace Box2DX.Common
@@ -55,7 +56,7 @@ namespace Box2DX.Common
 		public Vec3 Solve33(Vec3 b)
 		{
 			float det = Vec3.Dot(Col1, Vec3.Cross(Col2, Col3));
-			Box2DXDebug.Assert(det != 0.0f);
+			Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
 			Vec3 x = new Vec3();
 			x.X = det * Vec3.Dot(b, Vec3.Cross(Col2, Col3));
@@ -73,7 +74,7 @@ namespace Box2DX.Common
 		{
 			float a11 = Col1.X, a12 = Col2.X, a21 = Col1.Y, a22 = Col2.Y;
 			float det = a11 * a22 - a12 * a21;
-			Box2DXDebug.Assert(det != 0.0f);
+			Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
 			Vector2 x = new Vector2();
 			x.X = det * (a22 * b.X - a12 * b.Y);

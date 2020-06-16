@@ -51,7 +51,7 @@ namespace Box2DX.Collision {
     public static void GetPointStates(PointState[ /*b2_maxManifoldPoints*/] state1,
       PointState[ /*b2_maxManifoldPoints*/]                                 state2,
       Manifold                                                              manifold1, Manifold manifold2) {
-      for (int i = 0; i < Common.Settings.MaxManifoldPoints; ++i) {
+      for (int i = 0; i < Settings.MaxManifoldPoints; ++i) {
         state1[i] = PointState.NullState;
         state2[i] = PointState.NullState;
       }
@@ -127,22 +127,22 @@ namespace Box2DX.Collision {
     /// <summary>
     /// The edge that defines the outward contact normal.
     /// </summary>
-    public Byte ReferenceEdge;
+    public byte ReferenceEdge;
 
     /// <summary>
     /// The edge most anti-parallel to the reference edge.
     /// </summary>
-    public Byte IncidentEdge;
+    public byte IncidentEdge;
 
     /// <summary>
     /// The vertex (0 or 1) on the incident edge that was clipped.
     /// </summary>
-    public Byte IncidentVertex;
+    public byte IncidentVertex;
 
     /// <summary>
     /// A value of 1 indicates that the reference edge is on shape2.
     /// </summary>
-    public Byte Flip;
+    public byte Flip;
   }
 
   /// <summary>
@@ -157,7 +157,7 @@ namespace Box2DX.Collision {
     /// Used to quickly compare contact ids.
     /// </summary>
     [System.Runtime.InteropServices.FieldOffset(0)]
-    public UInt32 Key;
+    public uint Key;
   }
 
   /// <summary>
@@ -195,10 +195,10 @@ namespace Box2DX.Collision {
 
     public ManifoldPoint Clone() {
       ManifoldPoint newPoint = new ManifoldPoint();
-      newPoint.LocalPoint     = this.LocalPoint;
-      newPoint.NormalImpulse  = this.NormalImpulse;
-      newPoint.TangentImpulse = this.TangentImpulse;
-      newPoint.ID             = this.ID;
+      newPoint.LocalPoint     = LocalPoint;
+      newPoint.NormalImpulse  = NormalImpulse;
+      newPoint.TangentImpulse = TangentImpulse;
+      newPoint.ID             = ID;
       return newPoint;
     }
   }
@@ -239,14 +239,14 @@ namespace Box2DX.Collision {
 
     public Manifold Clone() {
       Manifold newManifold = new Manifold();
-      newManifold.LocalPlaneNormal = this.LocalPlaneNormal;
-      newManifold.LocalPoint       = this.LocalPoint;
-      newManifold.Type             = this.Type;
-      newManifold.PointCount       = this.PointCount;
-      int             pointCount = this.Points.Length;
+      newManifold.LocalPlaneNormal = LocalPlaneNormal;
+      newManifold.LocalPoint       = LocalPoint;
+      newManifold.Type             = Type;
+      newManifold.PointCount       = PointCount;
+      int             pointCount = Points.Length;
       ManifoldPoint[] tmp        = new ManifoldPoint[pointCount];
       for (int i = 0; i < pointCount; i++) {
-        tmp[i] = this.Points[i].Clone();
+        tmp[i] = Points[i].Clone();
       }
 
       newManifold.Points = tmp;
@@ -285,7 +285,7 @@ namespace Box2DX.Collision {
       Vector2 d = P2         - P1;
       Vector2 n = Vectex.Cross(d, 1.0f);
 
-      float k_slop = 100.0f * Common.Settings.FLT_EPSILON;
+      float k_slop = 100.0f * Settings.FLT_EPSILON;
       float denom  = -Vector2.Dot(r, n);
 
       // Cull back facing collision and ignore parallel segments.
@@ -358,8 +358,8 @@ namespace Box2DX.Collision {
 
     /// Combine two AABBs into this one.
     public void Combine(AABB aabb1, AABB aabb2) {
-      LowerBound = Common.Math.Min(aabb1.LowerBound, aabb2.LowerBound);
-      UpperBound = Common.Math.Max(aabb1.UpperBound, aabb2.UpperBound);
+      LowerBound = Vector2.Min(aabb1.LowerBound, aabb2.LowerBound);
+      UpperBound = Vector2.Max(aabb1.UpperBound, aabb2.UpperBound);
     }
 
     /// Does this aabb contain the provided AABB.
@@ -375,8 +375,8 @@ namespace Box2DX.Collision {
     // From Real-time Collision Detection, p179.
     /// </summary>
     public void RayCast(out RayCastOutput output, RayCastInput input) {
-      float tmin = -Common.Settings.FLT_MAX;
-      float tmax = Common.Settings.FLT_MAX;
+      float tmin = -Settings.FLT_MAX;
+      float tmax = Settings.FLT_MAX;
 
       output = new RayCastOutput();
 
@@ -384,12 +384,12 @@ namespace Box2DX.Collision {
 
       Vector2 p    = input.P1;
       Vector2 d    = input.P2 - input.P1;
-      Vector2 absD = Common.Math.Abs(d);
+      Vector2 absD = Vector2.Abs(d);
 
       Vector2 normal = Vector2.Zero;
 
       for (int i = 0; i < 2; ++i) {
-        if (absD.GetIdx(i) < Common.Settings.FLT_EPSILON) {
+        if (absD.GetIdx(i) < Settings.FLT_EPSILON) {
           // Parallel.
           if (p.GetIdx(i) < LowerBound.GetIdx(i) || UpperBound.GetIdx(i) < p.GetIdx(i)) {
             return;
@@ -415,7 +415,7 @@ namespace Box2DX.Collision {
           }
 
           // Pull the max down
-          tmax = Common.Math.Min(tmax, t2);
+          tmax = MathF.Min(tmax, t2);
 
           if (tmin > tmax) {
             return;
@@ -473,12 +473,12 @@ namespace Box2DX.Collision {
     /// <summary>
     /// World contact point (point of intersection).
     /// </summary>
-    public Vector2[] Points = new Vector2[Common.Settings.MaxManifoldPoints];
+    public Vector2[] Points = new Vector2[Settings.MaxManifoldPoints];
 
     public WorldManifold Clone() {
       WorldManifold newManifold = new WorldManifold();
-      newManifold.Normal = this.Normal;
-      this.Points.CopyTo(newManifold.Points, 0);
+      newManifold.Normal = Normal;
+      Points.CopyTo(newManifold.Points, 0);
       return newManifold;
     }
 
@@ -496,7 +496,7 @@ namespace Box2DX.Collision {
           Vector2 pointA = Common.Math.Mul(xfA, manifold.LocalPoint);
           Vector2 pointB = Common.Math.Mul(xfB, manifold.Points[0].LocalPoint);
           Vector2 normal = new Vector2(1.0f, 0.0f);
-          if (Vector2.DistanceSquared(pointA, pointB) > Common.Settings.FLT_EPSILON_SQUARED) {
+          if (Vector2.DistanceSquared(pointA, pointB) > Settings.FLT_EPSILON_SQUARED) {
             normal = Vector2.Normalize(pointB - pointA);
           }
 

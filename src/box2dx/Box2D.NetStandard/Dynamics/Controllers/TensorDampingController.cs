@@ -16,8 +16,10 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.Numerics;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Dynamics.Controllers
 {
@@ -61,7 +63,7 @@ namespace Box2DX.Dynamics.Controllers
             T.Col2.Y = -yDamping;
             if (xDamping > 0 || yDamping > 0)
             {
-                MaxTimestep = 1 / Math.Max(xDamping, yDamping);
+                MaxTimestep = 1 / MathF.Max(xDamping, yDamping);
             }
             else
             {

@@ -19,8 +19,12 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Collision
 {
@@ -80,19 +84,16 @@ namespace Box2DX.Collision
 			_cornerDir2 = -1.0f * _normal;
 		}
 
-		public override bool TestPoint(XForm transform, Vector2 p)
-		{
-			return false;
-		}
+		public override bool TestPoint(XForm transform, Vector2 p) => false;
 
 		public override SegmentCollide TestSegment(XForm transform, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			Vector2 r = segment.P2 - segment.P1;
-			Vector2 v1 = Common.Math.Mul(transform, _v1);
-			Vector2 d = Common.Math.Mul(transform, _v2) - v1;
+			Vector2 v1 = Math.Mul(transform, _v1);
+			Vector2 d = Math.Mul(transform, _v2) - v1;
 			Vector2 n = Vectex.Cross(d, 1.0f);
 
-			float k_slop = 100.0f * Common.Settings.FLT_EPSILON;
+			float k_slop = 100.0f * Settings.FLT_EPSILON;
 			float denom = -Vector2.Dot(r, n);
 
 			// Cull back facing collision and ignore parallel segments.
@@ -125,12 +126,12 @@ namespace Box2DX.Collision
 
 		public override void ComputeAABB(out AABB aabb, XForm transform)
 		{
-			Vector2 v1 = Common.Math.Mul(transform, _v1);
-			Vector2 v2 = Common.Math.Mul(transform, _v2);
+			Vector2 v1 = Math.Mul(transform, _v1);
+			Vector2 v2 = Math.Mul(transform, _v2);
 
 			Vector2 r = new Vector2(_radius, _radius);
-			aabb.LowerBound = Common.Math.Min(v1, v2) - r;
-			aabb.UpperBound = Common.Math.Max(v1, v2) + r;
+			aabb.LowerBound = Vector2.Min(v1, v2) - r;
+			aabb.UpperBound = Vector2.Max(v1, v2) + r;
 		}
 
 		public override void ComputeMass(out MassData massData, float density)
@@ -161,8 +162,8 @@ namespace Box2DX.Collision
 			Vector2 v0 = offset * normal;
 			//b2Vector2 v0 = xf.position + (offset - b2Dot(normal, xf.position)) * normal;
 
-			Vector2 v1 = Common.Math.Mul(xf, _v1);
-			Vector2 v2 = Common.Math.Mul(xf, _v2);
+			Vector2 v1 = Math.Mul(xf, _v1);
+			Vector2 v2 = Math.Mul(xf, _v2);
 
 			float d1 = Vector2.Dot(normal, v1) - offset;
 			float d2 = Vector2.Dot(normal, v2) - offset;
@@ -205,37 +206,44 @@ namespace Box2DX.Collision
 
 		public float Length
 		{
-			get { return _length; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _length;
 		}
 
 		public Vector2 Vertex1
 		{
-			get { return _v1; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _v1;
 		}
 
 		public Vector2 Vertex2
 		{
-			get { return _v2; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _v2;
 		}
 
 		public Vector2 NormalVector
 		{
-			get { return _normal; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _normal;
 		}
 
 		public Vector2 DirectionVector
 		{
-			get { return _direction; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _direction;
 		}
 
 		public Vector2 Corner1Vector
 		{
-			get { return _cornerDir1; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _cornerDir1;
 		}
 
 		public Vector2 Corner2Vector
 		{
-			get { return _cornerDir2; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _cornerDir2;
 		}
 
 		public override int GetSupport(Vector2 d)
@@ -250,26 +258,28 @@ namespace Box2DX.Collision
 
 		public override Vector2 GetVertex(int index)
 		{
-			Box2DXDebug.Assert(0 <= index && index < 2);
+			Debug.Assert(0 <= index && index < 2);
 			if (index == 0) return _v1;
 			else return _v2;
 		}
 
 		public bool Corner1IsConvex
 		{
-			get { return _cornerConvex1; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _cornerConvex1;
 		}
 
 		public bool Corner2IsConvex
 		{
-			get { return _cornerConvex2; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _cornerConvex2;
 		}
 
 		public override float ComputeSweepRadius(Vector2 pivot)
 		{
 			float ds1 = Vector2.DistanceSquared(_v1, pivot);
 			float ds2 = Vector2.DistanceSquared(_v2, pivot);
-			return Common.Math.Sqrt(Common.Math.Max(ds1, ds2));
+			return MathF.Sqrt(MathF.Max(ds1, ds2));
 		}
 	}
 }

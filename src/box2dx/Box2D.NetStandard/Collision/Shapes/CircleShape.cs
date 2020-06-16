@@ -19,8 +19,12 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2DX.Common;
+using Math = Box2DX.Common.Math;
 
 namespace Box2DX.Collision
 {
@@ -39,7 +43,7 @@ namespace Box2DX.Collision
 
 		public override bool TestPoint(XForm transform, Vector2 p)
 		{
-			Vector2 center = transform.Position + Common.Math.Mul(transform.R, _position);
+			Vector2 center = transform.Position + Math.Mul(transform.R, _position);
 			Vector2 d = p - center;
 			return Vector2.Dot(d, d) <= _radius * _radius;
 		}
@@ -54,7 +58,7 @@ namespace Box2DX.Collision
 			lambda = 0f;
 			normal = Vector2.Zero;
 
-			Vector2 position = transform.Position + Common.Math.Mul(transform.R, _position);
+			Vector2 position = transform.Position + Math.Mul(transform.R, _position);
 			Vector2 s = segment.P1 - position;
 			float b = Vector2.Dot(s, s) - _radius * _radius;
 
@@ -72,13 +76,13 @@ namespace Box2DX.Collision
 			float sigma = c * c - rr * b;
 
 			// Check for negative discriminant and short segment.
-			if (sigma < 0.0f || rr < Common.Settings.FLT_EPSILON)
+			if (sigma < 0.0f || rr < Settings.FLT_EPSILON)
 			{
 				return SegmentCollide.MissCollide;
 			}
 
 			// Find the point of intersection of the line with the circle.
-			float a = -(c + Common.Math.Sqrt(sigma));
+			float a = -(c + MathF.Sqrt(sigma));
 
 			// Is the intersection point on the segment?
 			if (0.0f <= a && a <= maxLambda * rr)
@@ -96,7 +100,7 @@ namespace Box2DX.Collision
 		{
 			aabb = new AABB();
 
-			Vector2 p = transform.Position + Common.Math.Mul(transform.R, _position);
+			Vector2 p = transform.Position + Math.Mul(transform.R, _position);
 			aabb.LowerBound= new Vector2(p.X - _radius, p.Y - _radius);
 			aabb.UpperBound= new Vector2(p.X + _radius, p.Y + _radius);
 		}
@@ -114,9 +118,9 @@ namespace Box2DX.Collision
 
 		public override float ComputeSubmergedArea(Vector2 normal, float offset, XForm xf, out Vector2 c)
 		{
-			Vector2 p = Box2DX.Common.Math.Mul(xf, _position);
+			Vector2 p = Math.Mul(xf, _position);
 			float l = -(Vector2.Dot(normal, p) - offset);
-			if (l < -_radius + Box2DX.Common.Settings.FLT_EPSILON)
+			if (l < -_radius + Settings.FLT_EPSILON)
 			{
 				//Completely dry
 				c = new Vector2();
@@ -126,14 +130,14 @@ namespace Box2DX.Collision
 			{
 				//Completely wet
 				c = p;
-				return Box2DX.Common.Settings.Pi * _radius * _radius;
+				return Settings.Pi * _radius * _radius;
 			}
 
 			//Magic
 			float r2 = _radius * _radius;
 			float l2 = l * l;
-			float area = r2 * ((float)System.Math.Asin(l / _radius) + Box2DX.Common.Settings.Pi / 2) +
-				l * Box2DX.Common.Math.Sqrt(r2 - l2);
+			float area = r2 * ((float)System.Math.Asin(l / _radius) + Settings.Pi / 2) +
+				l * MathF.Sqrt(r2 - l2);
 			float com = -2.0f / 3.0f * (float)System.Math.Pow(r2 - l2, 1.5f) / area;
 
 			c.X = p.X + normal.X * com;
@@ -163,7 +167,7 @@ namespace Box2DX.Collision
 		/// </summary>
 		public override Vector2 GetVertex(int index)
 		{
-			Box2DXDebug.Assert(index == 0);
+			Debug.Assert(index == 0);
 			return _position;
 		}
 
@@ -175,6 +179,9 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Get the vertex count.
 		/// </summary>
-		public int VertexCount { get { return 1; } }
+		public int VertexCount {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => 1;
+		}
 	}
 }

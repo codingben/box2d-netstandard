@@ -22,6 +22,7 @@
 //#define B2_DEBUG_SOLVER
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2DX.Collision;
 using Box2DX.Common;
@@ -103,7 +104,7 @@ namespace Box2DX.Dynamics
 				float wA = bodyA._angularVelocity;
 				float wB = bodyB._angularVelocity;
 
-				Box2DXDebug.Assert(manifold.PointCount > 0);
+				Debug.Assert(manifold.PointCount > 0);
 
 				WorldManifold worldManifold = new WorldManifold();
 				worldManifold.Initialize(manifold, bodyA._xf, radiusA, bodyB._xf, radiusB);
@@ -146,13 +147,13 @@ namespace Box2DX.Dynamics
 
 							float kNormal = bodyA._invMass + bodyB._invMass + bodyA._invI * rnA + bodyB._invI * rnB;
 
-							Box2DXDebug.Assert(kNormal > Common.Settings.FLT_EPSILON);
+							Debug.Assert(kNormal > Settings.FLT_EPSILON);
 							ccp->NormalMass = 1.0f / kNormal;
 
 							float kEqualized = bodyA._mass * bodyA._invMass + bodyB._mass * bodyB._invMass;
 							kEqualized += bodyA._mass * bodyA._invI * rnA + bodyB._mass * bodyB._invI * rnB;
 
-							Box2DXDebug.Assert(kEqualized > Common.Settings.FLT_EPSILON);
+							Debug.Assert(kEqualized > Settings.FLT_EPSILON);
 							ccp->EqualizedMass = 1.0f / kEqualized;
 
 							Vector2 tangent = Vectex.Cross(cc.Normal, 1.0f);
@@ -164,13 +165,13 @@ namespace Box2DX.Dynamics
 
 							float kTangent = bodyA._invMass + bodyB._invMass + bodyA._invI * rtA + bodyB._invI * rtB;
 
-							Box2DXDebug.Assert(kTangent > Common.Settings.FLT_EPSILON);
+							Debug.Assert(kTangent > Settings.FLT_EPSILON);
 							ccp->TangentMass = 1.0f / kTangent;
 
 							// Setup a velocity bias for restitution.
 							ccp->VelocityBias = 0.0f;
 							float vRel = Vector2.Dot(cc.Normal, vB + Vectex.Cross(wB, ccp->RB) - vA - Vectex.Cross(wA, ccp->RA));
-							if (vRel < -Common.Settings.VelocityThreshold)
+							if (vRel < -Settings.VelocityThreshold)
 							{
 								ccp->VelocityBias = -cc.Restitution * vRel;
 							}
@@ -289,7 +290,7 @@ namespace Box2DX.Dynamics
 				Vector2 tangent = Vectex.Cross(normal, 1.0f);
 				float friction = c.Friction;
 
-				Box2DXDebug.Assert(c.PointCount == 1 || c.PointCount == 2);
+				Debug.Assert(c.PointCount == 1 || c.PointCount == 2);
 
 				unsafe
 				{
@@ -309,7 +310,7 @@ namespace Box2DX.Dynamics
 
 							// b2Clamp the accumulated force
 							float maxFriction = friction * ccp->NormalImpulse;
-							float newImpulse = Common.Math.Clamp(ccp->TangentImpulse + lambda, -maxFriction, maxFriction);
+							float newImpulse = System.Math.Clamp(ccp->TangentImpulse + lambda, -maxFriction, maxFriction);
 							lambda = newImpulse - ccp->TangentImpulse;
 
 							// Apply contact impulse
@@ -337,7 +338,7 @@ namespace Box2DX.Dynamics
 							float lambda = -ccp.NormalMass * (vn - ccp.VelocityBias);
 
 							// Clamp the accumulated impulse
-							float newImpulse = Common.Math.Max(ccp.NormalImpulse + lambda, 0.0f);
+							float newImpulse = MathF.Max(ccp.NormalImpulse + lambda, 0.0f);
 							lambda = newImpulse - ccp.NormalImpulse;
 
 							// Apply contact impulse
@@ -383,7 +384,7 @@ namespace Box2DX.Dynamics
 							ContactConstraintPoint* cp2 = &pointsPtr[1];
 
 							Vector2 a = new Vector2(cp1->NormalImpulse, cp2->NormalImpulse);
-							Box2DXDebug.Assert(a.X >= 0.0f && a.Y >= 0.0f);
+							Debug.Assert(a.X >= 0.0f && a.Y >= 0.0f);
 
 							// Relative velocity at contact
 							Vector2 dv1 = vB + Vectex.Cross(wB, cp1->RB) - vA - Vectex.Cross(wA, cp1->RA);
@@ -598,7 +599,7 @@ namespace Box2DX.Dynamics
 
 			internal void Initialize(ContactConstraint cc)
 			{
-				Box2DXDebug.Assert(cc.PointCount > 0);
+				Debug.Assert(cc.PointCount > 0);
 
 				switch (cc.Type)
 				{
@@ -684,10 +685,10 @@ namespace Box2DX.Dynamics
 					Vector2 rB = point - bodyB._sweep.C;
 
 					// Track max constraint error.
-					minSeparation = Common.Math.Min(minSeparation, separation);
+					minSeparation = MathF.Min(minSeparation, separation);
 
 					// Prevent large corrections and allow slop.
-					float C = baumgarte * Common.Math.Clamp(separation + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
+					float C = baumgarte * System.Math.Clamp(separation + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
 
 					// Compute normal impulse
 					float impulse = -c.Points[j].EqualizedMass * C;

@@ -64,6 +64,7 @@ namespace Box2DX.Common
 			return x;
 		}
 
+		[Obsolete("Use MathF.Sqrt",true)]
 		public static float Sqrt(float x)
 		{
 			return (float)System.Math.Sqrt(x);
@@ -115,69 +116,76 @@ namespace Box2DX.Common
 			return result;
 		}
 
+		[Obsolete("Use MathF.Abs",true)]
 		public static float Abs(float a)
 		{
 			return a > 0.0f ? a : -a;
 		}
 
-		public static Vector2 Abs(Vector2 a) => new Vector2(Math.Abs(a.X), Math.Abs(a.Y));
+		[Obsolete("Use Vector2.Abs",true)]
+		public static Vector2 Abs(Vector2 a) => new Vector2(Abs(a.X), Abs(a.Y));
 
-		public static Mat22 Abs(Mat22 A)
-		{
-			Mat22 B = new Mat22();
-			B.Set(Math.Abs(A.Col1), Math.Abs(A.Col2));
-			return B;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Mat22 Abs(Mat22 A) => new Mat22(Vector2.Abs(A.Col1), Vector2.Abs(A.Col2));
 
+		[Obsolete("Use MathF.Min",true)]
 		public static float Min(float a, float b)
 		{
 			return a < b ? a : b;
 		}
 
+		[Obsolete("Use Math.Min",true)]
 		public static int Min(int a, int b)
 		{
 			return a < b ? a : b;
 		}
 
+		[Obsolete("Use Vector2.Min",true)]
 		public static Vector2 Min(Vector2 a, Vector2 b)
 		{
 			Vector2 c = new Vector2();
-			c.X = Math.Min(a.X, b.X);
-			c.Y = Math.Min(a.Y, b.Y);
+			c.X = Min(a.X, b.X);
+			c.Y = Min(a.Y, b.Y);
 			return c;
 		}
 
+		[Obsolete("Use MathF.Max",true)]
 		public static float Max(float a, float b)
 		{
 			return a > b ? a : b;
 		}
 
+		[Obsolete("Use Math.Max",true)]
 		public static int Max(int a, int b)
 		{
 			return a > b ? a : b;
 		}
 
+		[Obsolete("Use Vector2.Max",true)]
 		public static Vector2 Max(Vector2 a, Vector2 b)
 		{
 			Vector2 c = new Vector2();
-			c.X = Math.Max(a.X, b.X);
-			c.Y = Math.Max(a.Y, b.Y);
+			c.X = Max(a.X, b.X);
+			c.Y = Max(a.Y, b.Y);
 			return c;
 		}
 
+		[Obsolete("Use Math.Clamp",true)]
 		public static float Clamp(float a, float low, float high)
 		{
-			return Math.Max(low, Math.Min(a, high));
+			return Max(low, Min(a, high));
 		}
 
+		[Obsolete("Use Math.Clamp",true)]
 		public static int Clamp(int a, int low, int high)
 		{
-			return Math.Max(low, Math.Min(a, high));
+			return Max(low, Min(a, high));
 		}
 
+		[Obsolete("Use Vector2.Clamp",true)]
 		public static Vector2 Clamp(Vector2 a, Vector2 low, Vector2 high)
 		{
-			return Math.Max(low, Math.Min(a, high));
+			return Max(low, Min(a, high));
 		}
 
 		public static void Swap<T>(ref T a, ref T b)
@@ -207,7 +215,7 @@ namespace Box2DX.Common
 		public static Mat22 Mul(Mat22 A, Mat22 B)
 		{
 			Mat22 C = new Mat22();
-			C.Set(Math.Mul(A, B.Col1), Math.Mul(A, B.Col2));
+			C.Set(Mul(A, B.Col1), Mul(A, B.Col2));
 			return C;
 		}
 
@@ -223,25 +231,19 @@ namespace Box2DX.Common
 			return C;
 		}
 
-		public static Vector2 Mul(XForm T, Vector2 v)
-		{
-			return T.Position + Math.Mul(T.R, v);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Mul(XForm T, Vector2 v) => T.Position + Mul(T.R, v);
 
-		public static Vector2 MulT(XForm T, Vector2 v)
-		{
-			return Math.MulT(T.R, v - T.Position);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 MulT(XForm T, Vector2 v) => MulT(T.R, v - T.Position);
 
 		/// <summary>
 		/// Multiply a matrix times a vector.
 		/// </summary>
-		public static Vec3 Mul(Mat33 A, Vec3 v)
-		{
-			Vec3 u = v.X * A.Col1 + v.Y * A.Col2 + v.Z * A.Col3;
-			return u;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vec3 Mul(Mat33 A, Vec3 v) => v.X * A.Col1 + v.Y * A.Col2 + v.Z * A.Col3;
 
+		[Obsolete("Use MathF.Atan2",true)]
 		public static float Atan2(float y, float x)
 		{
 			return (float)System.Math.Atan2(y, x);
