@@ -23,6 +23,7 @@ using System;
 using System.Numerics;
 using Box2DX.Collision;
 using Box2DX.Common;
+#pragma warning disable 618
 
 namespace Box2DX.Dynamics
 {
@@ -209,27 +210,27 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Draw a closed polygon provided in CCW order.
 		/// </summary>
-		public abstract void DrawPolygon(Vector2[] vertices, int vertexCount, Color color);
-
+		public abstract void DrawPolygon(Vec2[] vertices, int vertexCount, Color color);
+		
 		/// <summary>
 		/// Draw a solid closed polygon provided in CCW order.
 		/// </summary>
-		public abstract void DrawSolidPolygon(Vector2[] vertices, int vertexCount, Color color);
-
+		public abstract void DrawSolidPolygon(Vec2[] vertices, int vertexCount, Color color);
+		
 		/// <summary>
 		/// Draw a circle.
 		/// </summary>
-		public abstract void DrawCircle(Vector2 center, float radius, Color color);
+		public abstract void DrawCircle(Vec2 center, float radius, Color color);
 
 		/// <summary>
 		/// Draw a solid circle.
 		/// </summary>
-		public abstract void DrawSolidCircle(Vector2 center, float radius, Vector2 axis, Color color);
+		public abstract void DrawSolidCircle(Vec2 center, float radius, Vec2 axis, Color color);
 
 		/// <summary>
 		/// Draw a line segment.
 		/// </summary>
-		public abstract void DrawSegment(Vector2 p1, Vector2 p2, Color color);
+		public abstract void DrawSegment(Vec2 p1, Vec2 p2, Color color);
 
 		/// <summary>
 		/// Draw a transform. Choose your own length scale.

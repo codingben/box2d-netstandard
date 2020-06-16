@@ -187,6 +187,7 @@ namespace Box2DX.Dynamics
 		public void SetDebugDraw(DebugDraw debugDraw)
 		{
 			_debugDraw = debugDraw;
+			DrawDebugDataStub = DrawDebugData;
 		}
 
 		/// <summary>
@@ -607,12 +608,14 @@ namespace Box2DX.Dynamics
 			}
 
 			// Draw debug information.
-			DrawDebugData();
+			DrawDebugDataStub();
 
 			_inv_dt0 = step.Inv_Dt;
 			_lock = false;
 		}
 
+		private Action DrawDebugDataStub = () => { };
+		
 		/// Query the world for all shapes that potentially overlap the
 		/// provided AABB. You provide a shape pointer buffer of specified
 		/// size. The number of shapes found is returned.
@@ -1262,8 +1265,8 @@ namespace Box2DX.Dynamics
 						{
 							vertices[i] = Common.Math.Mul(xf, localVertices[i]);
 						}
-
-						_debugDraw.DrawSolidPolygon(vertices, vertexCount, color);
+						
+						_debugDraw.DrawSolidPolygon(Vec2.ConvertArray(vertices), vertexCount, color);
 					}
 					break;
 
@@ -1279,11 +1282,6 @@ namespace Box2DX.Dynamics
 
 		private void DrawDebugData()
 		{
-			if (_debugDraw == null)
-			{
-				return;
-			}
-
 			DebugDraw.DrawFlags flags = _debugDraw.Flags;
 
 			if ((flags & DebugDraw.DrawFlags.Shape) != 0)
@@ -1393,7 +1391,7 @@ namespace Box2DX.Dynamics
 					vs1[2]=new Vector2(b.UpperBound.X, b.UpperBound.Y);
 					vs1[3]=new Vector2(b.LowerBound.X, b.UpperBound.Y);
 
-					_debugDraw.DrawPolygon(vs1, 4, color);
+					_debugDraw.DrawPolygon(Vec2.ConvertArray(vs1), 4, color);
 				}
 
 				Vector2[] vs = new Vector2[4];
@@ -1401,7 +1399,7 @@ namespace Box2DX.Dynamics
 				vs[1]= new Vector2(worldUpper.X, worldLower.Y);
 				vs[2]= new Vector2(worldUpper.X, worldUpper.Y);
 				vs[3]= new Vector2(worldLower.X, worldUpper.Y);
-				_debugDraw.DrawPolygon(vs, 4, new Color(0.3f, 0.9f, 0.9f));
+				_debugDraw.DrawPolygon(Vec2.ConvertArray(vs), 4, new Color(0.3f, 0.9f, 0.9f));
 			}
 
 			if ((flags & DebugDraw.DrawFlags.CenterOfMass) != 0)
