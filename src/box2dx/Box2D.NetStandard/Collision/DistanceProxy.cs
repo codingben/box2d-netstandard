@@ -1,8 +1,9 @@
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Box2D.NetStandard.Collision.Shapes;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   internal class DistanceProxy {
     internal Vector2[] _buffer = new Vector2[2];
     internal Vector2[] _vertices;

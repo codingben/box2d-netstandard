@@ -23,7 +23,7 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 
-namespace Box2DX.Common
+namespace Box2D.NetStandard.Common
 {
 	public struct Sweep
 	{

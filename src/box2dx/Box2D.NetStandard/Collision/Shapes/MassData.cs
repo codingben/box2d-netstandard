@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision.Shapes {
   public struct MassData {
     public float   mass;
     public Vector2 center;

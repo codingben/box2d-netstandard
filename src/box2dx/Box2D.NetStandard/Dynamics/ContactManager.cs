@@ -19,20 +19,22 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-using Box2DX.Collision;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Dynamics.Body;
+using Box2D.NetStandard.Dynamics.Contacts;
+using Box2D.NetStandard.Dynamics.Fixture;
 using int32 = System.Int32;
-using b2Vec2 = System.Numerics.Vector2;
-using b2Fixture = Box2DX.Dynamics.Fixture;
-using b2Body = Box2DX.Dynamics.Body;
-using b2Contact = Box2DX.Dynamics.Contact;
+using b2Fixture = Box2D.NetStandard.Dynamics.Fixture.Fixture;
+using b2Body = Box2D.NetStandard.Dynamics.Body.Body;
+using b2Contact = Box2D.NetStandard.Dynamics.Contacts.Contact;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics {
   /// <summary>
   /// Delegate of World.
   /// </summary>
   internal class ContactManager {
     internal BroadPhase      m_broadPhase;
-    internal Contact         m_contactList;
+    internal b2Contact         m_contactList;
     internal int             m_contactCount;
     internal ContactFilter   m_contactFilter;
     internal ContactListener m_contactListener;
@@ -45,11 +47,11 @@ namespace Box2DX.Dynamics {
       m_broadPhase      = new BroadPhase();
     }
 
-    internal void Destroy(Contact c) {
-      Fixture fixtureA = c.FixtureA;
-      Fixture fixtureB = c.FixtureB;
-      Body    bodyA    = fixtureA.Body;
-      Body    bodyB    = fixtureB.Body;
+    internal void Destroy(b2Contact c) {
+      b2Fixture fixtureA = c.FixtureA;
+      b2Fixture fixtureB = c.FixtureB;
+      b2Body    bodyA    = fixtureA.Body;
+      b2Body    bodyB    = fixtureB.Body;
 
       if (m_contactListener != null && c.Touching) {
         m_contactListener.EndContact(c);
@@ -147,7 +149,7 @@ namespace Box2DX.Dynamics {
 
         // Here we destroy contacts that cease to overlap in the broad-phase.
         if (overlap == false) {
-          Contact cNuke = c;
+          b2Contact cNuke = c;
           c = cNuke.GetNext();
           Destroy(cNuke);
           continue;

@@ -1,4 +1,4 @@
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.World {
   internal struct TimeStep {
     internal float dt;      // time step
     internal float inv_dt;  // inverse time step (0 if dt == 0).

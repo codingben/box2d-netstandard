@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// Used for computing contact manifolds.
   /// </summary>

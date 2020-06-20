@@ -1,12 +1,11 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Common;
-
+using Box2D.NetStandard.Common;
 using int32 = System.Int32;
 using b2Vec2 = System.Numerics.Vector2;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   internal class Simplex {
     internal SimplexVertex[] m_v;
 

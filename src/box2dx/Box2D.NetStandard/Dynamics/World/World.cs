@@ -20,14 +20,18 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Body;
+using Box2D.NetStandard.Dynamics.Contacts;
+using Box2D.NetStandard.Dynamics.Fixture;
+using Box2D.NetStandard.Dynamics.Joints;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.World {
   /// <summary>
   /// The world class manages all physics entities, dynamic simulation,
   /// and asynchronous queries.
@@ -36,7 +40,7 @@ namespace Box2DX.Dynamics {
     //internal BroadPhase     _broadPhase;
     internal ContactManager _contactManager;
 
-    private Body  _bodyList;
+    private Body.Body  _bodyList;
     private Joint _jointList;
 
     private int _bodyCount;
@@ -81,7 +85,7 @@ namespace Box2DX.Dynamics {
     /// </summary>
     /// <returns>The head of the world body list.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Body GetBodyList() => _bodyList;
+    public Body.Body GetBodyList() => _bodyList;
 
     /// <summary>
     /// Get the world joint list. With the returned joint, use Joint.GetNext to get
@@ -205,13 +209,13 @@ namespace Box2DX.Dynamics {
     /// </summary>
     /// <param name="def"></param>
     /// <returns></returns>
-    public Body CreateBody(BodyDef def) {
+    public Body.Body CreateBody(BodyDef def) {
       Debug.Assert(_locked == false);
       if (_locked == true) {
         return null;
       }
 
-      Body b = new Body(def, this);
+      Body.Body b = new Body.Body(def, this);
 
       // Add to world doubly linked list.
       b._prev = null;
@@ -233,7 +237,7 @@ namespace Box2DX.Dynamics {
     /// @warning This function is locked during callbacks.
     /// </summary>
     /// <param name="b"></param>
-    public void DestroyBody(Body b) {
+    public void DestroyBody(Body.Body b) {
       Debug.Assert(_bodyCount > 0);
       Debug.Assert(_locked    == false);
       if (_locked == true) {
@@ -266,9 +270,9 @@ namespace Box2DX.Dynamics {
 
       // Delete the attached fixtures. This destroys broad-phase
       // proxies.
-      Fixture f = b._fixtureList;
+      Fixture.Fixture f = b._fixtureList;
       while (f != null) {
-        Fixture f0 = f;
+        Fixture.Fixture f0 = f;
         f = f.m_next;
 
         _destructionListener?.SayGoodbye(f0);
@@ -340,8 +344,8 @@ namespace Box2DX.Dynamics {
         j._bodyB._jointList.Prev = j._edgeB;
       j._bodyB._jointList = j._edgeB;
 
-      Body bodyA = def.BodyA;
-      Body bodyB = def.BodyB;
+      Body.Body bodyA = def.BodyA;
+      Body.Body bodyB = def.BodyB;
 
       // If the joint prevents collisions, then flag any contacts for filtering.
       if (def.CollideConnected == false) {
@@ -387,8 +391,8 @@ namespace Box2DX.Dynamics {
       }
 
       // Disconnect from island graph.
-      Body bodyA = j._bodyA;
-      Body bodyB = j._bodyB;
+      Body.Body bodyA = j._bodyA;
+      Body.Body bodyB = j._bodyB;
 
       // Wake up connected bodies.
       bodyA.SetAwake(true);
@@ -451,7 +455,7 @@ namespace Box2DX.Dynamics {
 
       _allowSleep = flag;
       if (!_allowSleep) {
-        for (Body b = _bodyList; b != null; b = b._next) {
+        for (Body.Body b = _bodyList; b != null; b = b._next) {
           b.SetAwake(true);
         }
       }
@@ -471,7 +475,7 @@ namespace Box2DX.Dynamics {
                                  _contactManager.m_contactListener);
 
       // Clear all the island flags.
-      for (Body b = _bodyList; b != null; b = b._next) {
+      for (Body.Body b = _bodyList; b != null; b = b._next) {
         b.UnsetFlag(BodyFlags.Island);
       }
 
@@ -487,8 +491,8 @@ namespace Box2DX.Dynamics {
       int stackSize = _bodyCount;
       //Stack<Body> stack = new Stack<Body>(_bodyCount);
       //Body stack     = (b2Body**) m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
-      Body[] stack = new Body[_bodyCount];
-      for (Body seed = _bodyList; seed != null; seed = seed._next) {
+      Body.Body[] stack = new Body.Body[_bodyCount];
+      for (Body.Body seed = _bodyList; seed != null; seed = seed._next) {
         if (seed.HasFlag(BodyFlags.Island)) {
           continue;
         }
@@ -511,7 +515,7 @@ namespace Box2DX.Dynamics {
         // Perform a depth first search (DFS) on the constraint graph.
         while (stackCount > 0) {
           // Grab the next body off the stack and add it to the island.
-          Body b = stack[--stackCount];
+          Body.Body b = stack[--stackCount];
           //Debug.Assert(b.IsEnabled() == true);
           island.Add(b);
 
@@ -549,7 +553,7 @@ namespace Box2DX.Dynamics {
             island.Add(contact);
             contact.m_flags |= CollisionFlags.Island;
 
-            Body other = ce.other;
+            Body.Body other = ce.other;
 
             // Was the other body already added to this island?
             if (other.HasFlag(BodyFlags.Island)) {
@@ -567,7 +571,7 @@ namespace Box2DX.Dynamics {
               continue;
             }
 
-            Body other = je.other;
+            Body.Body other = je.other;
 
             // Don't simulate joints connected to disabled bodies.
             if (other.IsEnabled() == false) {
@@ -596,7 +600,7 @@ namespace Box2DX.Dynamics {
         // Post solve cleanup.
         for (int i = 0; i < island._bodyCount; ++i) {
           // Allow static bodies to participate in other islands.
-          Body b = island._bodies[i];
+          Body.Body b = island._bodies[i];
           if (b._type == BodyType.Static) {
             b.UnsetFlag(BodyFlags.Island);
           }
@@ -608,7 +612,7 @@ namespace Box2DX.Dynamics {
       {
         Stopwatch timer = Stopwatch.StartNew();
         // Synchronize fixtures, check for out of range bodies.
-        for (Body b = _bodyList; b != null; b = b.GetNext()) {
+        for (Body.Body b = _bodyList; b != null; b = b.GetNext()) {
           // If a body was not in an island then it did not move.
           if (!(b.HasFlag(BodyFlags.Island))) {
             continue;
@@ -635,7 +639,7 @@ namespace Box2DX.Dynamics {
                                  _contactManager.m_contactListener);
 
       if (_stepComplete) {
-        for (Body b = _bodyList; b != null; b = b._next) {
+        for (Body.Body b = _bodyList; b != null; b = b._next) {
           b.UnsetFlag(BodyFlags.Island);
           b._sweep.alpha0 =  0.0f;
         }
@@ -671,16 +675,16 @@ namespace Box2DX.Dynamics {
             alpha = c._toi;
           }
           else {
-            Fixture fA = c.FixtureA;
-            Fixture fB = c.FixtureB;
+            Fixture.Fixture fA = c.FixtureA;
+            Fixture.Fixture fB = c.FixtureB;
 
             // Is there a sensor?
             if (fA.IsSensor() || fB.IsSensor()) {
               continue;
             }
 
-            Body bA = fA.Body;
-            Body bB = fB.Body;
+            Body.Body bA = fA.Body;
+            Body.Body bB = fB.Body;
 
             BodyType typeA = bA._type;
             BodyType typeB = bB._type;
@@ -760,10 +764,10 @@ namespace Box2DX.Dynamics {
 
         {
           // Advance the bodies to the TOI.
-          Fixture fA = minContact.m_fixtureA;
-          Fixture fB = minContact.m_fixtureB;
-          Body    bA = fA.Body;
-          Body    bB = fB.Body;
+          Fixture.Fixture fA = minContact.m_fixtureA;
+          Fixture.Fixture fB = minContact.m_fixtureB;
+          Body.Body    bA = fA.Body;
+          Body.Body    bB = fB.Body;
 
           Sweep backup1 = bA._sweep;
           Sweep backup2 = bB._sweep;
@@ -801,10 +805,10 @@ namespace Box2DX.Dynamics {
           minContact.m_flags |= CollisionFlags.Island;
 
           // Get contacts on bodyA and bodyB.
-          Body[] bodies = {bA, bB};
+          Body.Body[] bodies = {bA, bB};
 
           for (int i = 0; i < 2; ++i) {
-            Body body = bodies[i];
+            Body.Body body = bodies[i];
             if (body._type == BodyType.Dynamic) {
               for (ContactEdge ce = body._contactList; ce != null; ce = ce.next) {
                 if (island._bodyCount == island._bodyCapacity) {
@@ -823,7 +827,7 @@ namespace Box2DX.Dynamics {
                 }
 
                 // Only add static, kinematic, or bullet bodies.
-                Body other = ce.other;
+                Body.Body other = ce.other;
                 if (other._type     == BodyType.Dynamic &&
                     body.IsBullet() == false            && other.IsBullet() == false) {
                   continue;
@@ -891,7 +895,7 @@ namespace Box2DX.Dynamics {
 
           // Reset island flags and synchronize broad-phase proxies.
           for (int i = 0; i < island._bodyCount; ++i) {
-            Body body = island._bodies[i];
+            Body.Body body = island._bodies[i];
             body.UnsetFlag(BodyFlags.Island);
 
             if (body._type != BodyType.Dynamic) {
@@ -985,13 +989,13 @@ namespace Box2DX.Dynamics {
     }
 
     public void ClearForces() {
-      for (Body body = _bodyList; body != null; body = body.GetNext()) {
+      for (Body.Body body = _bodyList; body != null; body = body.GetNext()) {
         body._force  = Vector2.Zero;
         body._torque = 0.0f;
       }
     }
 
-    public delegate bool QueryCallback(Fixture fixture);
+    public delegate bool QueryCallback(Fixture.Fixture fixture);
 
     public void QueryAABB(QueryCallback callback, in AABB aabb) {
       bool internalCallback(int proxyId) {
@@ -1002,8 +1006,8 @@ namespace Box2DX.Dynamics {
       _contactManager.m_broadPhase.Query(internalCallback, aabb);
     }
 
-    public int QueryAABB(out Fixture[] fixtures, in AABB aabb, int maxFixtures = 256) {
-      Fixture[] result = new Fixture[maxFixtures];
+    public int QueryAABB(out Fixture.Fixture[] fixtures, in AABB aabb, int maxFixtures = 256) {
+      Fixture.Fixture[] result = new Fixture.Fixture[maxFixtures];
 
       int i = 0;
 
@@ -1019,13 +1023,13 @@ namespace Box2DX.Dynamics {
       return i;
     }
 
-    public delegate void RayCastCallback(Fixture fixture, Vector2 point, Vector2 normal, float fraction);
+    public delegate void RayCastCallback(Fixture.Fixture fixture, Vector2 point, Vector2 normal, float fraction);
 
     public void RayCast(RayCastCallback callback, in Vector2 point1, in Vector2 point2) {
       float internalCallback(RayCastInput input, int proxyId) {
         object       userData = _contactManager.m_broadPhase.GetUserData(proxyId);
         FixtureProxy proxy    = (FixtureProxy) userData;
-        Fixture      fixture  = proxy.fixture;
+        Fixture.Fixture      fixture  = proxy.fixture;
         int          index    = proxy.childIndex;
         bool         hit      = fixture.RayCast(out RayCastOutput output, input, index);
 
@@ -1049,8 +1053,8 @@ namespace Box2DX.Dynamics {
 
 
     private void DrawJoint(Joint joint) {
-      Body      b1  = joint.GetBodyA();
-      Body      b2  = joint.GetBodyB();
+      Body.Body      b1  = joint.GetBodyA();
+      Body.Body      b2  = joint.GetBodyB();
       Transform xf1 = b1.GetTransform();
       Transform xf2 = b2.GetTransform();
       Vector2   x1  = xf1.p;
@@ -1087,7 +1091,7 @@ namespace Box2DX.Dynamics {
       }
     }
 
-    private void DrawFixture(Fixture fixture, Transform xf, Color color, bool core) {
+    private void DrawFixture(Fixture.Fixture fixture, Transform xf, Color color, bool core) {
 #warning "the core argument is not used, the coreColor variable is also not used"
       Color coreColor = new Color(0.9f, 0.6f, 0.6f);
 

@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// A manifold point is a contact point belonging to a contact
   /// manifold. It holds details related to the geometry and dynamics

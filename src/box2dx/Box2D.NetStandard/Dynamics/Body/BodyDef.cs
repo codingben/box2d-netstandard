@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Body {
   /// <summary>
   /// A body definition holds all the data needed to construct a rigid body.
   /// You can safely re-use body definitions.

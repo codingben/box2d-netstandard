@@ -41,9 +41,9 @@
 
 using System.Diagnostics;
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Joints {
   /// <summary>
   /// Gear joint definition. This definition requires two existing
   /// revolute or prismatic joints (any combination will work).
@@ -90,12 +90,12 @@ namespace Box2DX.Dynamics {
     private Joint     _joint2;
     private JointType _typeA;
     private JointType _typeB;
-    private Body      _bodyC;
+    private Body.Body      _bodyC;
     private Vector2   _localAnchorC;
     private Vector2   _localAnchorA;
     private float     _referenceAngleA;
     private Vector2   _localAxisC;
-    private Body      _bodyD;
+    private Body.Body      _bodyD;
     private Vector2   _localAnchorD;
     private Vector2   _localAnchorB;
     private float     _referenceAngleB;

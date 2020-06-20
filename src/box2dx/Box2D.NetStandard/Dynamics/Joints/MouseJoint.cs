@@ -27,11 +27,10 @@
 // Identity used:
 // w k % (rx i + ry j) = w * (-ry i + rx j)
 
-using System.Diagnostics;
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics
+namespace Box2D.NetStandard.Dynamics.Joints
 {
 	/// <summary>
 	/// Mouse joint definition. This requires a world target point,

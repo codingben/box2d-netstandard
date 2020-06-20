@@ -23,7 +23,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Box2DX.Common
+namespace Box2D.NetStandard.Common
 {
 	/// <summary>
 	/// A 2-by-2 matrix. Stored in column-major order.

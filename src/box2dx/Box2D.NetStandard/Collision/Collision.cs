@@ -20,9 +20,8 @@
 */
 
 using System.Numerics;
-using Box2DX.Common;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   // Structures and functions used for computing contact points, distance
   // queries, and TOI queries.
 

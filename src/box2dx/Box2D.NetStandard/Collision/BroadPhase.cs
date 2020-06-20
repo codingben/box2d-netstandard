@@ -45,7 +45,7 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
 #warning "CAS"
 
 

@@ -1,7 +1,7 @@
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Contacts {
   public class ContactVelocityConstraint {
     internal VelocityConstraintPoint[] points = new VelocityConstraintPoint[Settings.MaxManifoldPoints];
     internal Vector2                   normal;

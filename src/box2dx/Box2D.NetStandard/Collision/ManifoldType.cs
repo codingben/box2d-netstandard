@@ -1,4 +1,4 @@
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   public enum ManifoldType {
     Circles,
     FaceA,

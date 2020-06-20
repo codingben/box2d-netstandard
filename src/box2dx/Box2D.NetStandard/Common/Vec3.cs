@@ -19,7 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-namespace Box2DX.Common
+namespace Box2D.NetStandard.Common
 {
 	/// <summary>
 	/// A 2D column vector with 3 elements.

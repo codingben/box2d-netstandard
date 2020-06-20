@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Contacts {
   internal class VelocityConstraintPoint {
     internal Vector2 rA;
     internal Vector2 rB;

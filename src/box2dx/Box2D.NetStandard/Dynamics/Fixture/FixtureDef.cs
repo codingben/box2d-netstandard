@@ -1,6 +1,7 @@
-using Box2DX.Collision;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Fixture {
   /// <summary>
   /// A fixture definition is used to create a fixture. This class defines an
   /// abstract fixture definition. You can reuse fixture definitions safely.

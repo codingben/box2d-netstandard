@@ -19,9 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// Inpute parameters for TimeOfImpact
   /// </summary>

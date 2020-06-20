@@ -1,11 +1,7 @@
-using System;
-using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
-using Box2DX.Collision;
+using Box2D.NetStandard.Collision;
 using int32 = System.Int32;
-using b2Vec2 = System.Numerics.Vector2;
 
-namespace Box2DX.Common {
+namespace Box2D.NetStandard.Common {
   internal enum PointState {
     Null, Add, Persist, Remove
   }

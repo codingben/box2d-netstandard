@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Common;
-using b2Vec2 = System.Numerics.Vector2;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   internal class DynamicTree {
     private int m_root;
 

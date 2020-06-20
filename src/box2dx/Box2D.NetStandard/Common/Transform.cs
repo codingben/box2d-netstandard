@@ -23,7 +23,7 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Box2DX.Common
+namespace Box2D.NetStandard.Common
 {
 	/// <summary>
 	/// A transform contains translation and rotation.

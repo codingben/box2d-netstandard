@@ -21,12 +21,13 @@
 
 using System.Diagnostics;
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
 using int32 = System.Int32;
 using b2Vec2 = System.Numerics.Vector2;
 using uint8 = System.Byte;
 
-namespace Box2DX.Collision
+namespace Box2D.NetStandard.Collision
 {
 	public partial class Collision
 	{

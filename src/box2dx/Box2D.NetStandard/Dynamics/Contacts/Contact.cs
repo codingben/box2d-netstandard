@@ -19,15 +19,14 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-using System;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Contacts {
   /// <summary>
   /// The class manages contact between two shapes. A contact exists for each overlapping
   /// AABB in the broad-phase (except if filtered). Therefore a contact object may exist
@@ -49,8 +48,8 @@ namespace Box2DX.Dynamics {
     internal ContactEdge m_nodeA;
     internal ContactEdge m_nodeB;
 
-    internal Fixture m_fixtureA;
-    internal Fixture m_fixtureB;
+    internal Fixture.Fixture m_fixtureA;
+    internal Fixture.Fixture m_fixtureB;
 
     internal int m_indexA;
     internal int m_indexB;
@@ -75,8 +74,8 @@ namespace Box2DX.Dynamics {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void GetWorldManifold(out WorldManifold worldManifold) {
-      Body bodyA = m_fixtureA.Body;
-      Body bodyB = m_fixtureB.Body;
+      Body.Body bodyA = m_fixtureA.Body;
+      Body.Body bodyB = m_fixtureB.Body;
       Shape shapeA = m_fixtureA.Shape;
       Shape shapeB = m_fixtureB.Shape;
 
@@ -123,7 +122,7 @@ namespace Box2DX.Dynamics {
     /// <summary>
     /// Get the first fixture in this contact.
     /// </summary>
-    public Fixture FixtureA {
+    public Fixture.Fixture FixtureA {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_fixtureA;
     }
@@ -131,16 +130,16 @@ namespace Box2DX.Dynamics {
     /// <summary>
     /// Get the second fixture in this contact.
     /// </summary>
-    public Fixture FixtureB {
+    public Fixture.Fixture FixtureB {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_fixtureB;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Fixture GetFixtureA() => FixtureA;
+    public Fixture.Fixture GetFixtureA() => FixtureA;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Fixture GetFixtureB() => FixtureB;
+    public Fixture.Fixture GetFixtureB() => FixtureB;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FlagForFiltering() => m_flags |= CollisionFlags.Filter;
@@ -218,7 +217,7 @@ namespace Box2DX.Dynamics {
 
     internal abstract void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB);
     
-    public Contact(Fixture fA, int indexA, Fixture fB, int indexB) {
+    public Contact(Fixture.Fixture fA, int indexA, Fixture.Fixture fB, int indexB) {
       m_flags = CollisionFlags.Enabled;
 
       m_fixtureA = fA;
@@ -276,7 +275,7 @@ namespace Box2DX.Dynamics {
 #endif
     }
 
-    public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
+    public static Contact Create(Fixture.Fixture fixtureA, int indexA, Fixture.Fixture fixtureB, int indexB) {
       if (s_initialized == false) {
         InitializeRegisters();
         s_initialized = true;
@@ -305,8 +304,8 @@ namespace Box2DX.Dynamics {
     public static void Destroy(ref Contact contact) {
       Debug.Assert(s_initialized == true);
 
-      Fixture fixtureA = contact.m_fixtureA;
-      Fixture fixtureB = contact.m_fixtureB;
+      Fixture.Fixture fixtureA = contact.m_fixtureA;
+      Fixture.Fixture fixtureB = contact.m_fixtureB;
       
       if (contact.m_manifold.pointCount > 0 &&
           fixtureA.IsSensor()==false &&
@@ -338,8 +337,8 @@ namespace Box2DX.Dynamics {
       bool sensorB = m_fixtureB.IsSensor();
       bool sensor  = sensorA || sensorB;
 
-      Body      bodyA = m_fixtureA.Body;
-      Body      bodyB = m_fixtureB.Body;
+      Body.Body      bodyA = m_fixtureA.Body;
+      Body.Body      bodyB = m_fixtureB.Body;
       Transform xfA   = bodyA.GetTransform();
       Transform xfB   = bodyB.GetTransform();
 

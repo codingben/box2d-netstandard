@@ -20,12 +20,15 @@
 */
 
 using System;
-using System.Numerics;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Contacts;
+using Box2D.NetStandard.Dynamics.Fixture;
+using Box2D.NetStandard.Dynamics.Joints;
+
 #pragma warning disable 618
 
-namespace Box2DX.Dynamics
+namespace Box2D.NetStandard.Dynamics
 {
 	/// <summary>
 	/// Joints and shapes are destroyed when their associated
@@ -44,7 +47,7 @@ namespace Box2DX.Dynamics
 		/// Called when any shape is about to be destroyed due
 		/// to the destruction of its parent body.
 		/// </summary>
-		public abstract void SayGoodbye(Fixture fixture);
+		public abstract void SayGoodbye(Fixture.Fixture fixture);
 	}
 
 	/// <summary>
@@ -58,7 +61,7 @@ namespace Box2DX.Dynamics
 		/// If you implement your own collision filter you may want to build from this implementation.
 		/// @warning for performance reasons this is only called when the AABBs begin to overlap.
 		/// </summary>
-		public virtual bool ShouldCollide(Fixture fixtureA, Fixture fixtureB)
+		public virtual bool ShouldCollide(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 		{
 			Filter filterA = fixtureA.m_filter;
 			Filter filterB = fixtureB.m_filter;
@@ -73,7 +76,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Return true if the given shape should be considered for ray intersection.
 		/// </summary>
-		public bool RayCollide(object userData, Fixture fixture)
+		public bool RayCollide(object userData, Fixture.Fixture fixture)
 		{
 			//By default, cast userData as a shape, and then collide if the shapes would collide
 			if (userData == null)
@@ -81,7 +84,7 @@ namespace Box2DX.Dynamics
 				return true;
 			}
 
-			return ShouldCollide((Fixture)userData, fixture);
+			return ShouldCollide((Fixture.Fixture)userData, fixture);
 		}
 	}
 

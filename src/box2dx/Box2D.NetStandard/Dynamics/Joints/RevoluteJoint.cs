@@ -36,13 +36,10 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Common;
-using Math = Box2DX.Common.Math;
+using Box2D.NetStandard.Common;
+using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2DX.Dynamics {
-  using Box2DXMath = Math;
-  using SystemMath = System.Math;
-
+namespace Box2D.NetStandard.Dynamics.Joints {
   /// <summary>
   /// Revolute joint definition. This requires defining an
   /// anchor point where the bodies are joined. The definition
@@ -74,7 +71,7 @@ namespace Box2DX.Dynamics {
     /// Initialize the bodies, anchors, and reference angle using the world
     /// anchor.
     /// </summary>
-    public void Initialize(Body body1, Body body2, Vector2 anchor) {
+    public void Initialize(Body.Body body1, Body.Body body2, Vector2 anchor) {
       BodyA          = body1;
       BodyB          = body2;
       LocalAnchorA   = body1.GetLocalPoint(anchor);
@@ -180,8 +177,8 @@ namespace Box2DX.Dynamics {
     public float JointAngle {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get {
-        Body b1 = _bodyA;
-        Body b2 = _bodyB;
+        Body.Body b1 = _bodyA;
+        Body.Body b2 = _bodyB;
         return b2._sweep.a - b1._sweep.a - _referenceAngle;
       }
     }
@@ -193,8 +190,8 @@ namespace Box2DX.Dynamics {
     public float JointSpeed {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get {
-        Body b1 = _bodyA;
-        Body b2 = _bodyB;
+        Body.Body b1 = _bodyA;
+        Body.Body b2 = _bodyB;
         return b2._angularVelocity - b1._angularVelocity;
       }
     }

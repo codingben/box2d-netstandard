@@ -23,13 +23,14 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Collision;
-using Box2DX.Common;
-
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Contacts;
 using int32 = System.Int32;
 using b2Vec2 = System.Numerics.Vector2; 
 
-namespace Box2DX.Dynamics
+namespace Box2D.NetStandard.Dynamics.Fixture
 {
 	/// <summary>
 	/// A fixture is used to attach a shape to a body for collision detection. A fixture
@@ -44,7 +45,7 @@ namespace Box2DX.Dynamics
 		internal float m_density;
 
 		internal Fixture m_next;
-		internal Body m_body;
+		internal Body.Body m_body;
 
 		private Shape m_shape;
 
@@ -72,7 +73,7 @@ namespace Box2DX.Dynamics
 			m_density = 0f;
 		}
 
-		public void Create(Body body, FixtureDef def) {
+		public void Create(Body.Body body, FixtureDef def) {
 			if (def.shape ==null) throw new ArgumentNullException("def.shape");
 
 			m_userData    = def.userData;
@@ -194,7 +195,7 @@ namespace Box2DX.Dynamics
 				edge = edge.next;
 			}
 
-			World world = m_body.GetWorld();
+			World.World world = m_body.GetWorld();
 
 			if (world == null)
 			{
@@ -237,13 +238,13 @@ namespace Box2DX.Dynamics
 			get => m_filter;
 		}
 
-		public Body Body {
+		public Body.Body Body {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => m_body;
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Body GetBody() => Body;
+		public Body.Body GetBody() => Body;
 
 		Fixture GetNext() => m_next;
 		public Fixture Next {

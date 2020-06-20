@@ -1,4 +1,4 @@
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// Contact ids to facilitate warm starting.
   /// </summary>

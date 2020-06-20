@@ -1,4 +1,6 @@
-namespace Box2DX.Dynamics {
+using Box2D.NetStandard.Dynamics.World;
+
+namespace Box2D.NetStandard.Dynamics.Contacts {
   internal struct ContactSolverDef {
     internal TimeStep   step;
     internal Contact[]  contacts;

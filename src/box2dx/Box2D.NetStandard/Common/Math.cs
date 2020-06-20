@@ -23,7 +23,7 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Box2DX.Common {
+namespace Box2D.NetStandard.Common {
   internal class Math {
     internal const ushort USHRT_MAX  = ushort.MaxValue;
     internal const byte   UCHAR_MAX  = byte.MaxValue;

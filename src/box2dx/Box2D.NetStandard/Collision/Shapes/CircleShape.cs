@@ -22,12 +22,11 @@
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Common;
-using Math = Box2DX.Common.Math;
+using Box2D.NetStandard.Common;
+using Math = Box2D.NetStandard.Common.Math;
 using b2Vec2 = System.Numerics.Vector2;
-using int32 = System.Int32;
 
-namespace Box2DX.Collision
+namespace Box2D.NetStandard.Collision.Shapes
 {
 	/// <summary>
 	/// A circle shape.

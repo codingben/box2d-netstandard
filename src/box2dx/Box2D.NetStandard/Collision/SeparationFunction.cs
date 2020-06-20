@@ -1,10 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
-using Box2DX.Common;
-using Math = Box2DX.Common.Math;
+using Box2D.NetStandard.Common;
+using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   internal struct SeparationFunction {
     private DistanceProxy          m_proxyA;
     private DistanceProxy          m_proxyB;

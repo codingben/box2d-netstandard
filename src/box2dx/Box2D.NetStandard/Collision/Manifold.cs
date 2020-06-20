@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// A manifold for two touching convex shapes.
   /// </summary>

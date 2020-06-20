@@ -22,9 +22,9 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics
+namespace Box2D.NetStandard.Dynamics.Joints
 {
 	public enum JointType
 	{
@@ -85,7 +85,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Provides quick access to the other body attached.
 		/// </summary>
-		public Body other;
+		public Body.Body other;
 
 		/// <summary>
 		/// The joint.
@@ -131,12 +131,12 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// The first attached body.
 		/// </summary>
-		public Body BodyA;
+		public Body.Body BodyA;
 
 		/// <summary>
 		/// The second attached body.
 		/// </summary>
-		public Body BodyB;
+		public Body.Body BodyB;
 
 		/// <summary>
 		/// Set this flag to true if the attached bodies should collide.
@@ -155,8 +155,8 @@ namespace Box2DX.Dynamics
 		internal Joint _next;
 		internal JointEdge _edgeA = new JointEdge();
 		internal JointEdge _edgeB = new JointEdge();
-		internal Body _bodyA;
-		internal Body _bodyB;
+		internal Body.Body _bodyA;
+		internal Body.Body _bodyB;
 
 		internal bool _islandFlag;
 		internal bool _collideConnected;
@@ -178,7 +178,7 @@ namespace Box2DX.Dynamics
 		/// Get the first body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetBodyA()
+		public Body.Body GetBodyA()
 		{
 			return _bodyA;
 		}
@@ -187,7 +187,7 @@ namespace Box2DX.Dynamics
 		/// Get the second body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetBodyB()
+		public Body.Body GetBodyB()
 		{
 			return _bodyB;
 		}

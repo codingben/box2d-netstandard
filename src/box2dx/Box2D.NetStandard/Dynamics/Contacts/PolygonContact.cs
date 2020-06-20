@@ -20,14 +20,15 @@
 */
 
 using System.Diagnostics;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics
+namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class PolygonContact : Contact
 	{
-		public PolygonContact(Fixture fixtureA, Fixture fixtureB)
+		public PolygonContact(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
 			Debug.Assert(fixtureA.Type == ShapeType.Polygon);
@@ -35,7 +36,7 @@ namespace Box2DX.Dynamics
 		}
 
 		
-		public new static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		public new static Contact Create(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 		{
 			return new PolygonContact(fixtureA, fixtureB);
 		}

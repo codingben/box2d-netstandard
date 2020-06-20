@@ -41,10 +41,10 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
-using Box2DX.Common;
-using Math = Box2DX.Common.Math;
+using Box2D.NetStandard.Common;
+using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Joints {
   /// <summary>
   /// Pulley joint definition. This requires two ground anchors,
   /// two dynamic body anchor points, max lengths for each side,
@@ -64,7 +64,7 @@ namespace Box2DX.Dynamics {
     }
 
     /// Initialize the bodies, anchors, lengths, max lengths, and ratio using the world anchors.
-    public void Initialize(Body body1,         Body    body2,
+    public void Initialize(Body.Body body1,         Body.Body    body2,
       Vector2                   groundAnchor1, Vector2 groundAnchor2,
       Vector2                   anchor1,       Vector2 anchor2,
       float                     ratio) {

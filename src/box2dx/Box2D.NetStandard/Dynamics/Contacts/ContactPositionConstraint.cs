@@ -1,8 +1,8 @@
 using System.Numerics;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Contacts {
   internal class ContactPositionConstraint {
     internal Vector2[]    localPoints = new Vector2[Settings.MaxManifoldPoints];
     internal Vector2      localNormal;

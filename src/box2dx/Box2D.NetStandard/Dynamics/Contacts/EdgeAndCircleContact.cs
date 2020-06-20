@@ -20,14 +20,15 @@
 */
 
 using System.Diagnostics;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics
+namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class EdgeAndCircleContact : Contact
 	{
-		public EdgeAndCircleContact(Fixture fixtureA, Fixture fixtureB)
+		public EdgeAndCircleContact(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
 			Debug.Assert(fixtureA.Type == ShapeType.Edge);
@@ -38,7 +39,7 @@ namespace Box2DX.Dynamics
 			m_manifold.points[0].tangentImpulse = 0.0f;
 		}
 
-		public static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		public static Contact Create(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 		{
 			return new EdgeAndCircleContact(fixtureA, fixtureB);
 		}

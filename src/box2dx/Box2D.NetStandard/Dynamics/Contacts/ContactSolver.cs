@@ -23,16 +23,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
-using System.Net.Http.Headers;
 using System.Numerics;
-using System.Threading.Tasks.Sources;
-using Box2DX.Collision;
-using Box2DX.Common;
-using Microsoft.Win32.SafeHandles;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.World;
 using Math = System.Math;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Contacts {
   internal class ContactSolver {
     public   TimeStep                    _step;
     internal ContactVelocityConstraint[] _velocityConstraints;
@@ -55,14 +53,14 @@ namespace Box2DX.Dynamics {
       for (int i = 0; i < _count; ++i) {
         Contact contact = _contacts[i];
 
-        Fixture  fixtureA = contact.m_fixtureA;
-        Fixture  fixtureB = contact.m_fixtureB;
+        Fixture.Fixture  fixtureA = contact.m_fixtureA;
+        Fixture.Fixture  fixtureB = contact.m_fixtureB;
         Shape    shapeA   = fixtureA.Shape;
         Shape    shapeB   = fixtureB.Shape;
         float    radiusA  = shapeA.m_radius;
         float    radiusB  = shapeB.m_radius;
-        Body     bodyA    = fixtureA.Body;
-        Body     bodyB    = fixtureB.Body;
+        Body.Body     bodyA    = fixtureA.Body;
+        Body.Body     bodyB    = fixtureB.Body;
         Manifold manifold = contact.Manifold;
 
         int pointCount = manifold.pointCount;

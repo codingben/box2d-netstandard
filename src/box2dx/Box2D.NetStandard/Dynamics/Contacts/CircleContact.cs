@@ -20,21 +20,22 @@
 */
 
 using System.Diagnostics;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics
+namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class CircleContact : Contact
 	{
-		public CircleContact(Fixture fixtureA, Fixture fixtureB)
+		public CircleContact(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
 			Debug.Assert(fixtureA.Type == ShapeType.Circle);
 			Debug.Assert(fixtureB.Type == ShapeType.Circle);
 		}
 
-		public static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		public static Contact Create(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 		{
 			return new CircleContact(fixtureA, fixtureB);
 		}

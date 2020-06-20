@@ -1,9 +1,9 @@
 using System;
 using System.Diagnostics;
-using Box2DX.Common;
-using Box2DX.Dynamics;
+using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Contacts;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   public static class TOI {
     internal static void TimeOfImpact(out TOIOutput output, in TOIInput input) {
       //b2Timer timer;

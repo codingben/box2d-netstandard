@@ -19,12 +19,11 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision.Shapes {
   /// <summary>
   /// A shape is used for collision detection. You can create a shape however you like.
   /// Shapes used for simulation in World are created automatically when a Fixture is created.

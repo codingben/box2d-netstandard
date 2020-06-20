@@ -1,9 +1,7 @@
 using System.Numerics;
-using Box2DX.Common;
-using int32 = System.Int32;
-using b2Vec2 = System.Numerics.Vector2;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// This is used to compute the current state of a contact manifold.
   /// </summary>

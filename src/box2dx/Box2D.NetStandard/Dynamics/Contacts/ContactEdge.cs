@@ -1,4 +1,4 @@
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Contacts {
   /// <summary>
   /// A contact edge is used to connect bodies and contacts together
   /// in a contact graph where each body is a node and each contact
@@ -10,7 +10,7 @@ namespace Box2DX.Dynamics {
     /// <summary>
     /// Provides quick access to the other body attached.
     /// </summary>
-    internal Body other;
+    internal Body.Body other;
 
     /// <summary>
     /// The contact.

@@ -90,13 +90,10 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Common;
-using Math = Box2DX.Common.Math;
+using Box2D.NetStandard.Common;
+using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2DX.Dynamics {
-  using Box2DXMath = Math;
-  using SystemMath = System.Math;
-
+namespace Box2D.NetStandard.Dynamics.Joints {
   /// <summary>
   /// Prismatic joint definition. This requires defining a line of
   /// motion using an axis and an anchor point. The definition uses local
@@ -124,7 +121,7 @@ namespace Box2DX.Dynamics {
     /// Initialize the bodies, anchors, axis, and reference angle using the world
     /// anchor and world axis.
     /// </summary>
-    public void Initialize(Body body1, Body body2, Vector2 anchor, Vector2 axis) {
+    public void Initialize(Body.Body body1, Body.Body body2, Vector2 anchor, Vector2 axis) {
       BodyA          = body1;
       BodyB          = body2;
       LocalAnchor1   = body1.GetLocalPoint(anchor);
@@ -246,8 +243,8 @@ namespace Box2DX.Dynamics {
     /// </summary>
     public float JointTranslation {
       get {
-        Body b1 = _bodyA;
-        Body b2 = _bodyB;
+        Body.Body b1 = _bodyA;
+        Body.Body b2 = _bodyB;
 
         Vector2 p1   = b1.GetWorldPoint(_localAnchorA);
         Vector2 p2   = b2.GetWorldPoint(_localAnchorB);
@@ -264,8 +261,8 @@ namespace Box2DX.Dynamics {
     /// </summary>
     public float JointSpeed {
       get {
-        Body b1 = _bodyA;
-        Body b2 = _bodyB;
+        Body.Body b1 = _bodyA;
+        Body.Body b2 = _bodyB;
 
         Vector2 r1   = Math.Mul(b1.GetTransform().q, _localAnchorA - b1.GetLocalCenter());
         Vector2 r2   = Math.Mul(b2.GetTransform().q, _localAnchorB - b2.GetLocalCenter());

@@ -19,15 +19,17 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Contacts;
+using Box2D.NetStandard.Dynamics.Fixture;
+using Box2D.NetStandard.Dynamics.Joints;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Body {
   /// <summary>
   /// A rigid body. These are created via World.CreateBody.
   /// </summary>
@@ -43,13 +45,13 @@ namespace Box2DX.Dynamics {
     /// </summary>
     /// <param name="def">the fixture definition.</param>
     /// <warning>This function is locked during callbacks.</warning>
-    public Fixture CreateFixture(in FixtureDef def) {
+    public Fixture.Fixture CreateFixture(in FixtureDef def) {
       Debug.Assert(_world.IsLocked() == false);
       if (_world.IsLocked() == true) {
         return null;
       }
 
-      Fixture fixture = new Fixture();
+      Fixture.Fixture fixture = new Fixture.Fixture();
       fixture.Create(this, def);
 
       if (HasFlag(BodyFlags.Enabled)) {
@@ -84,7 +86,7 @@ namespace Box2DX.Dynamics {
     /// <param name="shape">the shape to be cloned.</param>
     /// <param name="density">the shape density (set to zero for static bodies).</param>
     /// <warning>This function is locked during callbacks.</warning>
-    public Fixture CreateFixture(in Shape shape, float density) {
+    public Fixture.Fixture CreateFixture(in Shape shape, float density) {
       FixtureDef def = new FixtureDef();
       def.shape   = shape;
       def.density = density;
@@ -92,7 +94,7 @@ namespace Box2DX.Dynamics {
       return CreateFixture(def);
     }
 
-    public void DestroyFixture(Fixture fixture) {
+    public void DestroyFixture(Fixture.Fixture fixture) {
       if (fixture == null) {
         return;
       }
@@ -106,7 +108,7 @@ namespace Box2DX.Dynamics {
 
       // Remove the fixture from this body's singly linked list.
       Debug.Assert(_fixtureCount > 0);
-      Fixture node  = _fixtureList;
+      Fixture.Fixture node  = _fixtureList;
       bool    found = false;
       while (node != null) {
         if (node == fixture) {
@@ -127,8 +129,8 @@ namespace Box2DX.Dynamics {
         Contact c = edge.contact;
         edge = edge.next;
 
-        Fixture fixtureA = c.GetFixtureA();
-        Fixture fixtureB = c.GetFixtureB();
+        Fixture.Fixture fixtureA = c.GetFixtureA();
+        Fixture.Fixture fixtureB = c.GetFixtureB();
 
         if (fixture == fixtureA || fixture == fixtureB) {
           // This destroys the contact and removes it from
@@ -167,7 +169,7 @@ namespace Box2DX.Dynamics {
       _sweep.a0 = angle;
 
       BroadPhase broadPhase = _world._contactManager.m_broadPhase;
-      for (Fixture f = _fixtureList; f != null; f = f.m_next) {
+      for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
         f.Synchronize(broadPhase, _xf, _xf);
       }
     }
@@ -331,7 +333,7 @@ namespace Box2DX.Dynamics {
 
       // Accumulate mass over all fixtures.
       Vector2 localCenter = Vector2.Zero;
-      for (Fixture f = _fixtureList; f != null; f = f.m_next) {
+      for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
         if (f.m_density == 0.0f) {
           continue;
         }
@@ -445,7 +447,7 @@ namespace Box2DX.Dynamics {
 
       // Touch the proxies so that new contacts will be created (when appropriate)
       BroadPhase broadPhase = _world._contactManager.m_broadPhase;
-      for (Fixture f = _fixtureList; f != null; f = f.m_next) {
+      for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
         int proxyCount = f.m_proxyCount;
         for (int i = 0; i < proxyCount; ++i) {
           broadPhase.TouchProxy(f.m_proxies[i].proxyId);
@@ -519,7 +521,7 @@ namespace Box2DX.Dynamics {
 
         // Create all proxies.
         BroadPhase broadPhase = _world._contactManager.m_broadPhase;
-        for (Fixture f = _fixtureList; f != null; f = f.m_next) {
+        for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.CreateProxies(broadPhase, _xf);
         }
 
@@ -531,7 +533,7 @@ namespace Box2DX.Dynamics {
 
         // Destroy all proxies.
         BroadPhase broadPhase = _world._contactManager.m_broadPhase;
-        for (Fixture f = _fixtureList; f != null; f = f.m_next) {
+        for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.DestroyProxies(broadPhase);
         }
 
@@ -571,7 +573,7 @@ namespace Box2DX.Dynamics {
     public bool IsFixedRotation() => HasFlag(BodyFlags.FixedRotation);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Fixture GetFixtureList() => _fixtureList;
+    public Fixture.Fixture GetFixtureList() => _fixtureList;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public JointEdge GetJointList() => _jointList;
@@ -589,7 +591,7 @@ namespace Box2DX.Dynamics {
     public void SetUserData(object data) => _userData = data;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public World GetWorld() => _world;
+    public World.World GetWorld() => _world;
 
     public void Dump() {
       // Todo: Dump in some form. We could just serialize.
@@ -597,7 +599,7 @@ namespace Box2DX.Dynamics {
 
 // private
 
-    private Body(in BodyDef bd, World world) { }
+    private Body(in BodyDef bd, World.World world) { }
 
 
     internal void SynchronizeFixtures() {
@@ -608,12 +610,12 @@ namespace Box2DX.Dynamics {
         xf1.q.Set(_sweep.a0);
         xf1.p = _sweep.c0 - Common.Math.Mul(xf1.q, _sweep.localCenter);
 
-        for (Fixture f = _fixtureList; f != null; f = f.m_next) {
+        for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.Synchronize(broadPhase, xf1, _xf);
         }
       }
       else {
-        for (Fixture f = _fixtureList; f != null; f = f.m_next) {
+        for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.Synchronize(broadPhase, _xf, _xf);
         }
       }
@@ -668,11 +670,11 @@ namespace Box2DX.Dynamics {
     internal Vector2 _force;
     internal float   _torque;
 
-    private  World _world;
+    private  World.World _world;
     internal Body  _prev;
     internal Body  _next;
 
-    internal Fixture _fixtureList;
+    internal Fixture.Fixture _fixtureList;
     internal int     _fixtureCount;
 
     internal JointEdge   _jointList;
@@ -692,7 +694,7 @@ namespace Box2DX.Dynamics {
     private object _userData;
 
 
-    internal Body(BodyDef bd, World world) {
+    internal Body(BodyDef bd, World.World world) {
       Debug.Assert(bd.position.IsValid());
       Debug.Assert(bd.linearVelocity.IsValid());
 

@@ -20,9 +20,10 @@
 */
 
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Collision
+namespace Box2D.NetStandard.Collision
 {
 	public partial class Collision
 	{

@@ -1,4 +1,4 @@
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision.Shapes {
   /// <summary>
   /// The various collision shape types supported by Box2D.
   /// </summary>

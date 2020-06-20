@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
 
   [StructLayout(LayoutKind.Explicit)]
   internal struct pnUnion {

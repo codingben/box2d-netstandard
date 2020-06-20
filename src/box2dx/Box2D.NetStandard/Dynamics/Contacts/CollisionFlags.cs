@@ -1,6 +1,6 @@
 using System;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Contacts {
   [Flags]
   public enum CollisionFlags {
     Island    = 0x01,

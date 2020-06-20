@@ -1,4 +1,4 @@
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Body {
   public enum BodyType
   {
     Static,

@@ -15,13 +15,12 @@
 // J = [0 0 -1 0 0 1]
 
 using System;
-using System.ComponentModel.Design;
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 using b2Vec2 = System.Numerics.Vector2;
-using Math = Box2DX.Common.Math;
+using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Joints {
   public class WheelJointDef : JointDef {
     public WheelJointDef() {
       Type             = JointType.WheelJoint;

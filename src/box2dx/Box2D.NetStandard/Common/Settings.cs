@@ -20,9 +20,8 @@
 */
 
 using System;
-using System.Numerics;
 
-namespace Box2DX.Common
+namespace Box2D.NetStandard.Common
 {
 	public class Settings
 	{

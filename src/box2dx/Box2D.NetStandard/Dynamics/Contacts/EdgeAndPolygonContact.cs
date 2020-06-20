@@ -20,21 +20,22 @@
 */
 
 using System.Diagnostics;
-using Box2DX.Collision;
-using Box2DX.Common;
+using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Collision.Shapes;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics
+namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class EdgeAndPolygonContact : Contact
 	{
-		public EdgeAndPolygonContact(Fixture fixtureA, Fixture fixtureB)
+		public EdgeAndPolygonContact(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
 			Debug.Assert(fixtureA.Type == ShapeType.Edge);
 			Debug.Assert(fixtureB.Type == ShapeType.Polygon); 
 		}
 
-		new public static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		new public static Contact Create(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
 		{
 			return new EdgeAndPolygonContact(fixtureA, fixtureB);
 		}

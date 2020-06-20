@@ -1,6 +1,6 @@
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// Input for Distance.
   /// You have to option to use the shape radii

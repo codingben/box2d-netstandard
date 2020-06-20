@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   internal class SimplexVertex {
     internal Vector2 wA;     // support point in shapeA
     internal Vector2 wB;     // support point in shapeB

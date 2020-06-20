@@ -1,4 +1,4 @@
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.World {
   internal struct Profile
   {
     internal float step;

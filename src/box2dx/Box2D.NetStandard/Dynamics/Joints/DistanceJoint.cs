@@ -34,11 +34,10 @@
 // K = J * invM * JT
 //   = invMass1 + invI1 * cross(r1, u)^2 + invMass2 + invI2 * cross(r2, u)^2
 
-using System.Diagnostics;
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 
-namespace Box2DX.Dynamics {
+namespace Box2D.NetStandard.Dynamics.Joints {
   /// <summary>
   /// Distance joint definition. This requires defining an
   /// anchor point on both bodies and the non-zero length of the
@@ -60,7 +59,7 @@ namespace Box2DX.Dynamics {
     /// <summary>
     /// Initialize the bodies, anchors, and length using the world anchors.
     /// </summary>
-    public void Initialize(Body body1, Body body2, Vector2 anchor1, Vector2 anchor2) {
+    public void Initialize(Body.Body body1, Body.Body body2, Vector2 anchor1, Vector2 anchor2) {
       BodyA        = body1;
       BodyB        = body2;
       LocalAnchorA = body1.GetLocalPoint(anchor1);
@@ -246,8 +245,8 @@ namespace Box2DX.Dynamics {
         return true;
       }
 
-      Body b1 = _bodyA;
-      Body b2 = _bodyB;
+      Body.Body b1 = _bodyA;
+      Body.Body b2 = _bodyB;
 
       Vector2 r1 = Math.Mul(b1.GetTransform().q, _localAnchorA - b1.GetLocalCenter());
       Vector2 r2 = Math.Mul(b2.GetTransform().q, _localAnchorB - b2.GetLocalCenter());

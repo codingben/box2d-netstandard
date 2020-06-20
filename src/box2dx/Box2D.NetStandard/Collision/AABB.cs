@@ -1,20 +1,24 @@
 using System;
 using System.Numerics;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 using b2Vec2 = System.Numerics.Vector2;
 using int32 = System.Int32;
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// An axis aligned bounding box.
   /// </summary>
   public struct AABB {
 
-    
+    /// <summary>
+    /// The lower vertex
+    /// </summary>
     internal b2Vec2 lowerBound;
 
-    ///< the lower vertex
-    internal b2Vec2 upperBound; ///< the upper vertex
+    /// <summary>
+    /// The upper vertex
+    /// </summary>
+    internal b2Vec2 upperBound;
 
     /// Get the center of the AABB.
     internal b2Vec2 GetCenter() {

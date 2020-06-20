@@ -22,7 +22,7 @@
 using System.Diagnostics;
 using System.Numerics;
 
-namespace Box2DX.Common
+namespace Box2D.NetStandard.Common
 {
 	/// <summary>
 	/// A 3-by-3 matrix. Stored in column-major order.

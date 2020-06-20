@@ -21,7 +21,7 @@
 
 #define DEBUG
 
-namespace Box2DX.Collision {
+namespace Box2D.NetStandard.Collision {
   /// <summary>
   /// Used to warm start Distance.
   /// Set count to zero on first call.

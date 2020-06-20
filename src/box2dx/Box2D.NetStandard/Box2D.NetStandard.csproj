@@ -22,4 +22,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Dynamics\Joints\LineJoint.cs" />
+    <Compile Remove="Collision\PairManager.cs" />
+  </ItemGroup>
+
 </Project>
