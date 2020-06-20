@@ -2,7 +2,7 @@
 
 # Box2D .NET Standard 
 
-Box2D is the port of Box2D from C++ to C# by Ben Ukhanov & Hugh Phoenix-Hulme 2020.
+Box2D .NET Standard is the port of Box2D from C++ to C# by Ben Ukhanov & Hugh Phoenix-Hulme 2020.
 
 Loosely based on Box2DX by Ihar Kalasouski 2008.
 
