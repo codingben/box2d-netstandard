@@ -2,8 +2,8 @@
     Window Simulation Copyright © Ben Ukhanov 2020
 */
 
-using Box2DX.Common;
-using Color = Box2DX.Dynamics.Color;
+using Box2D.NetStandard.Common;
+using Color = Box2D.NetStandard.Dynamics.Color;
 
 namespace Box2D.Window
 {
@@ -19,6 +19,6 @@ namespace Box2D.Window
 
         void DrawSegment(Vec2 p1, Vec2 p2, Color color);
 
-        void DrawXForm(XForm xf);
+        void DrawXForm(Transform xf);
     }
 }
