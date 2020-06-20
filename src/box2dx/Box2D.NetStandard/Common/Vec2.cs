@@ -1,226 +1,288 @@
 ﻿/*
-  Box2DX Copyright (c) 2008 Ihar Kalasouski http://code.google.com/p/box2dx
-  Box2D original C++ version Copyright (c) 2006-2007 Erin Catto http://www.gphysics.com
+  Box2D.NetStandard Copyright © 2020 Ben Ukhanov & Hugh Phoenix-Hulme https://github.com/benzuk/box2d-netstandard
+  Box2DX Copyright (c) 2009 Ihar Kalasouski http://code.google.com/p/box2dx
+  
+// MIT License
 
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
+// Copyright (c) 2019 Erin Catto
 
-  Permission is granted to anyone to use this software for any purpose,
-  including commercial applications, and to alter it and redistribute it
-  freely, subject to the following restrictions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 
-  1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 */
 
-namespace Box2DX.Common
-{
-	/// <summary>
-	/// A 2D column vector.
-	/// </summary>
-	public struct Vec2
-	{
-		public float X, Y;
+using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
-		public float this[int i]
-		{
-			get
-			{
-				if (i == 0) return X;
-				else if (i == 1) return Y;
-				else
-				{
-					Box2DXDebug.Assert(false, "Incorrect Vec2 element!");
-					return 0;
-				}
-			}
-			set
-			{
-				if (i == 0) X = value;
-				else if (i == 1) Y = value;
-				else
-				{
-					Box2DXDebug.Assert(false, "Incorrect Vec2 element!");					
-				}
-			}
-		}
+namespace Box2D.NetStandard.Common {
+  /// <summary>
+  /// A 2D column vector.
+  /// </summary>
+  [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
+  public struct Vec2 {
+    [Obsolete("Warning: Implicit cast from Vec2 to System.Numerics.Vector2. You are advised to change your code to expect Vector2.")]
+    public static implicit operator Vector2(Vec2 src) => new Vector2(src.X, src.Y);
 
-		/// <summary>
-		/// Construct using coordinates.
-		/// </summary>
-		public Vec2(float x)
-		{
-			X = x;
-			Y = x;
-		}
+    [Obsolete("Warning: Implicit cast from System.Numerics.Vector2 to Vec2. You are advised to change your code to expect Vector2.")]
+    public static implicit operator Vec2(Vector2 src) => new Vec2(src.X, src.Y);
 
-		/// <summary>
-		/// Construct using coordinates.
-		/// </summary>
-		public Vec2(float x, float y)
-		{
-			X = x;
-			Y = y;
-		}
+    public float X, Y;
 
-		/// <summary>
-		/// Set this vector to all zeros.
-		/// </summary>
-		public void SetZero() { X = 0.0f; Y = 0.0f; }
+    /// <summary>
+    /// Construct using coordinates.
+    /// </summary>
+    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
+    public Vec2(float x) {
+      X = x;
+      Y = x;
+    }
 
-		/// <summary>
-		/// Set this vector to some specified coordinates.
-		/// </summary>
-		public void Set(float x, float y) { X = x; Y = y; }
+    /// <summary>
+    /// Construct using coordinates.
+    /// </summary>
+    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
+    public Vec2(float x, float y) {
+      X = x;
+      Y = y;
+    }
 
-		public void Set(float xy) { X = xy; Y = xy; }
+    /// <summary>
+    /// Set this vector to all zeros.
+    /// </summary>
+    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this means vectors are now considered immutable. Instead, please create a new Vector2 and assign it.",
+              true)]
+    public void SetZero() {
+      X = 0.0f;
+      Y = 0.0f;
+    }
 
-		/// <summary>
-		///  Get the length of this vector (the norm).
-		/// </summary>
-		public float Length()
-		{
-			return (float)System.Math.Sqrt(X * X + Y * Y);
-		}
+    /// <summary>
+    /// Set this vector to some specified coordinates.
+    /// </summary>
+    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this means vectors are now considered immutable. Instead, please create a new Vector2 and assign it.",
+              true)]
+    public void Set(float x, float y) {
+      X = x;
+      Y = y;
+    }
 
-		/// <summary>
-		/// Get the length squared. For performance, use this instead of
-		/// Length (if possible).
-		/// </summary>
-		public float LengthSquared()
-		{
-			return X * X + Y * Y;
-		}
+    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this means vectors are now considered immutable. Instead, please create a new Vector2 and assign it.",
+              true)]
+    public void Set(float xy) {
+      X = xy;
+      Y = xy;
+    }
 
-		/// <summary>
-		/// Convert this vector into a unit vector. Returns the length.
-		/// </summary>
-		public float Normalize()
-		{
-			float length = Length();
-			if (length < Settings.FLT_EPSILON)
-			{
-				return 0.0f;
-			}
-			float invLength = 1.0f / length;
-			X *= invLength;
-			Y *= invLength;
+    /// <summary>
+    ///  Get the length of this vector (the norm).
+    /// </summary>
+    [Obsolete("This will still work, but may be removed in a future version. Check the field or property and see if a newer Vector2 is available.")]
+    public float Length() => (float) System.Math.Sqrt(X * X + Y * Y);
 
-			return length;
-		}
+    /// <summary>
+    /// Get the length squared. For performance, use this instead of
+    /// Length (if possible).
+    /// </summary>
+    /// [Obsolete("This will still work, but may be removed in a future version. Check the field or property and see if a newer Vector2 is available.")]
+    public float LengthSquared() {
+      return X * X + Y * Y;
+    }
 
-		/// <summary>
-		/// Does this vector contain finite coordinates?
-		/// </summary>
-		public bool IsValid
-		{
-			get { return Math.IsValid(X) && Math.IsValid(Y); }
-		}
+    /// <summary>
+    /// Convert this vector into a unit vector. Returns the length.
+    /// </summary>
+    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this won't work any more. If you need the Length, get .Length. If you need to normalize a vector, call Vector2.Normalize and re-assign the result.",
+              true)]
+    public float Normalize() {
+      float length = Length();
+      if (length < Settings.FLT_EPSILON) {
+        return 0.0f;
+      }
 
-		/// <summary>
-		/// Negate this vector.
-		/// </summary>
-		public static Vec2 operator -(Vec2 v1)
-		{
-			Vec2 v = new Vec2();
-			v.Set(-v1.X, -v1.Y);
-			return v;
-		}
+      float invLength = 1.0f / length;
+      X *= invLength;
+      Y *= invLength;
 
-		public static Vec2 operator +(Vec2 v1, Vec2 v2)
-		{
-			Vec2 v = new Vec2();
-			v.Set(v1.X + v2.X, v1.Y + v2.Y);
-			return v;
-		}
+      return length;
+    }
 
-		public static Vec2 operator -(Vec2 v1, Vec2 v2)
-		{
-			Vec2 v = new Vec2();
-			v.Set(v1.X - v2.X, v1.Y - v2.Y);
-			return v;
-		}
+    /// <summary>
+    /// Does this vector contain finite coordinates?
+    /// </summary>
+    [Obsolete("Please switch to System.Numerics.Vector2 and use Vector2.IsValid() instead.")]
+    public bool IsValid {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => Math.IsValid(X) && Math.IsValid(Y);
+    }
 
-		public static Vec2 operator *(Vec2 v1, float a)
-		{
-			Vec2 v = new Vec2();
-			v.Set(v1.X * a, v1.Y * a);
-			return v;
-		}
+    /// <summary>
+    /// Negate this vector.
+    /// </summary>
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vec2 operator -(Vec2 v1) => new Vec2(-v1.X, -v1.Y);
 
-		public static Vec2 operator *(float a, Vec2 v1)
-		{
-			Vec2 v = new Vec2();
-			v.Set(v1.X * a, v1.Y * a);
-			return v;
-		}
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vec2 operator +(Vec2 v1, Vec2 v2) => new Vec2(v1.X + v2.X, v1.Y + v2.Y);
 
-		public static bool operator ==(Vec2 a, Vec2 b)
-		{
-			return a.X == b.X && a.Y == b.Y;
-		}
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vec2 operator -(Vec2 v1, Vec2 v2) => new Vec2(v1.X - v2.X, v1.Y - v2.Y);
 
-		public static bool operator !=(Vec2 a, Vec2 b)
-		{
-			return a.X != b.X || a.Y != b.Y;
-		}
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vec2 operator *(Vec2 v1, float a) => new Vec2(v1.X * a, v1.Y * a);
 
-		public static Vec2 Zero { get { return new Vec2(0, 0); } }
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vec2 operator *(float a, Vec2 v1) => new Vec2(v1.X * a, v1.Y * a);
 
-		/// <summary>
-		/// Peform the dot product on two vectors.
-		/// </summary>
-		public static float Dot(Vec2 a, Vec2 b)
-		{
-			return a.X * b.X + a.Y * b.Y;
-		}
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(Vec2 a, Vec2 b) => a.X == b.X && a.Y == b.Y;
 
-		/// <summary>
-		/// Perform the cross product on two vectors. In 2D this produces a scalar.
-		/// </summary>
-		public static float Cross(Vec2 a, Vec2 b)
-		{
-			return a.X * b.Y - a.Y * b.X;
-		}
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(Vec2 a, Vec2 b) => a.X != b.X || a.Y != b.Y;
 
-		/// <summary>
-		/// Perform the cross product on a vector and a scalar. 
-		/// In 2D this produces a vector.
-		/// </summary>
-		public static Vec2 Cross(Vec2 a, float s)
-		{
-			Vec2 v = new Vec2();
-			v.Set(s * a.Y, -s * a.X);
-			return v;
-		}
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    public static Vec2 Zero {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => new Vec2(0, 0);
+    }
 
-		/// <summary>
-		/// Perform the cross product on a scalar and a vector. 
-		/// In 2D this produces a vector.
-		/// </summary>
-		public static Vec2 Cross(float s, Vec2 a)
-		{
-			Vec2 v = new Vec2();
-			v.Set(-s * a.Y, s * a.X);
-			return v;
-		}
 
-		public static float Distance(Vec2 a, Vec2 b)
-		{
-			Vec2 c = a - b;
-			return c.Length();
-		}
+    /// <summary>
+    /// Peform the dot product on two vectors.
+    /// </summary>
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Dot(Vec2 a, Vec2 b) => a.X * b.X + a.Y * b.Y;
 
-		public static float DistanceSquared(Vec2 a, Vec2 b)
-		{
-			Vec2 c = a - b;
-			return Vec2.Dot(c, c);
-		}
-	}
+    /// <summary>
+    /// Perform the cross product on two vectors. In 2D this produces a scalar.
+    /// </summary>
+    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Cross(Vec2 a, Vec2 b) {
+      return a.X * b.Y - a.Y * b.X;
+    }
+
+    /// <summary>
+    /// Perform the cross product on a vector and a scalar. 
+    /// In 2D this produces a vector.
+    /// </summary>
+    [Obsolete("Please switch to System.Numerics.Vector2 and use Vectex.Cross.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vec2 Cross(Vec2 a, float s) => new Vec2(s * a.Y, -s * a.X);
+
+    /// <summary>
+    /// Perform the cross product on a scalar and a vector. 
+    /// In 2D this produces a vector.
+    /// </summary>
+    [Obsolete("Please switch to System.Numerics.Vector2 and use Vectex.Cross.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vec2 Cross(float s, Vec2 a) => new Vec2(-s * a.Y, s * a.X);
+
+    [Obsolete("Use Vector2.Distance instead")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Distance(Vec2 a, Vec2 b) => (a - b).Length();
+
+    [Obsolete("Use Vector2.DistanceSquared instead")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float DistanceSquared(Vec2 a, Vec2 b) {
+      Vec2 c = a - b;
+      return Dot(c, c);
+    }
+
+    internal static Vec2[] ConvertArray(Vector2[] vertices) {
+      Vec2[] result                                       = new Vec2[vertices.Length];
+      for (int i = 0; i < vertices.Length; i++) result[i] = vertices[i];
+      return result;
+    }
+  }
+
+  public static class Vectex // vector extensions
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float GetIdx(in this Vector2 candidate, in int n) => n == 0 ? candidate.X : candidate.Y;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Cross(float s, Vector2 a) => new Vector2(-s * a.Y, s * a.X);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Cross(Vector2 a, float s) => new Vector2(s * a.Y, -s * a.X);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Cross(Vector2 a, Vector2 b) => a.X * b.Y - a.Y * b.X;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsValid(this Vector2 candidate) => Math.IsValid(candidate.X) && Math.IsValid(candidate.Y);
+
+    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.", true)]
+    public static void Set(this Vector2 v, float x, float y) { }
+
+    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.", true)]
+    public static void Set(this Vector2 v, float x) { }
+
+    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.", true)]
+    public static void SetZero(this Vector2 v) { }
+  }
+
+  public struct Rot {
+    /// Sine and cosine
+    internal float s;
+
+    /// Sine and cosine
+    internal float c;
+
+    /// Initialize from an angle in radians
+    internal Rot(float angle) {
+      s = MathF.Sin(angle);
+      c = MathF.Cos(angle);
+    }
+
+    /// Set using an angle in radians.
+    internal void Set(float angle) {
+      s = MathF.Sin(angle);
+      c = MathF.Cos(angle);
+    }
+
+    /// Set to the identity rotation
+    void SetIdentity() {
+      s = 0.0f;
+      c = 1.0f;
+    }
+
+    /// Get the angle in radians
+    float GetAngle() {
+      return MathF.Atan2(s, c);
+    }
+
+    /// Get the x-axis
+    Vector2 GetXAxis() {
+      return new Vector2(c, s);
+    }
+
+    /// Get the u-axis
+    Vector2 GetYAxis() {
+      return new Vector2(-s, c);
+    }
+  };
 }

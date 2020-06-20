@@ -1,27 +1,37 @@
 ﻿/*
-  Box2DX Copyright (c) 2008 Ihar Kalasouski http://code.google.com/p/box2dx
-  Box2D original C++ version Copyright (c) 2006-2007 Erin Catto http://www.gphysics.com
+  Box2D.NetStandard Copyright © 2020 Ben Ukhanov & Hugh Phoenix-Hulme https://github.com/benzuk/box2d-netstandard
+  Box2DX Copyright (c) 2009 Ihar Kalasouski http://code.google.com/p/box2dx
+  
+// MIT License
 
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
+// Copyright (c) 2019 Erin Catto
 
-  Permission is granted to anyone to use this software for any purpose,
-  including commercial applications, and to alter it and redistribute it
-  freely, subject to the following restrictions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 
-  1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 */
 
-using Box2DX.Common;
 
-namespace Box2DX.Dynamics
+using System.Diagnostics;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using Box2D.NetStandard.Common;
+
+namespace Box2D.NetStandard.Dynamics.Joints
 {
 	public enum JointType
 	{
@@ -32,7 +42,8 @@ namespace Box2DX.Dynamics
 		PulleyJoint,
 		MouseJoint,
 		GearJoint,
-		LineJoint
+		LineJoint,
+		WheelJoint
 	}
 
 	public enum LimitState
@@ -45,26 +56,26 @@ namespace Box2DX.Dynamics
 
 	public struct Jacobian
 	{
-		public Vec2 Linear1;
+		public Vector2 Linear1;
 		public float Angular1;
-		public Vec2 Linear2;
+		public Vector2 Linear2;
 		public float Angular2;
 
 		public void SetZero()
 		{
-			Linear1.SetZero(); Angular1 = 0.0f;
-			Linear2.SetZero(); Angular2 = 0.0f;
+			Linear1=Vector2.Zero; Angular1 = 0.0f;
+			Linear2=Vector2.Zero; Angular2 = 0.0f;
 		}
 
-		public void Set(Vec2 x1, float a1, Vec2 x2, float a2)
+		public void Set(Vector2 x1, float a1, Vector2 x2, float a2)
 		{
 			Linear1 = x1; Angular1 = a1;
 			Linear2 = x2; Angular2 = a2;
 		}
 
-		public float Compute(Vec2 x1, float a1, Vec2 x2, float a2)
+		public float Compute(Vector2 x1, float a1, Vector2 x2, float a2)
 		{
-			return Vec2.Dot(Linear1, x1) + Angular1 * a1 + Vec2.Dot(Linear2, x2) + Angular2 * a2;
+			return Vector2.Dot(Linear1, x1) + Angular1 * a1 + Vector2.Dot(Linear2, x2) + Angular2 * a2;
 		}
 	}
 
@@ -81,12 +92,12 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Provides quick access to the other body attached.
 		/// </summary>
-		public Body Other;
+		public Body.Body other;
 
 		/// <summary>
 		/// The joint.
 		/// </summary>
-		public Joint Joint;
+		public Joint joint;
 
 		/// <summary>
 		/// The previous joint edge in the body's joint list.
@@ -96,7 +107,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// The next joint edge in the body's joint list.
 		/// </summary>
-		public JointEdge Next;
+		public JointEdge next;
 	}
 
 #warning "CAS"
@@ -109,8 +120,8 @@ namespace Box2DX.Dynamics
 		{
 			Type = JointType.UnknownJoint;
 			UserData = null;
-			Body1 = null;
-			Body2 = null;
+			BodyA = null;
+			BodyB = null;
 			CollideConnected = false;
 		}
 
@@ -127,12 +138,12 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// The first attached body.
 		/// </summary>
-		public Body Body1;
+		public Body.Body BodyA;
 
 		/// <summary>
 		/// The second attached body.
 		/// </summary>
-		public Body Body2;
+		public Body.Body BodyB;
 
 		/// <summary>
 		/// Set this flag to true if the attached bodies should collide.
@@ -149,10 +160,10 @@ namespace Box2DX.Dynamics
 		protected JointType _type;
 		internal Joint _prev;
 		internal Joint _next;
-		internal JointEdge _node1 = new JointEdge();
-		internal JointEdge _node2 = new JointEdge();
-		internal Body _body1;
-		internal Body _body2;
+		internal JointEdge _edgeA = new JointEdge();
+		internal JointEdge _edgeB = new JointEdge();
+		internal Body.Body _bodyA;
+		internal Body.Body _bodyB;
 
 		internal bool _islandFlag;
 		internal bool _collideConnected;
@@ -160,52 +171,50 @@ namespace Box2DX.Dynamics
 		protected object _userData;
 
 		// Cache here per time step to reduce cache misses.
-		protected Vec2 _localCenter1, _localCenter2;
+		protected Vector2 _localCenter1, _localCenter2;
 		protected float _invMass1, _invI1;
 		protected float _invMass2, _invI2;
 
 		/// <summary>
 		/// Get the type of the concrete joint.
 		/// </summary>
-		public new JointType GetType()
-		{
-			return _type;
-		}
+		public JointType Type => _type;
+		
 
 		/// <summary>
 		/// Get the first body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetBody1()
+		public Body.Body GetBodyA()
 		{
-			return _body1;
+			return _bodyA;
 		}
 
 		/// <summary>
 		/// Get the second body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetBody2()
+		public Body.Body GetBodyB()
 		{
-			return _body2;
+			return _bodyB;
 		}
 
 		/// <summary>
 		/// Get the anchor point on body1 in world coordinates.
 		/// </summary>
 		/// <returns></returns>
-		public abstract Vec2 Anchor1 { get; }
+		public abstract Vector2 Anchor1 { get; }
 
 		/// <summary>
 		/// Get the anchor point on body2 in world coordinates.
 		/// </summary>
 		/// <returns></returns>
-		public abstract Vec2 Anchor2 { get; }
+		public abstract Vector2 Anchor2 { get; }
 
 		/// <summary>
 		/// Get the reaction force on body2 at the joint anchor.
 		/// </summary>		
-		public abstract Vec2 GetReactionForce(float inv_dt);
+		public abstract Vector2 GetReactionForce(float inv_dt);
 
 		/// <summary>
 		/// Get the reaction torque on body2.
@@ -236,8 +245,8 @@ namespace Box2DX.Dynamics
 			_type = def.Type;
 			_prev = null;
 			_next = null;
-			_body1 = def.Body1;
-			_body2 = def.Body2;
+			_bodyA = def.BodyA;
+			_bodyB = def.BodyB;
 			_collideConnected = def.CollideConnected;
 			_islandFlag = false;
 			_userData = def.UserData;
@@ -247,45 +256,35 @@ namespace Box2DX.Dynamics
 		{
 			Joint joint = null;
 
-			switch (def.Type)
-			{
+			switch (def.Type) {
 				case JointType.DistanceJoint:
-					{
-						joint = new DistanceJoint((DistanceJointDef)def);
-					}
+					joint = new DistanceJoint((DistanceJointDef) def);
 					break;
 				case JointType.MouseJoint:
-					{
-						joint = new MouseJoint((MouseJointDef)def);
-					}
+					joint = new MouseJoint((MouseJointDef) def);
 					break;
 				case JointType.PrismaticJoint:
-					{
-						joint = new PrismaticJoint((PrismaticJointDef)def);
-					}
+					joint = new PrismaticJoint((PrismaticJointDef) def);
 					break;
 				case JointType.RevoluteJoint:
-					{
-						joint = new RevoluteJoint((RevoluteJointDef)def);
-					}
+					joint = new RevoluteJoint((RevoluteJointDef) def);
 					break;
 				case JointType.PulleyJoint:
-					{
-						joint = new PulleyJoint((PulleyJointDef)def);
-					}
+					joint = new PulleyJoint((PulleyJointDef) def);
 					break;
 				case JointType.GearJoint:
-					{
-						joint = new GearJoint((GearJointDef)def);
-					}
+					joint = new GearJoint((GearJointDef) def);
 					break;
-				case JointType.LineJoint:
-					{
-						joint = new LineJoint((LineJointDef)def);
-					}
+				// case JointType.LineJoint: {
+				// 	joint = new LineJoint((LineJointDef) def);
+				// }
+				// 	break;
+				case JointType.WheelJoint:
+					joint = new WheelJoint((WheelJointDef) def);
 					break;
+
 				default:
-					Box2DXDebug.Assert(false);
+					Debug.Assert(false);
 					break;
 			}
 
@@ -297,16 +296,17 @@ namespace Box2DX.Dynamics
 			joint = null;
 		}
 
-		internal abstract void InitVelocityConstraints(TimeStep step);
-		internal abstract void SolveVelocityConstraints(TimeStep step);
+		internal abstract void InitVelocityConstraints(in SolverData data);
+		internal abstract void SolveVelocityConstraints(in SolverData data);
 
 		// This returns true if the position errors are within tolerance.
-		internal abstract bool SolvePositionConstraints(float baumgarte);
+		internal abstract bool SolvePositionConstraints(in SolverData data);
 
-		internal void ComputeXForm(ref XForm xf, Vec2 center, Vec2 localCenter, float angle)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void ComputeXForm(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
 		{
-			xf.R.Set(angle);
-			xf.Position = center - Box2DX.Common.Math.Mul(xf.R, localCenter);
+			xf.q.Set(angle);
+			xf.p = center - Math.Mul(xf.q, localCenter);
 		}
 	}
 }

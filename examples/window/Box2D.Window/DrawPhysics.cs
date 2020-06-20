@@ -2,9 +2,9 @@
     Window Simulation Copyright © Ben Ukhanov 2020
 */
 
-using Box2DX.Dynamics;
-using Box2DX.Common;
-using Color = Box2DX.Dynamics.Color;
+using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics;
+using Color = Box2D.NetStandard.Dynamics.Color;
 
 namespace Box2D.Window
 {
@@ -42,7 +42,7 @@ namespace Box2D.Window
             window.DrawSegment(p1, p2, color);
         }
 
-        public override void DrawXForm(XForm xf)
+        public override void DrawXForm(Transform xf)
         {
             window.DrawXForm(xf);
         }

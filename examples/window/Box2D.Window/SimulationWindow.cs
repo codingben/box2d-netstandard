@@ -4,13 +4,13 @@
 
 using System;
 using System.Collections.Concurrent;
-using Box2DX.Common;
+using Box2D.NetStandard.Common;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 using OpenTK.Input;
 using Math = System.Math;
-using Color = Box2DX.Dynamics.Color;
+using Color = Box2D.NetStandard.Dynamics.Color;
 
 namespace Box2D.Window
 {
@@ -189,7 +189,7 @@ namespace Box2D.Window
                 const float kSegments = 16.0f;
                 const int VertexCount = 16;
 
-                var kIncrement = 2.0f * Settings.Pi / kSegments;
+                var kIncrement = 2.0f * MathF.PI / kSegments;
                 var theta = 0.0f;
 
                 GL.Color4(color.R, color.G, color.B, 0.5f);
@@ -218,7 +218,7 @@ namespace Box2D.Window
                 const float kSegments = 16.0f;
                 const int VertexCount = 16;
 
-                var kIncrement = 2.0f * Settings.Pi / kSegments;
+                var kIncrement = 2.0f * MathF.PI / kSegments;
                 var theta = 0.0f;
 
                 GL.Color4(color.R, color.G, color.B, 0.5f);
@@ -254,25 +254,25 @@ namespace Box2D.Window
             });
         }
 
-        public void DrawXForm(XForm xf)
+        public void DrawXForm(Transform xf)
         {
             drawActions.Enqueue(() =>
             {
                 const float kAxisScale = 0.4f;
 
-                var a = xf.Position;
+                var a = xf.p;
 
                 GL.Begin(PrimitiveType.Lines);
                 GL.Color3(1.0f, 0.0f, 0.0f);
                 GL.Vertex2(a.X, a.Y);
 
-                var b = a + (kAxisScale * xf.R.Col1);
+                var b = a + (kAxisScale * xf.q.ex);
 
                 GL.Vertex2(b.X, b.Y);
                 GL.Color3(0.0f, 1.0f, 0.0f);
                 GL.Vertex2(a.X, a.Y);
 
-                b = a + (kAxisScale * xf.R.Col2);
+                b = a + (kAxisScale * xf.q.ey);
 
                 GL.Vertex2(b.X, b.Y);
                 GL.End();

@@ -1,23 +1,30 @@
 ﻿/*
-  Box2DX Copyright (c) 2008 Ihar Kalasouski http://code.google.com/p/box2dx
-  Box2D original C++ version Copyright (c) 2006-2007 Erin Catto http://www.gphysics.com
+  Box2D.NetStandard Copyright © 2020 Ben Ukhanov & Hugh Phoenix-Hulme https://github.com/benzuk/box2d-netstandard
+  Box2DX Copyright (c) 2009 Ihar Kalasouski http://code.google.com/p/box2dx
+  
+// MIT License
 
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
+// Copyright (c) 2019 Erin Catto
 
-  Permission is granted to anyone to use this software for any purpose,
-  including commercial applications, and to alter it and redistribute it
-  freely, subject to the following restrictions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 
-  1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 */
+
 
 // 1-D constrained system
 // m (v2 - v1) = lambda
@@ -34,240 +41,271 @@
 // K = J * invM * JT
 //   = invMass1 + invI1 * cross(r1, u)^2 + invMass2 + invI2 * cross(r2, u)^2
 
-using Box2DX.Common;
+using System;
+using System.Numerics;
+using Box2D.NetStandard.Common;
+using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2DX.Dynamics
-{
-	/// <summary>
-	/// Distance joint definition. This requires defining an
-	/// anchor point on both bodies and the non-zero length of the
-	/// distance joint. The definition uses local anchor points
-	/// so that the initial configuration can violate the constraint
-	/// slightly. This helps when saving and loading a game.
-	/// @warning Do not use a zero or short length.
-	/// </summary>
-	public class DistanceJointDef : JointDef
-	{
-		public DistanceJointDef()
-		{
-			Type = JointType.DistanceJoint;
-			LocalAnchor1.Set(0.0f, 0.0f);
-			LocalAnchor2.Set(0.0f, 0.0f);
-			Length = 1.0f;
-			FrequencyHz = 0.0f;
-			DampingRatio = 0.0f;
-		}
+namespace Box2D.NetStandard.Dynamics.Joints {
+  /// <summary>
+  /// Distance joint definition. This requires defining an
+  /// anchor point on both bodies and the non-zero length of the
+  /// distance joint. The definition uses local anchor points
+  /// so that the initial configuration can violate the constraint
+  /// slightly. This helps when saving and loading a game.
+  /// @warning Do not use a zero or short length.
+  /// </summary>
+  public class DistanceJointDef : JointDef {
+    public DistanceJointDef() {
+      Type         = JointType.DistanceJoint;
+      LocalAnchorA = new Vector2(0.0f, 0.0f);
+      LocalAnchorB = new Vector2(0.0f, 0.0f);
+      Length       = 1.0f;
+      FrequencyHz  = 0.0f;
+      DampingRatio = 0.0f;
+    }
 
-		/// <summary>
-		/// Initialize the bodies, anchors, and length using the world anchors.
-		/// </summary>
-		public void Initialize(Body body1, Body body2, Vec2 anchor1, Vec2 anchor2)
-		{
-			Body1 = body1;
-			Body2 = body2;
-			LocalAnchor1 = body1.GetLocalPoint(anchor1);
-			LocalAnchor2 = body2.GetLocalPoint(anchor2);
-			Vec2 d = anchor2 - anchor1;
-			Length = d.Length();
-		}
+    /// <summary>
+    /// Initialize the bodies, anchors, and length using the world anchors.
+    /// </summary>
+    public void Initialize(Body.Body body1, Body.Body body2, Vector2 anchor1, Vector2 anchor2) {
+      BodyA        = body1;
+      BodyB        = body2;
+      LocalAnchorA = body1.GetLocalPoint(anchor1);
+      LocalAnchorB = body2.GetLocalPoint(anchor2);
+      Vector2 d = anchor2 - anchor1;
+      Length = d.Length();
+    }
 
-		/// <summary>
-		/// The local anchor point relative to body1's origin.
-		/// </summary>
-		public Vec2 LocalAnchor1;
+    /// <summary>
+    /// The local anchor point relative to body1's origin.
+    /// </summary>
+    public Vector2 LocalAnchorA;
 
-		/// <summary>
-		/// The local anchor point relative to body2's origin.
-		/// </summary>
-		public Vec2 LocalAnchor2;
+    /// <summary>
+    /// The local anchor point relative to body2's origin.
+    /// </summary>
+    public Vector2 LocalAnchorB;
 
-		/// <summary>
-		/// The equilibrium length between the anchor points.
-		/// </summary>
-		public float Length;
+    /// <summary>
+    /// The equilibrium length between the anchor points.
+    /// </summary>
+    public float Length;
 
-		/// <summary>
-		/// The response speed.
-		/// </summary>
-		public float FrequencyHz;
+    /// <summary>
+    /// The response speed.
+    /// </summary>
+    public float FrequencyHz;
 
-		/// <summary>
-		/// The damping ratio. 0 = no damping, 1 = critical damping.
-		/// </summary>
-		public float DampingRatio;
-	}
+    /// <summary>
+    /// The damping ratio. 0 = no damping, 1 = critical damping.
+    /// </summary>
+    public float DampingRatio;
+  }
 
-	/// <summary>
-	/// A distance joint constrains two points on two bodies
-	/// to remain at a fixed distance from each other. You can view
-	/// this as a massless, rigid rod.
-	/// </summary>
-	public class DistanceJoint : Joint
-	{
-		public Vec2 _localAnchor1;
-		public Vec2 _localAnchor2;
-		public Vec2 _u;
-		public float _frequencyHz;
-		public float _dampingRatio;
-		public float _gamma;
-		public float _bias;
-		public float _impulse;
-		public float _mass;		// effective mass for the constraint.
-		public float _length;
+  /// <summary>
+  /// A distance joint constrains two points on two bodies
+  /// to remain at a fixed distance from each other. You can view
+  /// this as a massless, rigid rod.
+  /// </summary>
+  public class DistanceJoint : Joint {
+    private Vector2 _localAnchorA;
+    private Vector2 _localAnchorB;
+    private Vector2 _u;
+    private float   _frequencyHz;
+    private float   _dampingRatio;
+    private float   _gamma;
+    private float   _bias;
+    private float   _impulse;
+    private float   _mass; // effective mass for the constraint.
+    private float   _length;
+    private int _indexA;
+    private int _indexB;
+    private Vector2 _localCenterA;
+    private Vector2 _localCenterB;
+    private float _invMassA;
+    private float _invMassB;
+    private float _invIA;
+    private float _invIB;
+    private Vector2 _rA;
+    private Vector2 _rB;
 
-		public override Vec2 Anchor1
-		{
-			get { return _body1.GetWorldPoint(_localAnchor1);}
-		}
+    public override Vector2 Anchor1 {
+      get { return _bodyA.GetWorldPoint(_localAnchorA); }
+    }
 
-		public override Vec2 Anchor2
-		{
-			get { return _body2.GetWorldPoint(_localAnchor2);}
-		}
+    public override Vector2 Anchor2 {
+      get { return _bodyB.GetWorldPoint(_localAnchorB); }
+    }
 
-		public override Vec2 GetReactionForce(float inv_dt)
-		{
-			return (inv_dt * _impulse) * _u;
-		}
+    public override Vector2 GetReactionForce(float inv_dt) {
+      return (inv_dt * _impulse) * _u;
+    }
 
-		public override float GetReactionTorque(float inv_dt)
-		{
-			return 0.0f;
-		}
+    public override float GetReactionTorque(float inv_dt) {
+      return 0.0f;
+    }
 
-		public DistanceJoint(DistanceJointDef def)
-			: base(def)
-		{
-			_localAnchor1 = def.LocalAnchor1;
-			_localAnchor2 = def.LocalAnchor2;
-			_length = def.Length;
-			_frequencyHz = def.FrequencyHz;
-			_dampingRatio = def.DampingRatio;
-			_impulse = 0.0f;
-			_gamma = 0.0f;
-			_bias = 0.0f;
-		}
+    public DistanceJoint(DistanceJointDef def)
+      : base(def) {
+      _localAnchorA = def.LocalAnchorA;
+      _localAnchorB = def.LocalAnchorB;
+      _length       = def.Length;
+      _frequencyHz  = def.FrequencyHz;
+      _dampingRatio = def.DampingRatio;
+      _impulse      = 0.0f;
+      _gamma        = 0.0f;
+      _bias         = 0.0f;
+    }
 
-		internal override void InitVelocityConstraints(TimeStep step)
-		{
-			Body b1 = _body1;
-			Body b2 = _body2;
+    internal override void InitVelocityConstraints(in SolverData data) {
+      _indexA       = _bodyA._islandIndex;
+      _indexB       = _bodyB._islandIndex;
+      _localCenterA = _bodyA._sweep.localCenter;
+      _localCenterB = _bodyB._sweep.localCenter;
+      _invMassA     = _bodyA._invMass;
+      _invMassB     = _bodyB._invMass;
+      _invIA        = _bodyA._invI;
+      _invIB        = _bodyB._invI;
 
-			// Compute the effective mass matrix.
-			Vec2 r1 = Common.Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-			Vec2 r2 = Common.Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
-			_u = b2._sweep.C + r2 - b1._sweep.C - r1;
+      Vector2 cA = data.positions[ _indexA].c;
+      float  aA = data.positions[ _indexA].a;
+      Vector2 vA = data.velocities[_indexA].v;
+      float  wA = data.velocities[_indexA].w;
 
-			// Handle singularity.
-			float length = _u.Length();
-			if (length > Settings.LinearSlop)
-			{
-				_u *= 1.0f / length;
-			}
-			else
-			{
-				_u.Set(0.0f, 0.0f);
-			}
+      Vector2 cB = data.positions[ _indexB].c;
+      float  aB = data.positions[ _indexB].a;
+      Vector2 vB = data.velocities[_indexB].v;
+      float  wB = data.velocities[_indexB].w;
 
-			float cr1u = Vec2.Cross(r1, _u);
-			float cr2u = Vec2.Cross(r2, _u);
-			float invMass = b1._invMass + b1._invI * cr1u * cr1u + b2._invMass + b2._invI * cr2u * cr2u;
-			Box2DXDebug.Assert(invMass > Settings.FLT_EPSILON);
-			_mass = 1.0f / invMass;
+      Rot qA = new Rot(aA), qB = new Rot(aB);
 
-			if (_frequencyHz > 0.0f)
-			{
-				float C = length - _length;
+      _rA = Common.Math.Mul(qA, _localAnchorA - _localCenterA);
+      _rB = Common.Math.Mul(qB, _localAnchorB - _localCenterB);
+      _u  = cB + _rB - cA - _rA;
 
-				// Frequency
-				float omega = 2.0f * Settings.Pi * _frequencyHz;
+      // Handle singularity.
+      float length = _u.Length();
+      if (length > Settings.LinearSlop) {
+        _u *= 1.0f / length;
+      }
+      else {
+        _u=Vector2.Zero;
+      }
 
-				// Damping coefficient
-				float d = 2.0f * _mass * _dampingRatio * omega;
+      float crAu    = Vectex.Cross(_rA, _u);
+      float crBu    = Vectex.Cross(_rB, _u);
+      float invMass = _invMassA + _invIA * crAu * crAu + _invMassB + _invIB * crBu * crBu;
 
-				// Spring stiffness
-				float k = _mass * omega * omega;
+      // Compute the effective mass matrix.
+      _mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
 
-				// magic formulas
-				_gamma = 1.0f / (step.Dt * (d + step.Dt * k));
-				_bias = C * step.Dt * k * _gamma;
+      if (_frequencyHz > 0.0f) {
+        float C = length - _length;
 
-				_mass = 1.0f / (invMass + _gamma);
-			}
+        // Frequency
+        float omega = 2.0f * MathF.PI * _frequencyHz;
 
-			if (step.WarmStarting)
-			{
-				//Scale the inpulse to support a variable timestep.
-				_impulse *= step.DtRatio;
-				Vec2 P = _impulse * _u;
-				b1._linearVelocity -= b1._invMass * P;
-				b1._angularVelocity -= b1._invI * Vec2.Cross(r1, P);
-				b2._linearVelocity += b2._invMass * P;
-				b2._angularVelocity += b2._invI * Vec2.Cross(r2, P);
-			}
-			else
-			{
-				_impulse = 0.0f;
-			}
-		}
+        // Damping coefficient
+        float d = 2.0f * _mass * _dampingRatio * omega;
 
-		internal override bool SolvePositionConstraints(float baumgarte)
-		{
-			if (_frequencyHz > 0.0f)
-			{
-				//There is no possition correction for soft distace constraint.
-				return true;
-			}
+        // Spring stiffness
+        float k = _mass * omega * omega;
 
-			Body b1 = _body1;
-			Body b2 = _body2;
+        // magic formulas
+        float h = data.step.dt;
 
-			Vec2 r1 = Common.Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-			Vec2 r2 = Common.Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+        // gamma = 1 / (h * (d + h * k)), the extra factor of h in the denominator is since the lambda is an impulse, not a force
+        _gamma = h * (d + h * k);
+        _gamma = _gamma != 0.0f ? 1.0f / _gamma : 0.0f;
+        _bias  = C * h * k * _gamma;
 
-			Vec2 d = b2._sweep.C + r2 - b1._sweep.C - r1;
+        invMass += _gamma;
+        _mass  =  invMass != 0.0f ? 1.0f / invMass : 0.0f;
+      }
+      else {
+        _gamma = 0.0f;
+        _bias  = 0.0f;
+      }
 
-			float length = d.Normalize();
-			float C = length - _length;
-			C = Common.Math.Clamp(C, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
+      if (data.step.warmStarting) {
+        // Scale the impulse to support a variable time step.
+        _impulse *= data.step.dtRatio;
 
-			float impulse = -_mass * C;
-			_u = d;
-			Vec2 P = impulse * _u;
+        Vector2 P = _impulse * _u;
+        vA -= _invMassA * P;
+        wA -= _invIA    * Vectex.Cross(_rA, P);
+        vB += _invMassB * P;
+        wB += _invIB    * Vectex.Cross(_rB, P);
+      }
+      else {
+        _impulse = 0.0f;
+      }
 
-			b1._sweep.C -= b1._invMass * P;
-			b1._sweep.A -= b1._invI * Vec2.Cross(r1, P);
-			b2._sweep.C += b2._invMass * P;
-			b2._sweep.A += b2._invI * Vec2.Cross(r2, P);
+      data.velocities[_indexA].v = vA;
+      data.velocities[_indexA].w = wA;
+      data.velocities[_indexB].v = vB;
+      data.velocities[_indexB].w = wB;
+    }
 
-			b1.SynchronizeTransform();
-			b2.SynchronizeTransform();
+    internal override bool SolvePositionConstraints(in SolverData data) {
+      if (_frequencyHz > 0.0f) {
+        //There is no position correction for soft distance constraints.
+        return true;
+      }
 
-			return System.Math.Abs(C) < Settings.LinearSlop;
-		}
+      Body.Body b1 = _bodyA;
+      Body.Body b2 = _bodyB;
 
-		internal override void SolveVelocityConstraints(TimeStep step)
-		{
-			//B2_NOT_USED(step);
+      Vector2 r1 = Math.Mul(b1.GetTransform().q, _localAnchorA - b1.GetLocalCenter());
+      Vector2 r2 = Math.Mul(b2.GetTransform().q, _localAnchorB - b2.GetLocalCenter());
 
-			Body b1 = _body1;
-			Body b2 = _body2;
+      Vector2 d = b2._sweep.c + r2 - b1._sweep.c - r1;
 
-			Vec2 r1 = Common.Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-			Vec2 r2 = Common.Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+      float length = d.Length();
+      d = Vector2.Normalize(d);
+      float C = length - _length;
+      C = System.Math.Clamp(C, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
 
-			// Cdot = dot(u, v + cross(w, r))
-			Vec2 v1 = b1._linearVelocity + Vec2.Cross(b1._angularVelocity, r1);
-			Vec2 v2 = b2._linearVelocity + Vec2.Cross(b2._angularVelocity, r2);
-			float Cdot = Vec2.Dot(_u, v2 - v1);
-			float impulse = -_mass * (Cdot + _bias + _gamma * _impulse);
-			_impulse += impulse;
+      float impulse = -_mass * C;
+      _u = d;
+      Vector2 P = impulse * _u;
 
-			Vec2 P = impulse * _u;
-			b1._linearVelocity -= b1._invMass * P;
-			b1._angularVelocity -= b1._invI * Vec2.Cross(r1, P);
-			b2._linearVelocity += b2._invMass * P;
-			b2._angularVelocity += b2._invI * Vec2.Cross(r2, P);
-		}
-	}
+      b1._sweep.c -= b1._invMass * P;
+      b1._sweep.a -= b1._invI    * Vectex.Cross(r1, P);
+      b2._sweep.c += b2._invMass * P;
+      b2._sweep.a += b2._invI    * Vectex.Cross(r2, P);
+
+      b1.SynchronizeTransform();
+      b2.SynchronizeTransform();
+
+      return System.Math.Abs(C) < Settings.LinearSlop;
+    }
+
+    internal override void SolveVelocityConstraints(in SolverData data) {
+      Vector2 vA = data.velocities[_indexA].v;
+      float  wA = data.velocities[_indexA].w;
+      Vector2 vB = data.velocities[_indexB].v;
+      float  wB = data.velocities[_indexB].w;
+
+      // Cdot = dot(u, v + cross(w, r))
+      Vector2 vpA  = vA + Vectex.Cross(wA, _rA);
+      Vector2 vpB  = vB + Vectex.Cross(wB, _rB);
+      float  Cdot = Vector2.Dot(_u, vpB - vpA);
+
+      float impulse = -_mass * (Cdot + _bias + _gamma * _impulse);
+      _impulse += impulse;
+
+      Vector2 P = impulse * _u;
+      vA -= _invMassA * P;
+      wA -= _invIA    * Vectex.Cross(_rA, P);
+      vB += _invMassB * P;
+      wB += _invIB    * Vectex.Cross(_rB, P);
+
+      data.velocities[_indexA].v = vA;
+      data.velocities[_indexA].w = wA;
+      data.velocities[_indexB].v = vB;
+      data.velocities[_indexB].w = wB;
+    }
+  }
 }
