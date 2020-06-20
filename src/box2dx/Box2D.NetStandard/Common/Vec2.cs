@@ -194,11 +194,11 @@ namespace Box2D.NetStandard.Common {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vec2 Cross(float s, Vec2 a) => new Vec2(-s * a.Y, s * a.X);
 
-    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [Obsolete("Use Vector2.Distance instead")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Distance(Vec2 a, Vec2 b) => (a - b).Length();
 
-    [Obsolete("Please switch to System.Numerics.Vector2.")]
+    [Obsolete("Use Vector2.DistanceSquared instead")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float DistanceSquared(Vec2 a, Vec2 b) {
       Vec2 c = a - b;
@@ -229,16 +229,13 @@ namespace Box2D.NetStandard.Common {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsValid(this Vector2 candidate) => Math.IsValid(candidate.X) && Math.IsValid(candidate.Y);
 
-    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.",
-              true)]
+    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.", true)]
     public static void Set(this Vector2 v, float x, float y) { }
 
-    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.",
-              true)]
+    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.", true)]
     public static void Set(this Vector2 v, float x) { }
 
-    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.",
-              true)]
+    [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.", true)]
     public static void SetZero(this Vector2 v) { }
   }
 

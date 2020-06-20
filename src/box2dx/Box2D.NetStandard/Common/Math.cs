@@ -61,11 +61,6 @@ namespace Box2D.NetStandard.Common {
       return x;
     }
 
-    [Obsolete("Use MathF.Sqrt", true)]
-    internal static float Sqrt(float x) {
-      return (float) System.Math.Sqrt(x);
-    }
-
     private static Random s_rnd = new Random();
 
     /// <summary>
@@ -82,7 +77,7 @@ namespace Box2D.NetStandard.Common {
     /// <summary>
     /// Random floating point number in range [lo, hi]
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Random(float lo, float hi) {
       float r = (float) (s_rnd.Next() & RAND_LIMIT);
       r /= RAND_LIMIT;
@@ -107,73 +102,15 @@ namespace Box2D.NetStandard.Common {
       return x + 1;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsPowerOfTwo(uint x) {
       bool result = x > 0 && (x & (x - 1)) == 0;
       return result;
     }
 
-    [Obsolete("Use MathF.Abs", true)]
-    internal static float Abs(float a) {
-      return a > 0.0f ? a : -a;
-    }
-
-    [Obsolete("Use Vector2.Abs", true)]
-    internal static Vector2 Abs(Vector2 a) => new Vector2(Abs(a.X), Abs(a.Y));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Mat22 Abs(Mat22 A) => new Mat22(Vector2.Abs(A.ex), Vector2.Abs(A.ey));
-
-    [Obsolete("Use MathF.Min", true)]
-    internal static float Min(float a, float b) {
-      return a < b ? a : b;
-    }
-
-    [Obsolete("Use Math.Min", true)]
-    internal static int Min(int a, int b) {
-      return a < b ? a : b;
-    }
-
-    [Obsolete("Use Vector2.Min", true)]
-    internal static Vector2 Min(Vector2 a, Vector2 b) {
-      Vector2 c = new Vector2();
-      c.X = Min(a.X, b.X);
-      c.Y = Min(a.Y, b.Y);
-      return c;
-    }
-
-    [Obsolete("Use MathF.Max", true)]
-    internal static float Max(float a, float b) {
-      return a > b ? a : b;
-    }
-
-    [Obsolete("Use Math.Max", true)]
-    internal static int Max(int a, int b) {
-      return a > b ? a : b;
-    }
-
-    [Obsolete("Use Vector2.Max", true)]
-    internal static Vector2 Max(Vector2 a, Vector2 b) {
-      Vector2 c = new Vector2();
-      c.X = Max(a.X, b.X);
-      c.Y = Max(a.Y, b.Y);
-      return c;
-    }
-
-    [Obsolete("Use Math.Clamp", true)]
-    internal static float Clamp(float a, float low, float high) {
-      return Max(low, Min(a, high));
-    }
-
-    [Obsolete("Use Math.Clamp", true)]
-    internal static int Clamp(int a, int low, int high) {
-      return Max(low, Min(a, high));
-    }
-
-    [Obsolete("Use Vector2.Clamp", true)]
-    internal static Vector2 Clamp(Vector2 a, Vector2 low, Vector2 high) {
-      return Max(low, Min(a, high));
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Swap<T>(ref T a, ref T b) {
@@ -231,11 +168,6 @@ namespace Box2D.NetStandard.Common {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vec3 Mul(Mat33 A, Vec3 v) => v.X * A.ex + v.Y * A.ey + v.Z * A.ez;
 
-    [Obsolete("Use MathF.Atan2", true)]
-    internal static float Atan2(float y, float x) {
-      return (float) System.Math.Atan2(y, x);
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 Mul(Rot q, Vector2 v) =>
       new Vector2(q.c * v.X - q.s * v.Y,
@@ -245,13 +177,12 @@ namespace Box2D.NetStandard.Common {
     internal static Vector2 MulT(Rot q, Vector2 v) =>
       new Vector2(q.c  * v.X + q.s * v.Y,
                   -q.s * v.X + q.c * v.Y);
-    
-    
+
+
     // v2 = A.q.Rot(B.q.Rot(v1) + B.p) + A.p
 //    = (A.q * B.q).Rot(v1) + A.q.Rot(B.p) + A.p
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Transform Mul(in Transform A, in Transform  B)
-    {
+    internal static Transform Mul(in Transform A, in Transform B) {
       Transform C;
       C.q = Mul(A.q, B.q);
       C.p = Mul(A.q, B.p) + A.p;
@@ -261,16 +192,11 @@ namespace Box2D.NetStandard.Common {
 // v2 = A.q' * (B.q * v1 + B.p - A.p)
 //    = A.q' * B.q * v1 + A.q' * (B.p - A.p)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Transform MulT(in Transform  A, in Transform  B)
-    {
+    internal static Transform MulT(in Transform A, in Transform B) {
       Transform C;
       C.q = MulT(A.q, B.q);
       C.p = MulT(A.q, B.p - A.p);
       return C;
     }
   }
-  
-  
-  
-
 }
