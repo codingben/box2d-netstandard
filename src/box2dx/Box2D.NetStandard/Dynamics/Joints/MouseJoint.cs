@@ -80,26 +80,31 @@ namespace Box2DX.Dynamics
 	/// </summary>
 	public class MouseJoint : Joint
 	{
-		public Vector2 _localAnchor;
-		public Vector2 _target;
-		public Vector2 _impulse;
-
-		public Mat22 _mass;		// effective mass for point-to-point constraint.
-		public Vector2 _C;				// position error
-		public float _maxForce;
-		public float _frequencyHz;
-		public float _dampingRatio;
 		public float _beta;
 		public float _gamma;
+		private Vector2 _targetA;
+		private Vector2 _localAnchor;
+		private float _maxForce;
+		private Vector2 _impulse;
+		private float _frequencyHz;
+		private float _dampingRatio;
+		private int _indexB;
+		private Vector2 _localCenterB;
+		private float _invMassB;
+		private float _invIB;
+		private Vector2 _rB;
+		private Vector2 _localAnchorB;
+		private Mat22 _mass;
+		private Vector2 _C;
 
 		public override Vector2 Anchor1
 		{
-			get { return _target; }
+			get { return _targetA; }
 		}
 
 		public override Vector2 Anchor2
 		{
-			get { return _body2.GetWorldPoint(_localAnchor); }
+			get { return _bodyB.GetWorldPoint(_localAnchor); }
 		}
 
 		public override Vector2 GetReactionForce(float inv_dt)
@@ -117,21 +122,21 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public void SetTarget(Vector2 target)
 		{
-			if (_body2.IsSleeping())
+			if (!_bodyB.IsAwake())
 			{
-				_body2.WakeUp();
+				_bodyB.SetAwake(true);
 			}
-			_target = target;
+			_targetA = target;
 		}
 
 		public MouseJoint(MouseJointDef def)
 			: base(def)
 		{
-			_target = def.Target;
-			_localAnchor = Math.MulT(_body2.GetXForm(), _target);
+			_targetA = def.Target;
+			_localAnchor = Math.MulT(_bodyB.GetTransform(), _targetA);
 
 			_maxForce = def.MaxForce;
-			_impulse=Vector2.Zero;
+			_impulse = Vector2.Zero;
 
 			_frequencyHz = def.FrequencyHz;
 			_dampingRatio = def.DampingRatio;
@@ -140,11 +145,21 @@ namespace Box2DX.Dynamics
 			_gamma = 0.0f;
 		}
 
-		internal override void InitVelocityConstraints(TimeStep step)
+		internal override void InitVelocityConstraints(in SolverData data)
 		{
-			Body b = _body2;
+			_indexB       = _bodyB._islandIndex;
+			_localCenterB = _bodyB._sweep.localCenter;
+			_invMassB     = _bodyB._invMass;
+			_invIB        = _bodyB._invI;
 
-			float mass = b.GetMass();
+			Vector2 cB =  data.positions[_indexB].c;
+			float  aB =  data.positions[_indexB].a;
+			Vector2 vB = data.velocities[_indexB].v;
+			float  wB = data.velocities[_indexB].w;
+
+			Rot qB = new Rot(aB);
+
+			float mass = _bodyB.GetMass();
 
 			// Frequency
 			float omega = 2.0f * Settings.Pi * _frequencyHz;
@@ -158,68 +173,75 @@ namespace Box2DX.Dynamics
 			// magic formulas
 			// gamma has units of inverse mass.
 			// beta has units of inverse time.
-			Debug.Assert(d + step.Dt * k > Settings.FLT_EPSILON);
-			_gamma = 1.0f / (step.Dt * (d + step.Dt * k));
-			_beta = step.Dt * k * _gamma;
+			float h = data.step.dt;
+			_gamma = h * (d + h * k);
+			if (_gamma != 0.0f)
+			{
+				_gamma = 1.0f / _gamma;
+			}
+			_beta = h * k * _gamma;
 
 			// Compute the effective mass matrix.
-			Vector2 r = Math.Mul(b.GetXForm().R, _localAnchor - b.GetLocalCenter());
+			_rB = Math.Mul(qB, _localAnchorB - _localCenterB);
 
 			// K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
 			//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
 			//        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
-			float invMass = b._invMass;
-			float invI = b._invI;
-
-			Mat22 K1 = new Mat22();
-			K1.Col1.X = invMass; K1.Col2.X = 0.0f;
-			K1.Col1.Y = 0.0f; K1.Col2.Y = invMass;
-
-			Mat22 K2 = new Mat22();
-			K2.Col1.X = invI * r.Y * r.Y; K2.Col2.X = -invI * r.X * r.Y;
-			K2.Col1.Y = -invI * r.X * r.Y; K2.Col2.Y = invI * r.X * r.X;
-
-			Mat22 K = K1 + K2;
-			K.Col1.X += _gamma;
-			K.Col2.Y += _gamma;
+			Mat22 K = new Mat22();
+			K.ex.X = _invMassB + _invIB * _rB.Y * _rB.Y + _gamma;
+			K.ex.Y = -_invIB * _rB.X * _rB.Y;
+			K.ey.X = K.ex.Y;
+			K.ey.Y = _invMassB + _invIB * _rB.X * _rB.Y + _gamma;
 
 			_mass = K.GetInverse();
 
-			_C = b._sweep.C + r - _target;
+			_C =  cB + _rB - _targetA;
+			_C *= _beta;
 
 			// Cheat with some damping
-			b._angularVelocity *= 0.98f;
+			wB *= 0.98f;
 
-			// Warm starting.
-			_impulse *= step.DtRatio;
-			b._linearVelocity += invMass * _impulse;
-			b._angularVelocity += invI * Vectex.Cross(r, _impulse);
+			if (data.step.warmStarting)
+			{
+				_impulse *= data.step.dtRatio;
+				vB        += _invMassB * _impulse;
+				wB        += _invIB    * Vectex.Cross(_rB, _impulse);
+			}
+			else
+			{
+				_impulse=Vector2.Zero;
+			}
+
+			data.velocities[_indexB].v = vB;
+			data.velocities[_indexB].w = wB;
 		}
 
-		internal override void SolveVelocityConstraints(TimeStep step)
+		internal override void SolveVelocityConstraints(in SolverData data)
 		{
-			Body b = _body2;
-
-			Vector2 r = Math.Mul(b.GetXForm().R, _localAnchor - b.GetLocalCenter());
+			Vector2 vB = data.velocities[_indexB].v;
+			float  wB = data.velocities[_indexB].w;
 
 			// Cdot = v + cross(w, r)
-			Vector2 Cdot = b._linearVelocity + Vectex.Cross(b._angularVelocity, r);
-			Vector2 impulse = Math.Mul(_mass, -(Cdot + _beta * _C + _gamma * _impulse));
+			Vector2 Cdot    = vB + Vectex.Cross(wB, _rB);
+			Vector2 impulse = Math.Mul(_mass, -(Cdot + _C + _gamma * _impulse));
 
 			Vector2 oldImpulse = _impulse;
 			_impulse += impulse;
-			float maxImpulse = step.Dt * _maxForce;
+			float maxImpulse = data.step.dt * _maxForce;
 			if (_impulse.LengthSquared() > maxImpulse * maxImpulse)
 			{
 				_impulse *= maxImpulse / _impulse.Length();
 			}
 			impulse = _impulse - oldImpulse;
 
-			b._linearVelocity += b._invMass * impulse;
-			b._angularVelocity += b._invI * Vectex.Cross(r, impulse);
+			vB += _invMassB * impulse;
+			wB += _invIB    * Vectex.Cross(_rB, impulse);
+
+			data.velocities[_indexB].v = vB;
+			data.velocities[_indexB].w = wB;
 		}
 
-		internal override bool SolvePositionConstraints(float baumgarte)
+		internal override bool SolvePositionConstraints(in SolverData data)
 		{
 			return true;
 		}

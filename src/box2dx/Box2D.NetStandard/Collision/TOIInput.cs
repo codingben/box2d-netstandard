@@ -19,35 +19,20 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-using System.Diagnostics;
-using Box2DX.Collision;
 using Box2DX.Common;
 
-namespace Box2DX.Dynamics
-{
-	public class PolyAndEdgeContact : Contact
-	{
-		public PolyAndEdgeContact(Fixture fixtureA, Fixture fixtureB)
-			: base(fixtureA, fixtureB)
-		{
-			Debug.Assert(fixtureA.ShapeType == ShapeType.PolygonShape);
-			Debug.Assert(fixtureB.ShapeType == ShapeType.EdgeShape);
-			CollideShapeFunction = CollidePolyAndEdgeContact;
-		}
-
-		private static void CollidePolyAndEdgeContact(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2)
-		{
-			Collision.Collision.CollidePolyAndEdge(ref manifold, (PolygonShape)shape1, xf1, (EdgeShape)shape2, xf2);
-		}
-
-		new public static Contact Create(Fixture fixtureA, Fixture fixtureB)
-		{
-			return new PolyAndEdgeContact(fixtureA, fixtureB);
-		}
-
-		new public static void Destroy(ref Contact contact)
-		{
-			contact = null;
-		}
-	}
+namespace Box2DX.Collision {
+  /// <summary>
+  /// Inpute parameters for TimeOfImpact
+  /// </summary>
+  internal struct TOIInput {
+    internal Sweep         sweepA;
+    internal Sweep         sweepB;
+    // internal float         sweepRadiusA;
+    // internal float         sweepRadiusB;
+    // internal float         tolerance;
+    internal DistanceProxy proxyA;
+    internal DistanceProxy proxyB;
+    internal float         tMax;
+  }
 }

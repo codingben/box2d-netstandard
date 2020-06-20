@@ -25,261 +25,129 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2DX.Common;
 using Math = Box2DX.Common.Math;
+using int32 = System.Int32;
+using b2Vec2 = System.Numerics.Vector2;
 
 namespace Box2DX.Collision
 {
-	public class EdgeShape : Shape
-	{
-		public Vector2 _v1;
-		public Vector2 _v2;
+	public class EdgeShape : Shape {
+    internal Vector2 m_vertex1;
+    internal Vector2 m_vertex2;
 
-		public float _length;
+    internal Vector2 m_vertex0;
+    internal Vector2 m_vertex3;
+    internal bool m_hasVertex0;
+    internal bool m_hasVertex3;
 
-		public Vector2 _normal;
+    public EdgeShape() {
+      m_type = ShapeType.Edge;
+      m_radius = Settings.PolygonRadius;
+      m_vertex0 = Vector2.Zero;
+      m_vertex3=Vector2.Zero;
+      m_hasVertex0 = false;
+      m_hasVertex3 = false;
+    }
 
-		public Vector2 _direction;
+    public Vector2 Vertex1 {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get=>m_vertex1;
+    }
+    
+    public Vector2 Vertex2 {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get=>m_vertex2;
+    }
 
-		// Unit vector halfway between m_direction and m_prevEdge.m_direction:
-		public Vector2 _cornerDir1;
+    public void Set(in Vector2 v1, in Vector2 v2) {
+      m_vertex1    = v1;
+      m_vertex2    = v2;
+      m_hasVertex0 = false;
+      m_hasVertex3 = false;
+    }
 
-		// Unit vector halfway between m_direction and m_nextEdge.m_direction:
-		public Vector2 _cornerDir2;
 
-		public bool _cornerConvex1;
-		public bool _cornerConvex2;
+    public override Shape Clone() {
+      return (EdgeShape) MemberwiseClone();
+    }
 
-		public EdgeShape _nextEdge;
-		public EdgeShape _prevEdge;
+    public override int GetChildCount() => 1;
 
-		public EdgeShape()
-		{
-			_type = ShapeType.EdgeShape;
-			_radius = Settings.PolygonRadius;
-		}
+    public override bool TestPoint(in Transform xf, in Vector2 p) => false;
 
-		public override void Dispose()
-		{
-			if (_prevEdge != null)
-			{
-				_prevEdge._nextEdge = null;
-			}
+    public override bool RayCast(out RayCastOutput output, in RayCastInput input, in Transform xf, int childIndex) {
+      output = default;
+      // Put the ray into the edge's frame of reference.
+      b2Vec2 p1 = Math.MulT(xf.q, input.p1 - xf.p);
+      b2Vec2 p2 = Math.MulT(xf.q, input.p2 - xf.p);
+      b2Vec2 d  = p2 - p1;
 
-			if (_nextEdge != null)
-			{
-				_nextEdge._prevEdge = null;
-			}
-		}
+      b2Vec2 v1 = m_vertex1;
+      b2Vec2 v2 = m_vertex2;
+      b2Vec2 e  = v2 - v1;
+      b2Vec2 normal = Vector2.Normalize(new Vector2(e.Y, -e.X));
 
-		public void Set(Vector2 v1, Vector2 v2)
-		{
-			_v1 = v1;
-			_v2 = v2;
+      // q = p1 + t * d
+      // dot(normal, q - v1) = 0
+      // dot(normal, p1 - v1) + t * dot(normal, d) = 0
+      float numerator   = Vector2.Dot(normal, v1 - p1);
+      float denominator = Vector2.Dot(normal, d);
 
-			_direction = _v2 - _v1;
-			_length = _direction.Length();
-			_direction=Vector2.Normalize(_direction);
-			_normal = Vectex.Cross(_direction, 1.0f);
+      if (denominator == 0.0f)
+      {
+        return false;
+      }
 
-			_cornerDir1 = _normal;
-			_cornerDir2 = -1.0f * _normal;
-		}
+      float t = numerator / denominator;
+      if (t < 0.0f || input.maxFraction < t)
+      {
+        return false;
+      }
 
-		public override bool TestPoint(XForm transform, Vector2 p) => false;
+      b2Vec2 q = p1 + t * d;
 
-		public override SegmentCollide TestSegment(XForm transform, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
-		{
-			Vector2 r = segment.P2 - segment.P1;
-			Vector2 v1 = Math.Mul(transform, _v1);
-			Vector2 d = Math.Mul(transform, _v2) - v1;
-			Vector2 n = Vectex.Cross(d, 1.0f);
+      // q = v1 + s * r
+      // s = dot(q - v1, r) / dot(r, r)
+      b2Vec2 r  = v2 - v1;
+      float  rr = Vector2.Dot(r, r);
+      if (rr == 0.0f)
+      {
+        return false;
+      }
 
-			float k_slop = 100.0f * Settings.FLT_EPSILON;
-			float denom = -Vector2.Dot(r, n);
+      float s = Vector2.Dot(q - v1, r) / rr;
+      if (s < 0.0f || 1.0f < s)
+      {
+        return false;
+      }
 
-			// Cull back facing collision and ignore parallel segments.
-			if (denom > k_slop)
-			{
-				// Does the segment intersect the infinite line associated with this segment?
-				Vector2 b = segment.P1 - v1;
-				float a = Vector2.Dot(b, n);
+      output.fraction = t;
+      if (numerator > 0.0f)
+      {
+        output.normal = -Math.Mul(xf.q, normal);
+      }
+      else
+      {
+        output.normal = Math.Mul(xf.q, normal);
+      }
+      return true;
+    }
 
-				if (0.0f <= a && a <= maxLambda * denom)
-				{
-					float mu2 = -r.X * b.Y + r.Y * b.X;
+    public override void ComputeAABB(out AABB aabb, in Transform xf, int childIndex) {
+      b2Vec2 v1 = Math.Mul(xf, m_vertex1);
+      b2Vec2 v2 = Math.Mul(xf, m_vertex2);
 
-					// Does the segment intersect this segment?
-					if (-k_slop * denom <= mu2 && mu2 <= denom * (1.0f + k_slop))
-					{
-						a /= denom;
-						n = Vector2.Normalize(n);
-						lambda = a;
-						normal = n;
-						return SegmentCollide.HitCollide;
-					}
-				}
-			}
+      b2Vec2 lower = Vector2.Min(v1, v2);
+      b2Vec2 upper = Vector2.Max(v1, v2);
 
-			lambda = 0;
-			normal = new Vector2();
-			return SegmentCollide.MissCollide;
-		}
+      b2Vec2 r = new Vector2(m_radius, m_radius);
+      aabb.lowerBound = lower - r;
+      aabb.upperBound = upper + r;
+    }
 
-		public override void ComputeAABB(out AABB aabb, XForm transform)
-		{
-			Vector2 v1 = Math.Mul(transform, _v1);
-			Vector2 v2 = Math.Mul(transform, _v2);
-
-			Vector2 r = new Vector2(_radius, _radius);
-			aabb.LowerBound = Vector2.Min(v1, v2) - r;
-			aabb.UpperBound = Vector2.Max(v1, v2) + r;
-		}
-
-		public override void ComputeMass(out MassData massData, float density)
-		{
-			massData.Mass = 0.0f;
-			massData.Center = _v1;
-			massData.I = 0.0f;
-		}
-
-		public void SetPrevEdge(EdgeShape edge, Vector2 cornerDir, bool convex)
-		{
-			_prevEdge = edge;
-			_cornerDir1 = cornerDir;
-			_cornerConvex1 = convex;
-		}
-
-		public void SetNextEdge(EdgeShape edge, Vector2 cornerDir, bool convex)
-		{
-			_nextEdge = edge;
-			_cornerDir2 = cornerDir;
-			_cornerConvex2 = convex;
-		}
-
-		public override float ComputeSubmergedArea(Vector2 normal, float offset, XForm xf, out Vector2 c)
-		{
-			//Note that v0 is independent of any details of the specific edge
-			//We are relying on v0 being consistent between multiple edges of the same body
-			Vector2 v0 = offset * normal;
-			//b2Vector2 v0 = xf.position + (offset - b2Dot(normal, xf.position)) * normal;
-
-			Vector2 v1 = Math.Mul(xf, _v1);
-			Vector2 v2 = Math.Mul(xf, _v2);
-
-			float d1 = Vector2.Dot(normal, v1) - offset;
-			float d2 = Vector2.Dot(normal, v2) - offset;
-
-			if (d1 > 0.0f)
-			{
-				if (d2 > 0.0f)
-				{
-					c = new Vector2();
-					return 0.0f;
-				}
-				else
-				{
-					v1 = -d2 / (d1 - d2) * v1 + d1 / (d1 - d2) * v2;
-				}
-			}
-			else
-			{
-				if (d2 > 0.0f)
-				{
-					v2 = -d2 / (d1 - d2) * v1 + d1 / (d1 - d2) * v2;
-				}
-				else
-				{
-					//Nothing
-				}
-			}
-
-			// v0,v1,v2 represents a fully submerged triangle
-			float k_inv3 = 1.0f / 3.0f;
-
-			// Area weighted centroid
-			c = k_inv3 * (v0 + v1 + v2);
-
-			Vector2 e1 = v1 - v0;
-			Vector2 e2 = v2 - v0;
-
-			return 0.5f * Vectex.Cross(e1, e2);
-		}
-
-		public float Length
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _length;
-		}
-
-		public Vector2 Vertex1
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _v1;
-		}
-
-		public Vector2 Vertex2
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _v2;
-		}
-
-		public Vector2 NormalVector
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _normal;
-		}
-
-		public Vector2 DirectionVector
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _direction;
-		}
-
-		public Vector2 Corner1Vector
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _cornerDir1;
-		}
-
-		public Vector2 Corner2Vector
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _cornerDir2;
-		}
-
-		public override int GetSupport(Vector2 d)
-		{
-			return Vector2.Dot(_v1, d) > Vector2.Dot(_v2, d) ? 0 : 1;
-		}
-
-		public override Vector2 GetSupportVertex(Vector2 d)
-		{
-			return Vector2.Dot(_v1, d) > Vector2.Dot(_v2, d) ? _v1 : _v2;
-		}
-
-		public override Vector2 GetVertex(int index)
-		{
-			Debug.Assert(0 <= index && index < 2);
-			if (index == 0) return _v1;
-			else return _v2;
-		}
-
-		public bool Corner1IsConvex
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _cornerConvex1;
-		}
-
-		public bool Corner2IsConvex
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _cornerConvex2;
-		}
-
-		public override float ComputeSweepRadius(Vector2 pivot)
-		{
-			float ds1 = Vector2.DistanceSquared(_v1, pivot);
-			float ds2 = Vector2.DistanceSquared(_v2, pivot);
-			return MathF.Sqrt(MathF.Max(ds1, ds2));
-		}
-	}
+    public override void ComputeMass(out MassData massData, float density) {
+      massData.mass   = 0.0f;
+      massData.center = 0.5f * (m_vertex1 + m_vertex2);
+      massData.I      = 0.0f;
+    }
+  }
 }

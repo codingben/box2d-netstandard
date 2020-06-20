@@ -19,17 +19,34 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Diagnostics;
 using Box2DX.Collision;
 using Box2DX.Common;
 
 namespace Box2DX.Dynamics
 {
-	public class NullContact : Contact
+	public class EdgeAndPolygonContact : Contact
 	{
-		public NullContact()
+		public EdgeAndPolygonContact(Fixture fixtureA, Fixture fixtureB)
+			: base(fixtureA,0, fixtureB,0)
 		{
-			CollideShapeFunction = Collide;
+			Debug.Assert(fixtureA.Type == ShapeType.Edge);
+			Debug.Assert(fixtureB.Type == ShapeType.Polygon); 
 		}
-		private static void Collide(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2) { }
+
+		new public static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		{
+			return new EdgeAndPolygonContact(fixtureA, fixtureB);
+		}
+
+		new public static void Destroy(ref Contact contact)
+		{
+			contact = null;
+		}
+
+		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
+			Collision.Collision.CollideEdgeAndPolygon(out manifold, (EdgeShape) m_fixtureA.Shape, in xfA,
+			                                          (PolygonShape) m_fixtureB.Shape, in xfB);
+		}
 	}
 }

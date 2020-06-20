@@ -28,18 +28,13 @@ namespace Box2DX.Dynamics
 	public class PolygonContact : Contact
 	{
 		public PolygonContact(Fixture fixtureA, Fixture fixtureB)
-			: base(fixtureA, fixtureB)
+			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.ShapeType == ShapeType.PolygonShape);
-			Debug.Assert(fixtureB.ShapeType == ShapeType.PolygonShape);
-			CollideShapeFunction = CollidePolygons;
+			Debug.Assert(fixtureA.Type == ShapeType.Polygon);
+			Debug.Assert(fixtureB.Type == ShapeType.Polygon);
 		}
 
-		private static void CollidePolygons(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2)
-		{
-			Collision.Collision.CollidePolygons(ref manifold, (PolygonShape)shape1, xf1, (PolygonShape)shape2, xf2);
-		}
-
+		
 		public new static Contact Create(Fixture fixtureA, Fixture fixtureB)
 		{
 			return new PolygonContact(fixtureA, fixtureB);
@@ -48,6 +43,10 @@ namespace Box2DX.Dynamics
 		public new static void Destroy(ref Contact contact)
 		{
 			contact = null;
+		}
+
+		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
+			Collision.Collision.CollidePolygons(out manifold, (PolygonShape)m_fixtureA.Shape, in xfA, (PolygonShape)m_fixtureB.Shape, in xfB);
 		}
 	}
 }

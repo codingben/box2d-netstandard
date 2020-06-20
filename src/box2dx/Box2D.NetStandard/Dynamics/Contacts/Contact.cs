@@ -21,357 +21,539 @@
 
 using System;
 using System.Diagnostics;
+using System.Dynamic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2DX.Collision;
 using Box2DX.Common;
 
-namespace Box2DX.Dynamics
-{
-	public delegate Contact ContactCreateFcn(Fixture fixtureA, Fixture fixtureB);
-	public delegate void ContactDestroyFcn(ref Contact contact);
+namespace Box2DX.Dynamics {
+  /// <summary>
+  /// The class manages contact between two shapes. A contact exists for each overlapping
+  /// AABB in the broad-phase (except if filtered). Therefore a contact object may exist
+  /// that has no contact points.
+  /// </summary>
+  public abstract class Contact {
+    private static ContactRegister[][] s_registers =
+      new ContactRegister[(int) ShapeType.TypeCount][ /*(int)ShapeType.ShapeTypeCount*/];
 
-	public struct ContactRegister
-	{
-		public ContactCreateFcn CreateFcn;
-		public ContactDestroyFcn DestroyFcn;
-		public bool Primary;
-	}
+    private static bool s_initialized;
 
-	/// <summary>
-	/// A contact edge is used to connect bodies and contacts together
-	/// in a contact graph where each body is a node and each contact
-	/// is an edge. A contact edge belongs to a doubly linked list
-	/// maintained in each attached body. Each contact has two contact
-	/// nodes, one for each attached body.
-	/// </summary>
-	public class ContactEdge
-	{
-		/// <summary>
-		/// Provides quick access to the other body attached.
-		/// </summary>
-		public Body Other;
-		/// <summary>
-		/// The contact.
-		/// </summary>
-		public Contact Contact;
-		/// <summary>
-		/// The previous contact edge in the body's contact list.
-		/// </summary>
-		public ContactEdge Prev;
-		/// <summary>
-		/// The next contact edge in the body's contact list.
-		/// </summary>
-		public ContactEdge Next;
-	}
+    internal CollisionFlags m_flags;
 
-	/// <summary>
-	/// The class manages contact between two shapes. A contact exists for each overlapping
-	/// AABB in the broad-phase (except if filtered). Therefore a contact object may exist
-	/// that has no contact points.
-	/// </summary>
-	public abstract class Contact
-	{
-		[Flags]
-		public enum CollisionFlags
-		{
-			NonSolid = 0x0001,
-			Slow = 0x0002,
-			Island = 0x0004,
-			Toi = 0x0008,
-			Touch = 0x0010
-		}
+    // World pool and list pointers.
+    internal Contact m_prev;
+    internal Contact m_next;
 
-		public static ContactRegister[][] s_registers =
-			new ContactRegister[(int)ShapeType.ShapeTypeCount][/*(int)ShapeType.ShapeTypeCount*/];
-		public static bool s_initialized;
+    // Nodes for connecting bodies.
+    internal ContactEdge m_nodeA;
+    internal ContactEdge m_nodeB;
 
-		public CollisionFlags _flags;
+    internal Fixture m_fixtureA;
+    internal Fixture m_fixtureB;
 
-		// World pool and list pointers.
-		public Contact _prev;
-		public Contact _next;
+    internal int m_indexA;
+    internal int m_indexB;
 
-		// Nodes for connecting bodies.
-		public ContactEdge _nodeA;
-		public ContactEdge _nodeB;
+    internal Manifold m_manifold = new Manifold();
 
-		public Fixture _fixtureA;
-		public Fixture _fixtureB;
-		
-		public Manifold _manifold = new Manifold();
+    private int m_toiCount;
+    internal float _toi;
 
-		public float _toi;
+    private float m_friction;
+    private float m_restitution;
 
-		internal delegate void CollideShapeDelegate(
-			ref Manifold manifold, Shape circle1, XForm xf1, Shape circle2, XForm xf2);
-		internal CollideShapeDelegate CollideShapeFunction;
+    private float m_tangentSpeed;
 
-		public Contact(){}
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal Manifold GetManifold() => m_manifold;
 
-		public Contact(Fixture fA, Fixture fB)
-		{
-			_flags = 0;
+    internal Manifold Manifold {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_manifold;
+    }
 
-			if (fA.IsSensor || fB.IsSensor)
-			{
-				_flags |= CollisionFlags.NonSolid;
-			}
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void GetWorldManifold(out WorldManifold worldManifold) {
+      Body bodyA = m_fixtureA.Body;
+      Body bodyB = m_fixtureB.Body;
+      Shape shapeA = m_fixtureA.Shape;
+      Shape shapeB = m_fixtureB.Shape;
 
-			_fixtureA = fA;
-			_fixtureB = fB;
+      worldManifold = new WorldManifold();
+      worldManifold.Initialize(m_manifold, bodyA.GetTransform(), shapeA.m_radius, bodyB.GetTransform(), shapeB.m_radius);
+    }
 
-			_manifold.PointCount = 0;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetEnabled(bool flag) {
+      if (flag) {
+        m_flags |= CollisionFlags.Enabled;
+      }
+      else {
+        m_flags &= ~CollisionFlags.Enabled;
+      }
+    }
 
-			_prev = null;
-			_next = null;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsEnabled() => (m_flags & CollisionFlags.Enabled) == CollisionFlags.Enabled;
 
-			_nodeA = new ContactEdge();
-			_nodeB = new ContactEdge();
-		}
+    public bool Enabled {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => IsEnabled();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => SetEnabled(value);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsTouching() => (m_flags & CollisionFlags.Touching) == CollisionFlags.Touching;
 
-		public static void AddType(ContactCreateFcn createFcn, ContactDestroyFcn destoryFcn,
-					  ShapeType type1, ShapeType type2)
-		{
-			Debug.Assert(ShapeType.UnknownShape < type1 && type1 < ShapeType.ShapeTypeCount);
-			Debug.Assert(ShapeType.UnknownShape < type2 && type2 < ShapeType.ShapeTypeCount);
+    public bool Touching {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => IsTouching();
+    }
 
-			if (s_registers[(int)type1] == null)
-				s_registers[(int)type1] = new ContactRegister[(int)ShapeType.ShapeTypeCount];
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Contact GetNext() => m_next;
 
-			s_registers[(int)type1][(int)type2].CreateFcn = createFcn;
-			s_registers[(int)type1][(int)type2].DestroyFcn = destoryFcn;
-			s_registers[(int)type1][(int)type2].Primary = true;
+    public Contact Next {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => GetNext();
+    }
+    
+    /// <summary>
+    /// Get the first fixture in this contact.
+    /// </summary>
+    public Fixture FixtureA {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_fixtureA;
+    }
 
-			if (type1 != type2)
-			{
-				s_registers[(int)type2][(int)type1].CreateFcn = createFcn;
-				s_registers[(int)type2][(int)type1].DestroyFcn = destoryFcn;
-				s_registers[(int)type2][(int)type1].Primary = false;
-			}
-		}
+    /// <summary>
+    /// Get the second fixture in this contact.
+    /// </summary>
+    public Fixture FixtureB {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_fixtureB;
+    }
 
-		public static void InitializeRegisters()
-		{
-			AddType(CircleContact.Create, CircleContact.Destroy, ShapeType.CircleShape, ShapeType.CircleShape);
-			AddType(PolyAndCircleContact.Create, PolyAndCircleContact.Destroy, ShapeType.PolygonShape, ShapeType.CircleShape);
-			AddType(PolygonContact.Create, PolygonContact.Destroy, ShapeType.PolygonShape, ShapeType.PolygonShape);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Fixture GetFixtureA() => FixtureA;
 
-			AddType(EdgeAndCircleContact.Create, EdgeAndCircleContact.Destroy, ShapeType.EdgeShape, ShapeType.CircleShape);
-			AddType(PolyAndEdgeContact.Create, PolyAndEdgeContact.Destroy, ShapeType.PolygonShape, ShapeType.EdgeShape);
-		}
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Fixture GetFixtureB() => FixtureB;
 
-		public static Contact Create(Fixture fixtureA, Fixture fixtureB)
-		{
-			if (s_initialized == false)
-			{
-				InitializeRegisters();
-				s_initialized = true;
-			}
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FlagForFiltering() => m_flags |= CollisionFlags.Filter;
 
-			ShapeType type1 = fixtureA.ShapeType;
-			ShapeType type2 = fixtureB.ShapeType;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float GetFriction() => m_friction;
 
-			Debug.Assert(ShapeType.UnknownShape < type1 && type1 < ShapeType.ShapeTypeCount);
-			Debug.Assert(ShapeType.UnknownShape < type2 && type2 < ShapeType.ShapeTypeCount);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetFriction(float friction) => m_friction = friction;
 
-			ContactCreateFcn createFcn = s_registers[(int)type1][(int)type2].CreateFcn;
-			if (createFcn != null)
-			{
-				if (s_registers[(int)type1][(int)type2].Primary)
-				{
-					return createFcn(fixtureA, fixtureB);
-				}
-				else
-				{
-					return createFcn(fixtureB, fixtureA);
-				}
-			}
-			else
-			{
-				return null;
-			}
-		}
+    public float Friction {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => GetFriction();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => SetFriction(value);
+    }
 
-		public static void Destroy(ref Contact contact)
-		{
-			Debug.Assert(s_initialized == true);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ResetFriction() => m_friction = Settings.MixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
 
-			if (contact._manifold.PointCount > 0)
-			{
-				contact.FixtureA.Body.WakeUp();
-				contact.FixtureB.Body.WakeUp();
-			}
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetRestitution(float restitution) => m_restitution = restitution;
 
-			ShapeType typeA = contact.FixtureA.ShapeType;
-			ShapeType typeB = contact.FixtureB.ShapeType;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float GetRestitution() => m_restitution;
 
-			Debug.Assert(ShapeType.UnknownShape < typeA && typeA < ShapeType.ShapeTypeCount);
-			Debug.Assert(ShapeType.UnknownShape < typeB && typeB < ShapeType.ShapeTypeCount);
+    public float Restitution {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => GetRestitution();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => SetRestitution(value);
+    }
 
-			ContactDestroyFcn destroyFcn = s_registers[(int)typeA][(int)typeB].DestroyFcn;
-			destroyFcn(ref contact);
-		}
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ResetRestitution() =>
+      m_restitution = Settings.MixRestitution(m_fixtureA.m_restitution, m_fixtureB.m_restitution);
 
-		public void Update(ContactListener listener)
-		{
-			Manifold oldManifold = _manifold.Clone();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetTangentSpeed(float speed) => m_tangentSpeed = speed;
 
-			Evaluate();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float GetTangentSpeed() => m_tangentSpeed;
 
-			Body bodyA = _fixtureA.Body;
-			Body bodyB = _fixtureB.Body;
+    public float TangentSpeed {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => GetTangentSpeed();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => SetTangentSpeed(value);
+    }
 
-			int oldCount = oldManifold.PointCount;
-			int newCount = _manifold.PointCount;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetChildIndexA() => m_indexA;
 
-			if (newCount == 0 && oldCount > 0)
-			{
-				bodyA.WakeUp();
-				bodyB.WakeUp();
-			}
+    public int ChildIndexA {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => GetChildIndexA();
+    }
+    
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetChildIndexB() => m_indexB;
 
-			// Slow contacts don't generate TOI events.
-			if (bodyA.IsStatic() || bodyA.IsBullet() || bodyB.IsStatic() || bodyB.IsBullet())
-			{
-				_flags &= ~CollisionFlags.Slow;
-			}
-			else
-			{
-				_flags |= CollisionFlags.Slow;
-			}
+    public int ChildIndexB {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => GetChildIndexB();
+    }
+    
+    
+    public   float                _friction;
+    public   float                _restitution;
+    public   float                _tangentSpeed;
+    private  int                  _indexA;
+    private  int                  _indexB;
+    internal int                  _toiCount;
 
-			// Match old contact ids to new contact ids and copy the
-			// stored impulses to warm start the solver.
-			for (int i = 0; i < _manifold.PointCount; ++i)
-			{
-				ManifoldPoint mp2 = _manifold.Points[i];
-				mp2.NormalImpulse = 0.0f;
-				mp2.TangentImpulse = 0.0f;
-				ContactID id2 = mp2.ID;
+    internal abstract void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB);
+    
+    public Contact(Fixture fA, int indexA, Fixture fB, int indexB) {
+      m_flags = CollisionFlags.Enabled;
 
-				for (int j = 0; j < oldManifold.PointCount; ++j)
-				{
-					ManifoldPoint mp1 = oldManifold.Points[j];
+      m_fixtureA = fA;
+      m_fixtureB = fB;
 
-					if (mp1.ID.Key == id2.Key)
-					{
-						mp2.NormalImpulse = mp1.NormalImpulse;
-						mp2.TangentImpulse = mp1.TangentImpulse;
-						break;
-					}
-				}
-			}
+      _indexA = indexA;
+      _indexB = indexB;
 
-			if (oldCount == 0 && newCount > 0)
-			{
-				_flags |= CollisionFlags.Touch;
-				if(listener!=null)
-					listener.BeginContact(this);
-			}
+      m_manifold.pointCount = 0;
 
-			if (oldCount > 0 && newCount == 0)
-			{
-				_flags &= ~CollisionFlags.Touch;
-				if (listener != null)
-				listener.EndContact(this);
-			}
+      m_prev = null;
+      m_next = null;
 
-			if ((_flags & CollisionFlags.NonSolid) == 0)
-			{
-				if (listener != null)
-					listener.PreSolve(this, oldManifold);
+      m_nodeA = new ContactEdge();
+      m_nodeB = new ContactEdge();
 
-				// The user may have disabled contact.
-				if (_manifold.PointCount == 0)
-				{
-					_flags &= ~CollisionFlags.Touch;
-				}
-			}
-		}
+      _toiCount = 0;
 
-		public void Evaluate()
-		{
-			Body bodyA = _fixtureA.Body;
-			Body bodyB = _fixtureB.Body;
+      _friction    = Settings.MixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
+      _restitution = Settings.MixRestitution(m_fixtureA.Restitution, m_fixtureB.Restitution);
 
-			Debug.Assert(CollideShapeFunction!=null);
+      m_tangentSpeed = 0f;
+    }
 
-			CollideShapeFunction(ref _manifold, _fixtureA.Shape, bodyA.GetXForm(), _fixtureB.Shape, bodyB.GetXForm());
-		}
 
-		public float ComputeTOI(Sweep sweepA, Sweep sweepB)
-		{
-			TOIInput input = new TOIInput();
-			input.SweepA = sweepA;
-			input.SweepB = sweepB;
-			input.SweepRadiusA = _fixtureA.ComputeSweepRadius(sweepA.LocalCenter);
-			input.SweepRadiusB = _fixtureB.ComputeSweepRadius(sweepB.LocalCenter);
-			input.Tolerance = Settings.LinearSlop;
+    public static void AddType(ContactCreateFcn createFcn, ContactDestroyFcn destoryFcn,
+      ShapeType                                 type1,     ShapeType         type2) {
+      Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
+      Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
 
-			return Collision.Collision.TimeOfImpact(input, _fixtureA.Shape, _fixtureB.Shape);
-		}
+      if (s_registers[(int) type1] == null)
+        s_registers[(int) type1] = new ContactRegister[(int) ShapeType.TypeCount];
 
-		/// <summary>
-		/// Get the contact manifold.
-		/// </summary>
-		public Manifold Manifold
-		{
-			get { return _manifold; }
-		}
+      s_registers[(int) type1][(int) type2].CreateFcn  = createFcn;
+      s_registers[(int) type1][(int) type2].DestroyFcn = destoryFcn;
+      s_registers[(int) type1][(int) type2].Primary    = true;
 
-		/// <summary>
-		/// Get the world manifold.
-		/// </summary>		
-		public void GetWorldManifold(out WorldManifold worldManifold)
-		{
-			worldManifold = new WorldManifold();
+      if (type1 != type2) {
+        s_registers[(int) type2][(int) type1].CreateFcn  = createFcn;
+        s_registers[(int) type2][(int) type1].DestroyFcn = destoryFcn;
+        s_registers[(int) type2][(int) type1].Primary    = false;
+      }
+    }
 
-			Body bodyA = _fixtureA.Body;
-			Body bodyB = _fixtureB.Body;
-			Shape shapeA = _fixtureA.Shape;
-			Shape shapeB = _fixtureB.Shape;
+    public static void InitializeRegisters() {
+      AddType(CircleContact.Create, CircleContact.Destroy, ShapeType.Circle, ShapeType.Circle);
+      AddType(PolyAndCircleContact.Create, PolyAndCircleContact.Destroy, ShapeType.Polygon, ShapeType.Circle);
+      AddType(PolygonContact.Create, PolygonContact.Destroy, ShapeType.Polygon, ShapeType.Polygon);
+      AddType(EdgeAndCircleContact.Create, EdgeAndCircleContact.Destroy, ShapeType.Edge, ShapeType.Circle);
+      AddType(EdgeAndPolygonContact.Create, EdgeAndPolygonContact.Destroy, ShapeType.Edge, ShapeType.Polygon);
+#if CHAINSHAPE
+      AddType(ChainAndCircleContact.Create, ChainAndCircleContact.Destroy, ShapeType.Chain, ShapeType.Circle);
+      AddType(ChainAndPolygonContact.Create, ChainAndPolygonContact.Destroy, ShapeType.Chain,
+              ShapeType.Polygon);
+#endif
+    }
 
-			worldManifold.Initialize(_manifold, bodyA.GetXForm(), shapeA._radius, bodyB.GetXForm(), shapeB._radius);
-		}
+    public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
+      if (s_initialized == false) {
+        InitializeRegisters();
+        s_initialized = true;
+      }
 
-		/// <summary>
-		/// Is this contact solid?
-		/// </summary>
-		/// <returns>True if this contact should generate a response.</returns>
-		public bool IsSolid
-		{
-			get { return (_flags & CollisionFlags.NonSolid) == 0; }
-		}
+      ShapeType type1 = fixtureA.Type;
+      ShapeType type2 = fixtureB.Type;
 
-		/// <summary>
-		/// Are fixtures touching?
-		/// </summary>
-		public bool AreTouching
-		{
-			get { return (_flags & CollisionFlags.Touch) == CollisionFlags.Touch; }
-		}
+      Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
+      Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
 
-		/// <summary>
-		/// Get the next contact in the world's contact list.
-		/// </summary>
-		public Contact GetNext()
-		{
-			return _next;
-		}
+      ContactCreateFcn createFcn = s_registers[(int) type1][(int) type2].CreateFcn;
+      if (createFcn != null) {
+        if (s_registers[(int) type1][(int) type2].Primary) {
+          return createFcn(fixtureA, fixtureB);
+        }
+        else {
+          return createFcn(fixtureB, fixtureA);
+        }
+      }
+      else {
+        return null;
+      }
+    }
 
-		/// <summary>
-		/// Get the first fixture in this contact.
-		/// </summary>
-		public Fixture FixtureA
-		{
-			get { return _fixtureA; }
-		}
+    public static void Destroy(ref Contact contact) {
+      Debug.Assert(s_initialized == true);
 
-		/// <summary>
-		/// Get the second fixture in this contact.
-		/// </summary>
-		public Fixture FixtureB
-		{
-			get { return _fixtureB; }
-		}		
-	}
+      Fixture fixtureA = contact.m_fixtureA;
+      Fixture fixtureB = contact.m_fixtureB;
+      
+      if (contact.m_manifold.pointCount > 0 &&
+          fixtureA.IsSensor()==false &&
+          fixtureB.IsSensor()==false) {
+        fixtureA.Body.SetAwake(true);
+        fixtureB.Body.SetAwake(true);
+      }
+
+      ShapeType typeA = fixtureA.Type;
+      ShapeType typeB = fixtureB.Type;
+
+      Debug.Assert(ShapeType.Invalid < typeA && typeA < ShapeType.TypeCount);
+      Debug.Assert(ShapeType.Invalid < typeB && typeB < ShapeType.TypeCount);
+
+      ContactDestroyFcn destroyFcn = s_registers[(int) typeA][(int) typeB].DestroyFcn;
+      destroyFcn(ref contact);
+    }
+
+    public void Update(ContactListener listener) {
+      Manifold oldManifold = m_manifold;
+
+      // Re-enable this contact.
+      m_flags |= CollisionFlags.Enabled;
+
+      bool touching    = false;
+      bool wasTouching = m_flags.HasFlag(CollisionFlags.Touching);
+
+      bool sensorA = m_fixtureA.IsSensor();
+      bool sensorB = m_fixtureB.IsSensor();
+      bool sensor  = sensorA || sensorB;
+
+      Body      bodyA = m_fixtureA.Body;
+      Body      bodyB = m_fixtureB.Body;
+      Transform xfA   = bodyA.GetTransform();
+      Transform xfB   = bodyB.GetTransform();
+
+      // Is this contact a sensor?
+      if (sensor) {
+        Shape shapeA = m_fixtureA.Shape;
+        Shape shapeB = m_fixtureB.Shape;
+        touching = TestOverlap(shapeA, _indexA, shapeB, _indexB, xfA, xfB);
+
+        // Sensors don't generate manifolds.
+        m_manifold.pointCount = 0;
+      }
+      else {
+        Evaluate(out m_manifold, xfA, xfB);
+        touching = m_manifold.pointCount > 0;
+
+        // Match old contact ids to new contact ids and copy the
+        // stored impulses to warm start the solver.
+        for (int i = 0; i < m_manifold.pointCount; ++i) {
+          ManifoldPoint mp2 = m_manifold.points[i];
+          mp2.normalImpulse  = 0.0f;
+          mp2.tangentImpulse = 0.0f;
+          ContactID id2 = mp2.id;
+
+          for (int j = 0; j < oldManifold.pointCount; ++j) {
+            ManifoldPoint mp1 = oldManifold.points[j];
+
+            if (mp1.id.key == id2.key) {
+              mp2.normalImpulse  = mp1.normalImpulse;
+              mp2.tangentImpulse = mp1.tangentImpulse;
+              break;
+            }
+          }
+        }
+
+        if (touching != wasTouching) {
+          bodyA.SetAwake(true);
+          bodyB.SetAwake(true);
+        }
+      }
+
+      if (touching) {
+        m_flags |= CollisionFlags.Touching;
+      }
+      else {
+        m_flags &= ~CollisionFlags.Touching;
+      }
+
+      if (listener != null) {
+        if (wasTouching == false && touching == true) {
+          listener.BeginContact(this);
+        }
+
+        if (wasTouching == true && touching == false) {
+          listener.EndContact(this);
+        }
+
+        if (sensor == false && touching==true) {
+          listener.PreSolve(this, oldManifold);
+        }
+      }
+    }
+
+    private bool TestOverlap(in Shape     shapeA, int          indexA,
+      in                        Shape     shapeB, int          indexB,
+      in                        Transform xfA,    in Transform xfB) {
+      DistanceInput input = new DistanceInput();
+      input.proxyA.Set(shapeA, indexA);
+      input.proxyB.Set(shapeB, indexB);
+      input.transformA = xfA;
+      input.transformB = xfB;
+      input.useRadii   = true;
+
+      SimplexCache cache = new SimplexCache();
+      cache.count = 0;
+
+      Distance(out DistanceOutput output, cache, in input);
+
+      return output.distance < 10.0f * Settings.FLT_EPSILON;
+    }
+
+    internal static void Distance(out DistanceOutput output, SimplexCache cache, in DistanceInput input) {
+      output = new DistanceOutput();
+      
+      DistanceProxy proxyA = input.proxyA;
+      DistanceProxy proxyB = input.proxyB;
+
+      Transform transformA = input.transformA;
+      Transform transformB = input.transformB;
+
+      // Initialize the simplex.
+      Simplex simplex = new Simplex();
+      simplex.ReadCache(cache, proxyA, transformA, proxyB, transformB);
+
+      // Get simplex vertices as an array.
+      SimplexVertex[] vertices   = simplex.m_v;
+      const int           k_maxIters = 20;
+
+      // These store the vertices of the last simplex so that we
+      // can check for duplicates and prevent cycling.
+      int[] saveA     = new int[3], saveB = new int[3];
+      int   saveCount = 0;
+
+      // Main iteration loop.
+      int iter = 0;
+      while (iter < k_maxIters) {
+        // Copy simplex so we can identify duplicates.
+        saveCount = simplex.m_count;
+        for (int i = 0; i < saveCount; ++i) {
+          saveA[i] = vertices[i].indexA;
+          saveB[i] = vertices[i].indexB;
+        }
+
+        switch (simplex.m_count) {
+          case 1:
+            break;
+
+          case 2:
+            simplex.Solve2();
+            break;
+
+          case 3:
+            simplex.Solve3();
+            break;
+
+          default:
+            Debug.Assert(false);
+            break;
+        }
+
+        // If we have 3 points, then the origin is in the corresponding triangle.
+        if (simplex.m_count == 3) {
+          break;
+        }
+
+        // Get search direction.
+        Vector2 d = simplex.GetSearchDirection();
+
+        // Ensure the search direction is numerically fit.
+        if (d.LengthSquared() < Settings.FLT_EPSILON_SQUARED) {
+          // The origin is probably contained by a line segment
+          // or triangle. Thus the shapes are overlapped.
+
+          // We can't return zero here even though there may be overlap.
+          // In case the simplex is a point, segment, or triangle it is difficult
+          // to determine if the origin is contained in the CSO or very close to it.
+          break;
+        }
+
+        // Compute a tentative new simplex vertex using support points.
+        SimplexVertex vertex = vertices[simplex.m_count];
+        vertex.indexA = proxyA.GetSupport(Common.Math.MulT(transformA.q, -d));
+        vertex.wA     = Common.Math.Mul(transformA, proxyA.GetVertex(vertex.indexA));
+        vertex.indexB = proxyB.GetSupport(Common.Math.MulT(transformB.q, d));
+        vertex.wB     = Common.Math.Mul(transformB, proxyB.GetVertex(vertex.indexB));
+        vertex.w      = vertex.wB - vertex.wA;
+
+        // Iteration count is equated to the number of support point calls.
+        ++iter;
+        //++b2_gjkIters;
+
+        // Check for duplicate support points. This is the main termination criteria.
+        bool duplicate = false;
+        for (int i = 0; i < saveCount; ++i) {
+          if (vertex.indexA == saveA[i] && vertex.indexB == saveB[i]) {
+            duplicate = true;
+            break;
+          }
+        }
+
+        // If we found a duplicate support point we must exit to avoid cycling.
+        if (duplicate) {
+          break;
+        }
+
+        // New vertex is ok and needed.
+        ++simplex.m_count;
+      }
+
+      //_gjkMaxIters = b2Max(b2_gjkMaxIters, iter);
+
+      // Prepare output.
+      simplex.GetWitnessPoints(out output.pointA, out output.pointB);
+      output.distance   = Vector2.Distance(output.pointA, output.pointB);
+      output.iterations = iter;
+
+      // Cache the simplex.
+      simplex.WriteCache(cache);
+
+      // Apply radii if requested.
+      if (input.useRadii) {
+        float rA = proxyA._radius;
+        float rB = proxyB._radius;
+
+        if (output.distance > rA + rB && output.distance > Settings.FLT_EPSILON) {
+          // Shapes are still no overlapped.
+          // Move the witness points to the outer surface.
+          output.distance -= rA + rB;
+          Vector2 normal = output.pointB - output.pointA;
+          normal        =  Vector2.Normalize(normal);
+          output.pointA += rA * normal;
+          output.pointB -= rB * normal;
+        }
+        else {
+          // Shapes are overlapped when radii are considered.
+          // Move the witness points to the middle.
+          Vector2 p = 0.5f * (output.pointA + output.pointB);
+          output.pointA   = p;
+          output.pointB   = p;
+          output.distance = 0.0f;
+        }
+      }
+    }
+
+
+  }
 }

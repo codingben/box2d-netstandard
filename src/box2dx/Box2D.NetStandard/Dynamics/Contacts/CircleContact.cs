@@ -28,26 +28,24 @@ namespace Box2DX.Dynamics
 	public class CircleContact : Contact
 	{
 		public CircleContact(Fixture fixtureA, Fixture fixtureB)
-			: base(fixtureA, fixtureB)
+			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.ShapeType == ShapeType.CircleShape);
-			Debug.Assert(fixtureB.ShapeType == ShapeType.CircleShape);
-			CollideShapeFunction = CollideCircles;
+			Debug.Assert(fixtureA.Type == ShapeType.Circle);
+			Debug.Assert(fixtureB.Type == ShapeType.Circle);
 		}
 
-		private static void CollideCircles(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2)
-		{
-			Collision.Collision.CollideCircles(ref manifold, (CircleShape)shape1, xf1, (CircleShape)shape2, xf2);
-		}
-
-		public new static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		public static Contact Create(Fixture fixtureA, Fixture fixtureB)
 		{
 			return new CircleContact(fixtureA, fixtureB);
 		}
 
-		public new static void Destroy(ref Contact contact)
+		public static void Destroy(ref Contact contact)
 		{
 			contact = null;
+		}
+
+		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
+			Collision.Collision.CollideCircles(out manifold,(CircleShape)m_fixtureA.Shape,xfA,(CircleShape)m_fixtureB.Shape,xfB);
 		}
 	}
 }

@@ -20,168 +20,100 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2DX.Common;
 using Math = Box2DX.Common.Math;
+using b2Vec2 = System.Numerics.Vector2;
+using int32 = System.Int32;
 
 namespace Box2DX.Collision
 {
 	/// <summary>
 	/// A circle shape.
 	/// </summary>
-	public class CircleShape : Shape
-	{
-		// Position
-		internal Vector2 _position;
+	public class CircleShape : Shape {
+		internal Vector2 m_p;
 
-		public CircleShape()			
-		{
-			_type = ShapeType.CircleShape;
+		public CircleShape() {
+			m_type = ShapeType.Circle;
+			m_radius = 0;
+			m_p=Vector2.Zero;
 		}
 
-		public override bool TestPoint(XForm transform, Vector2 p)
-		{
-			Vector2 center = transform.Position + Math.Mul(transform.R, _position);
-			Vector2 d = p - center;
-			return Vector2.Dot(d, d) <= _radius * _radius;
+		public Vector2 Center {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => m_p;
+		}
+		
+		public float Radius {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => m_radius;
 		}
 
-		// Collision Detection in Interactive 3D Environments by Gino van den Bergen
-		// From Section 3.1.2
-		// x = s + a * r
-		// norm(x) = radius
-		public override SegmentCollide TestSegment(XForm transform, out float lambda, out Vector2 normal, Segment segment,
-			float                                          maxLambda)
-		{
-			lambda = 0f;
-			normal = Vector2.Zero;
+		public override Shape Clone() {
+			return (CircleShape) MemberwiseClone();
+		}
 
-			Vector2 position = transform.Position + Math.Mul(transform.R, _position);
-			Vector2 s = segment.P1 - position;
-			float b = Vector2.Dot(s, s) - _radius * _radius;
+		public override int GetChildCount() => 1;
 
-			// Does the segment start inside the circle?
-			if (b < 0.0f)
-			{
-				lambda = 0f;
-				return SegmentCollide.StartInsideCollide;
-			}
+		public override bool TestPoint(in Transform transform, in Vector2 p) {
+			b2Vec2 center = transform.p + Math.Mul(transform.q, m_p);
+			b2Vec2 d      = p           - center;
+			return Vector2.Dot(d, d) <= m_radius * m_radius;
+		}
+
+		public override bool RayCast(out RayCastOutput output, in RayCastInput input, in Transform transform, int childIndex) {
+			output = default;
+			
+			b2Vec2 position = transform.p + Math.Mul(transform.q, m_p);
+			b2Vec2 s        = input.p1    - position;
+			float  b        = Vector2.Dot(s, s) - m_radius * m_radius;
 
 			// Solve quadratic equation.
-			Vector2 r = segment.P2 - segment.P1;
-			float c = Vector2.Dot(s, r);
-			float rr = Vector2.Dot(r, r);
-			float sigma = c * c - rr * b;
+			b2Vec2 r     = input.p2 - input.p1;
+			float  c     =  Vector2.Dot(s, r);
+			float  rr    =  Vector2.Dot(r,  r);
+			float  sigma = c * c - rr * b;
 
 			// Check for negative discriminant and short segment.
 			if (sigma < 0.0f || rr < Settings.FLT_EPSILON)
 			{
-				return SegmentCollide.MissCollide;
+				return false;
 			}
 
 			// Find the point of intersection of the line with the circle.
 			float a = -(c + MathF.Sqrt(sigma));
 
 			// Is the intersection point on the segment?
-			if (0.0f <= a && a <= maxLambda * rr)
+			if (0.0f <= a && a <= input.maxFraction * rr)
 			{
-				a /= rr;
-				lambda = a;
-				normal = Vector2.Normalize(s + a * r);
-				return SegmentCollide.HitCollide;
+				a                /= rr;
+				output.fraction =  a;
+				output.normal   =  Vector2.Normalize(s + a * r);
+				return true;
 			}
 
-			return SegmentCollide.MissCollide;
+			return false;
 		}
 
-		public override void ComputeAABB(out AABB aabb, XForm transform)
-		{
-			aabb = new AABB();
-
-			Vector2 p = transform.Position + Math.Mul(transform.R, _position);
-			aabb.LowerBound= new Vector2(p.X - _radius, p.Y - _radius);
-			aabb.UpperBound= new Vector2(p.X + _radius, p.Y + _radius);
+		public override void ComputeAABB(out AABB aabb, in Transform transform, int childIndex) {
+			b2Vec2 p = transform.p   + Math.Mul(transform.q, m_p);
+			aabb.lowerBound=new Vector2(p.X - m_radius, p.Y - m_radius);
+			aabb.upperBound=new Vector2(p.X + m_radius, p.Y + m_radius);
 		}
 
-		public override void ComputeMass(out MassData massData, float density)
-		{
-			massData = new MassData();
-
-			massData.Mass = density * Settings.Pi * _radius * _radius;
-			massData.Center = _position;
+		public override void ComputeMass(out MassData massData, float density) {
+			massData.mass   = density * Settings.Pi * m_radius * m_radius;
+			massData.center = m_p;
 
 			// inertia about the local origin
-			massData.I = massData.Mass * (0.5f * _radius * _radius + Vector2.Dot(_position, _position));
-		}		
-
-		public override float ComputeSubmergedArea(Vector2 normal, float offset, XForm xf, out Vector2 c)
-		{
-			Vector2 p = Math.Mul(xf, _position);
-			float l = -(Vector2.Dot(normal, p) - offset);
-			if (l < -_radius + Settings.FLT_EPSILON)
-			{
-				//Completely dry
-				c = new Vector2();
-				return 0;
-			}
-			if (l > _radius)
-			{
-				//Completely wet
-				c = p;
-				return Settings.Pi * _radius * _radius;
-			}
-
-			//Magic
-			float r2 = _radius * _radius;
-			float l2 = l * l;
-			float area = r2 * ((float)System.Math.Asin(l / _radius) + Settings.Pi / 2) +
-				l * MathF.Sqrt(r2 - l2);
-			float com = -2.0f / 3.0f * (float)System.Math.Pow(r2 - l2, 1.5f) / area;
-
-			c.X = p.X + normal.X * com;
-			c.Y = p.Y + normal.Y * com;
-
-			return area;
+			massData.I = massData.mass * (0.5f * m_radius * m_radius + Vector2.Dot(m_p, m_p));
 		}
 
-		/// <summary>
-		/// Get the supporting vertex index in the given direction.
-		/// </summary>
-		public override int GetSupport(Vector2 d)
-		{
-			return 0;
-		}
-
-		/// <summary>
-		/// Get the supporting vertex in the given direction.
-		/// </summary>
-		public override Vector2 GetSupportVertex(Vector2 d)
-		{
-			return _position;
-		}
-
-		/// <summary>
-		/// Get a vertex by index. Used by Distance.
-		/// </summary>
-		public override Vector2 GetVertex(int index)
-		{
-			Debug.Assert(index == 0);
-			return _position;
-		}
-
-		public override float ComputeSweepRadius(Vector2 pivot)
-		{
-			return Vector2.Distance(_position, pivot);
-		}
-
-		/// <summary>
-		/// Get the vertex count.
-		/// </summary>
-		public int VertexCount {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => 1;
+		public void Set(in Vector2 center, in float radius) {
+			m_p = center;
+			m_radius = radius;
 		}
 	}
 }

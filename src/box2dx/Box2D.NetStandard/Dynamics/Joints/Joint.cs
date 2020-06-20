@@ -35,7 +35,8 @@ namespace Box2DX.Dynamics
 		PulleyJoint,
 		MouseJoint,
 		GearJoint,
-		LineJoint
+		LineJoint,
+		WheelJoint
 	}
 
 	public enum LimitState
@@ -84,12 +85,12 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Provides quick access to the other body attached.
 		/// </summary>
-		public Body Other;
+		public Body other;
 
 		/// <summary>
 		/// The joint.
 		/// </summary>
-		public Joint Joint;
+		public Joint joint;
 
 		/// <summary>
 		/// The previous joint edge in the body's joint list.
@@ -99,7 +100,7 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// The next joint edge in the body's joint list.
 		/// </summary>
-		public JointEdge Next;
+		public JointEdge next;
 	}
 
 #warning "CAS"
@@ -112,8 +113,8 @@ namespace Box2DX.Dynamics
 		{
 			Type = JointType.UnknownJoint;
 			UserData = null;
-			Body1 = null;
-			Body2 = null;
+			BodyA = null;
+			BodyB = null;
 			CollideConnected = false;
 		}
 
@@ -130,12 +131,12 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// The first attached body.
 		/// </summary>
-		public Body Body1;
+		public Body BodyA;
 
 		/// <summary>
 		/// The second attached body.
 		/// </summary>
-		public Body Body2;
+		public Body BodyB;
 
 		/// <summary>
 		/// Set this flag to true if the attached bodies should collide.
@@ -152,10 +153,10 @@ namespace Box2DX.Dynamics
 		protected JointType _type;
 		internal Joint _prev;
 		internal Joint _next;
-		internal JointEdge _node1 = new JointEdge();
-		internal JointEdge _node2 = new JointEdge();
-		internal Body _body1;
-		internal Body _body2;
+		internal JointEdge _edgeA = new JointEdge();
+		internal JointEdge _edgeB = new JointEdge();
+		internal Body _bodyA;
+		internal Body _bodyB;
 
 		internal bool _islandFlag;
 		internal bool _collideConnected;
@@ -170,27 +171,25 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Get the type of the concrete joint.
 		/// </summary>
-		public new JointType GetType()
-		{
-			return _type;
-		}
+		public JointType Type => _type;
+		
 
 		/// <summary>
 		/// Get the first body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetBody1()
+		public Body GetBodyA()
 		{
-			return _body1;
+			return _bodyA;
 		}
 
 		/// <summary>
 		/// Get the second body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetBody2()
+		public Body GetBodyB()
 		{
-			return _body2;
+			return _bodyB;
 		}
 
 		/// <summary>
@@ -239,8 +238,8 @@ namespace Box2DX.Dynamics
 			_type = def.Type;
 			_prev = null;
 			_next = null;
-			_body1 = def.Body1;
-			_body2 = def.Body2;
+			_bodyA = def.BodyA;
+			_bodyB = def.BodyB;
 			_collideConnected = def.CollideConnected;
 			_islandFlag = false;
 			_userData = def.UserData;
@@ -250,43 +249,33 @@ namespace Box2DX.Dynamics
 		{
 			Joint joint = null;
 
-			switch (def.Type)
-			{
+			switch (def.Type) {
 				case JointType.DistanceJoint:
-					{
-						joint = new DistanceJoint((DistanceJointDef)def);
-					}
+					joint = new DistanceJoint((DistanceJointDef) def);
 					break;
 				case JointType.MouseJoint:
-					{
-						joint = new MouseJoint((MouseJointDef)def);
-					}
+					joint = new MouseJoint((MouseJointDef) def);
 					break;
 				case JointType.PrismaticJoint:
-					{
-						joint = new PrismaticJoint((PrismaticJointDef)def);
-					}
+					joint = new PrismaticJoint((PrismaticJointDef) def);
 					break;
 				case JointType.RevoluteJoint:
-					{
-						joint = new RevoluteJoint((RevoluteJointDef)def);
-					}
+					joint = new RevoluteJoint((RevoluteJointDef) def);
 					break;
 				case JointType.PulleyJoint:
-					{
-						joint = new PulleyJoint((PulleyJointDef)def);
-					}
+					joint = new PulleyJoint((PulleyJointDef) def);
 					break;
 				case JointType.GearJoint:
-					{
-						joint = new GearJoint((GearJointDef)def);
-					}
+					joint = new GearJoint((GearJointDef) def);
 					break;
-				case JointType.LineJoint:
-					{
-						joint = new LineJoint((LineJointDef)def);
-					}
+				// case JointType.LineJoint: {
+				// 	joint = new LineJoint((LineJointDef) def);
+				// }
+				// 	break;
+				case JointType.WheelJoint:
+					joint = new WheelJoint((WheelJointDef) def);
 					break;
+
 				default:
 					Debug.Assert(false);
 					break;
@@ -300,17 +289,17 @@ namespace Box2DX.Dynamics
 			joint = null;
 		}
 
-		internal abstract void InitVelocityConstraints(TimeStep step);
-		internal abstract void SolveVelocityConstraints(TimeStep step);
+		internal abstract void InitVelocityConstraints(in SolverData data);
+		internal abstract void SolveVelocityConstraints(in SolverData data);
 
 		// This returns true if the position errors are within tolerance.
-		internal abstract bool SolvePositionConstraints(float baumgarte);
+		internal abstract bool SolvePositionConstraints(in SolverData data);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void ComputeXForm(ref XForm xf, Vector2 center, Vector2 localCenter, float angle)
+		internal void ComputeXForm(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
 		{
-			xf.R.Set(angle);
-			xf.Position = center - Math.Mul(xf.R, localCenter);
+			xf.q.Set(angle);
+			xf.p = center - Math.Mul(xf.q, localCenter);
 		}
 	}
 }

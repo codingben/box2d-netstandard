@@ -29,20 +29,26 @@ namespace Box2DX.Common
 	/// A transform contains translation and rotation.
 	/// It is used to represent the position and orientation of rigid frames.
 	/// </summary>
-	public struct XForm
+	public struct Transform
 	{
-		public Vector2 Position;
-		public Mat22 R;
+		/// <summary>
+		/// Position
+		/// </summary>
+		public Vector2 p;
+		/// <summary>
+		/// Rotation
+		/// </summary>
+		public Mat22 q;
 
 		/// <summary>
 		/// Initialize using a position vector and a rotation matrix.
 		/// </summary>
 		/// <param name="position"></param>
 		/// <param name="R"></param>
-		public XForm(Vector2 position, Mat22 rotation)
+		public Transform(Vector2 position, Mat22 rotation)
 		{
-			Position = position;
-			R = rotation;
+			p = position;
+			q = rotation;
 		}
 
 		/// <summary>
@@ -50,26 +56,26 @@ namespace Box2DX.Common
 		/// </summary>
 		public void SetIdentity()
 		{
-			Position = Vector2.Zero;
-			R.SetIdentity();
+			p = Vector2.Zero;
+			q.SetIdentity();
 		}
 
 		/// Set this based on the position and angle.
 		public void Set(Vector2 p, float angle)
 		{
-			Position = p;
-			R.Set(angle);
+			this.p = p;
+			q.Set(angle);
 		}
 
 		/// Calculate the angle that the rotation matrix represents.
 		public float GetAngle()
 		{
-			return MathF.Atan2(R.Col1.Y, R.Col1.X);
+			return MathF.Atan2(q.ex.Y, q.ex.X);
 		}
 
-		public static XForm Identity {
+		public static Transform Identity {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new XForm(Vector2.Zero, Mat22.Identity);
+			get => new Transform(Vector2.Zero, Mat22.Identity);
 		}
 	}
 }

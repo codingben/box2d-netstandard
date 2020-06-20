@@ -34,9 +34,9 @@ namespace Box2DX.Common
 		/// </summary>
 		public Mat33(Vec3 c1, Vec3 c2, Vec3 c3)
 		{
-			Col1 = c1;
-			Col2 = c2;
-			Col3 = c3;
+			ex = c1;
+			ey = c2;
+			ez = c3;
 		}
 
 		/// <summary>
@@ -44,9 +44,9 @@ namespace Box2DX.Common
 		/// </summary>
 		public void SetZero()
 		{
-			Col1.SetZero();
-			Col2.SetZero();
-			Col3.SetZero();
+			ex.SetZero();
+			ey.SetZero();
+			ez.SetZero();
 		}
 
 		/// <summary>
@@ -55,13 +55,13 @@ namespace Box2DX.Common
 		/// </summary>
 		public Vec3 Solve33(Vec3 b)
 		{
-			float det = Vec3.Dot(Col1, Vec3.Cross(Col2, Col3));
+			float det = Vec3.Dot(ex, Vec3.Cross(ey, ez));
 			Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
 			Vec3 x = new Vec3();
-			x.X = det * Vec3.Dot(b, Vec3.Cross(Col2, Col3));
-			x.Y = det * Vec3.Dot(Col1, Vec3.Cross(b, Col3));
-			x.Z = det * Vec3.Dot(Col1, Vec3.Cross(Col2, b));
+			x.X = det * Vec3.Dot(b, Vec3.Cross(ey, ez));
+			x.Y = det * Vec3.Dot(ex, Vec3.Cross(b, ez));
+			x.Z = det * Vec3.Dot(ex, Vec3.Cross(ey, b));
 			return x;
 		}
 
@@ -72,7 +72,7 @@ namespace Box2DX.Common
 		/// </summary>
 		public Vector2 Solve22(Vector2 b)
 		{
-			float a11 = Col1.X, a12 = Col2.X, a21 = Col1.Y, a22 = Col2.Y;
+			float a11 = ex.X, a12 = ey.X, a21 = ex.Y, a22 = ey.Y;
 			float det = a11 * a22 - a12 * a21;
 			Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
@@ -82,6 +82,6 @@ namespace Box2DX.Common
 			return x;
 		}
 
-		public Vec3 Col1, Col2, Col3;
+		public Vec3 ex, ey, ez;
 	}
 }

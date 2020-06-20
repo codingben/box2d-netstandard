@@ -19,45 +19,53 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
 
 namespace Box2DX.Common
 {
 	public struct Sweep
 	{
-		public Vector2 LocalCenter;	//local center of mass position
-		public Vector2 C0, C; //local center of mass position
-		public float A0, A; //world angles
-		public float T0; //time interval = [T0,1], where T0 is in [0,1]
+		public Vector2 localCenter;	//local center of mass position
+		public Vector2 c0, c; //local center of mass position
+		public float a0, a; //world angles
+		//public float T0; //time interval = [T0,1], where T0 is in [0,1]
+		public float alpha0;
 
 		/// <summary>
 		/// Get the interpolated transform at a specific time.
 		/// </summary>
 		/// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
-		public void GetTransform(out XForm xf, float alpha)
+		public void GetTransform(out Transform xf, float alpha)
 		{
-			xf = new XForm();
-			xf.Position = (1.0f - alpha) * C0 + alpha * C;
-			float angle = (1.0f - alpha) * A0 + alpha * A;
-			xf.R.Set(angle);
+			xf = new Transform();
+			xf.p = (1.0f - alpha) * c0 + alpha * c;
+			float angle = (1.0f - alpha) * a0 + alpha * a;
+			xf.q.Set(angle);
 
 			// Shift to origin
-			xf.Position -= Math.Mul(xf.R, LocalCenter);
+			xf.p -= Math.Mul(xf.q, localCenter);
 		}
 
 		/// <summary>
 		/// Advance the sweep forward, yielding a new initial state.
 		/// </summary>
 		/// <param name="t">The new initial time.</param>
-		public void Advance(float t)
+		public void Advance(float alpha)
 		{
-			if (T0 < t && 1.0f - T0 > Settings.FLT_EPSILON)
-			{
-				float alpha = (t - T0) / (1.0f - T0);
-				C0 = (1.0f - alpha) * C0 + alpha * C;
-				A0 = (1.0f - alpha) * A0 + alpha * A;
-				T0 = t;
-			}
+			Debug.Assert(alpha0 < 1.0f);
+			float beta = (alpha - alpha0) / (1.0f - alpha0);
+			c0     += beta * (c - c0);
+			a0     += beta * (a - a0);
+			alpha0 =  alpha;
+		}
+
+		public void Normalize() {
+			float twoPi = 2f * Settings.Pi;
+			float d = twoPi * MathF.Floor(a0 / twoPi);
+			a0 -= d;
+			a -= d;
 		}
 	}
 }

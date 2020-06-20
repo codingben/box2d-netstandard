@@ -48,18 +48,6 @@ namespace Box2DX.Dynamics
 	}
 
 	/// <summary>
-	/// This is called when a body's shape passes outside of the world boundary.
-	/// </summary>
-	public abstract class BoundaryListener
-	{
-		/// <summary>
-		/// This is called for each body that leaves the world boundary.
-		/// @warning you can't modify the world inside this callback.
-		/// </summary>
-		public abstract void Violation(Body body);
-	}
-
-	/// <summary>
 	/// Implement this class to provide collision filtering. In other words, you can implement
 	/// this class if you want finer control over contact creation.
 	/// </summary>
@@ -72,15 +60,13 @@ namespace Box2DX.Dynamics
 		/// </summary>
 		public virtual bool ShouldCollide(Fixture fixtureA, Fixture fixtureB)
 		{
-			FilterData filterA = fixtureA.Filter;
-			FilterData filterB = fixtureB.Filter;
+			Filter filterA = fixtureA.m_filter;
+			Filter filterB = fixtureB.m_filter;
 
-			if (filterA.GroupIndex == filterB.GroupIndex && filterA.GroupIndex != 0)
-			{
-				return filterA.GroupIndex > 0;
-			}
+			if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0)
+				return filterA.groupIndex > 0;
 
-			bool collide = (filterA.MaskBits & filterB.CategoryBits) != 0 && (filterA.CategoryBits & filterB.MaskBits) != 0;
+			bool collide = (filterA.maskBits & filterB.categoryBits) != 0 && (filterA.categoryBits & filterB.maskBits) != 0;
 			return collide;
 		}
 
@@ -236,6 +222,6 @@ namespace Box2DX.Dynamics
 		/// Draw a transform. Choose your own length scale.
 		/// </summary>
 		/// <param name="xf">A transform.</param>
-		public abstract void DrawXForm(XForm xf);
+		public abstract void DrawXForm(Transform xf);
 	}
 }
