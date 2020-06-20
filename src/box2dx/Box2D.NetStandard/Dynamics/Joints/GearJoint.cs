@@ -49,6 +49,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Bodies;
 
 namespace Box2D.NetStandard.Dynamics.Joints {
   /// <summary>
@@ -97,12 +98,12 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     private Joint     _joint2;
     private JointType _typeA;
     private JointType _typeB;
-    private Body.Body      _bodyC;
+    private Body      _bodyC;
     private Vector2   _localAnchorC;
     private Vector2   _localAnchorA;
     private float     _referenceAngleA;
     private Vector2   _localAxisC;
-    private Body.Body      _bodyD;
+    private Body      _bodyD;
     private Vector2   _localAnchorD;
     private Vector2   _localAnchorB;
     private float     _referenceAngleB;

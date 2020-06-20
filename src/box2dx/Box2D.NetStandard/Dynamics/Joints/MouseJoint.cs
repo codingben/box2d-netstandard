@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-
 // p = attached point, m = mouse point
 // C = p - m
 // Cdot = v
@@ -102,7 +101,8 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		private float _invIB;
 		private Vector2 _rB;
 		private Vector2 _localAnchorB;
-		private Mat22 _mass;
+		// private Mat22 _mass;
+		private Matrix3x2 _mass;
 		private Vector2 _C;
 
 		public override Vector2 Anchor1
@@ -195,13 +195,15 @@ namespace Box2D.NetStandard.Dynamics.Joints
 			// K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
 			//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
 			//        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
-			Mat22 K = new Mat22();
-			K.ex.X = _invMassB + _invIB * _rB.Y * _rB.Y + _gamma;
-			K.ex.Y = -_invIB * _rB.X * _rB.Y;
-			K.ey.X = K.ex.Y;
-			K.ey.Y = _invMassB + _invIB * _rB.X * _rB.Y + _gamma;
+			Matrix3x2 K = new Matrix3x2();
+			K.M11 = _invMassB + _invIB * _rB.Y * _rB.Y + _gamma;
+			K.M21 = -_invIB * _rB.X * _rB.Y;
+			K.M12 = K.M21;
+			K.M22 = _invMassB + _invIB * _rB.X * _rB.Y + _gamma;
 
-			_mass = K.GetInverse();
+			Matrix3x2.Invert(K, out _mass);
+			
+			//_mass = K.GetInverse();
 
 			_C =  cB + _rB - _targetA;
 			_C *= _beta;

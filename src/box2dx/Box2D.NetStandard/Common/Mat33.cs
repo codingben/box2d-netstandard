@@ -38,7 +38,7 @@ namespace Box2D.NetStandard.Common
 		/// <summary>
 		/// Construct this matrix using columns.
 		/// </summary>
-		public Mat33(Vec3 c1, Vec3 c2, Vec3 c3)
+		public Mat33(Vector3 c1, Vector3 c2, Vector3 c3)
 		{
 			ex = c1;
 			ey = c2;
@@ -50,24 +50,24 @@ namespace Box2D.NetStandard.Common
 		/// </summary>
 		public void SetZero()
 		{
-			ex.SetZero();
-			ey.SetZero();
-			ez.SetZero();
+			ex = Vector3.Zero;
+			ey = Vector3.Zero;
+			ez = Vector3.Zero;
 		}
 
 		/// <summary>
 		/// Solve A * x = b, where b is a column vector. This is more efficient
 		/// than computing the inverse in one-shot cases.
 		/// </summary>
-		public Vec3 Solve33(Vec3 b)
+		public Vector3 Solve33(Vector3 b)
 		{
-			float det = Vec3.Dot(ex, Vec3.Cross(ey, ez));
+			float det = Vector3.Dot(ex, Vector3.Cross(ey, ez));
 			Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
-			Vec3 x = new Vec3();
-			x.X = det * Vec3.Dot(b, Vec3.Cross(ey, ez));
-			x.Y = det * Vec3.Dot(ex, Vec3.Cross(b, ez));
-			x.Z = det * Vec3.Dot(ex, Vec3.Cross(ey, b));
+			Vector3 x = new Vector3();
+			x.X = det * Vector3.Dot(b,  Vector3.Cross(ey, ez));
+			x.Y = det * Vector3.Dot(ex, Vector3.Cross(b, ez));
+			x.Z = det * Vector3.Dot(ex, Vector3.Cross(ey, b));
 			return x;
 		}
 
@@ -88,6 +88,6 @@ namespace Box2D.NetStandard.Common
 			return x;
 		}
 
-		public Vec3 ex, ey, ez;
+		public Vector3 ex, ey, ez;
 	}
 }

@@ -149,7 +149,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
-using Box2D.NetStandard.Dynamics.Body;
+using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
@@ -171,7 +171,7 @@ namespace Box2D.NetStandard.Dynamics {
   public class Island : IDisposable {
     public ContactListener _listener;
 
-    public Body.Body[]    _bodies;
+    public Body[]    _bodies;
     public Contact[] _contacts;
     public Joint[]   _joints;
 
@@ -198,7 +198,7 @@ namespace Box2D.NetStandard.Dynamics {
 
       _listener = listener;
 
-      _bodies   = new Body.Body[bodyCapacity];
+      _bodies   = new Body[bodyCapacity];
       _contacts = new Contact[contactCapacity];
       _joints   = new Joint[jointCapacity];
 
@@ -228,7 +228,7 @@ namespace Box2D.NetStandard.Dynamics {
       float h = step.dt;
       // Integrate velocities and apply damping.
       for (int i = 0; i < _bodyCount; ++i) {
-        Body.Body b = _bodies[i];
+        Body b = _bodies[i];
 
         Vector2 c = b._sweep.c;
         float   a = b._sweep.a;
@@ -355,7 +355,7 @@ namespace Box2D.NetStandard.Dynamics {
 
       // Copy state buffers back to the bodies
       for (int32 i = 0; i < _bodyCount; ++i) {
-        Body.Body body = _bodies[i];
+        Body body = _bodies[i];
         body._sweep.c         = _positions[i].c;
         body._sweep.a         = _positions[i].a;
         body._linearVelocity  = _velocities[i].v;
@@ -374,7 +374,7 @@ namespace Box2D.NetStandard.Dynamics {
         const float angTolSqr = Settings.AngularSleepTolerance * Settings.AngularSleepTolerance;
 
         for (int32 i = 0; i < _bodyCount; ++i) {
-          Body.Body b = _bodies[i];
+          Body b = _bodies[i];
           if (b.Type()==BodyType.Static) {
             continue;
           }
@@ -393,7 +393,7 @@ namespace Box2D.NetStandard.Dynamics {
 
         if (minSleepTime >= Settings.TimeToSleep && positionSolved) {
           for (int32 i = 0; i < _bodyCount; ++i) {
-            Body.Body b = _bodies[i];
+            Body b = _bodies[i];
             b.SetAwake(false);
           }
         }
@@ -405,7 +405,7 @@ namespace Box2D.NetStandard.Dynamics {
       Debug.Assert(toiIndexB < _bodyCount);
 
       for (int i = 0; i < _bodyCount; i++) {
-        Body.Body b = _bodies[i];
+        Body b = _bodies[i];
         _positions[i].c  = b._sweep.c;
         _positions[i].a  = b._sweep.a;
         _velocities[i].v = b._linearVelocity;
@@ -477,7 +477,7 @@ namespace Box2D.NetStandard.Dynamics {
         _velocities[i].w = w;
 
         // Sync bodies
-        Body.Body body = _bodies[i];
+        Body body = _bodies[i];
         body._sweep.c         = c;
         body._sweep.a         = a;
         body._linearVelocity  = v;
@@ -489,7 +489,7 @@ namespace Box2D.NetStandard.Dynamics {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Add(Body.Body body) {
+    public void Add(Body body) {
       Debug.Assert(_bodyCount < _bodyCapacity);
       body._islandIndex     = _bodyCount;
       _bodies[_bodyCount++] = body;

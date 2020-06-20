@@ -68,8 +68,8 @@ namespace Box2D.NetStandard.Collision {
             m_type = SeparationFunctionType.Points;
             Vector2 localPointA = m_proxyA._vertices[cache.indexA[0]];
             Vector2 localPointB = m_proxyB._vertices[cache.indexB[0]];
-            Vector2 pointA      = Common.Math.Mul(xfA, localPointA);
-            Vector2 pointB      = Common.Math.Mul(xfB, localPointB);
+            Vector2 pointA      = Math.Mul(xfA, localPointA);
+            Vector2 pointB      = Math.Mul(xfB, localPointB);
             m_axis = pointB - pointA;
             float s = m_axis.Length();
             m_axis = Vector2.Normalize(m_axis);

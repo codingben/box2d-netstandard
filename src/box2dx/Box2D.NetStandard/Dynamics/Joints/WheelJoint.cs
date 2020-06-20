@@ -163,11 +163,11 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     public override Vector2 Anchor2 => _bodyB.GetWorldPoint(_localAnchorB);
 
     public override Vector2 GetReactionForce(float inv_dt) {
-      throw new System.NotImplementedException();
+      throw new NotImplementedException();
     }
 
     public override float GetReactionTorque(float inv_dt) {
-      throw new System.NotImplementedException();
+      throw new NotImplementedException();
     }
 
     internal override void InitVelocityConstraints(in SolverData data) {
@@ -196,7 +196,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       Rot qA = new Rot(aA), qB = new Rot(aB);
 
       // Compute the effective masses.
-      b2Vec2 rA = Math.Mul(qA, _localAnchorA - _localCenterA);
+      b2Vec2 rA = Math.Mul((Rot) qA, _localAnchorA - _localCenterA);
       b2Vec2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
       b2Vec2 d  = cB + rB - cA - rA;
 

@@ -27,13 +27,9 @@
 
 
 using Box2D.NetStandard.Collision;
-using Box2D.NetStandard.Dynamics.Body;
+using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
-using Box2D.NetStandard.Dynamics.Fixture;
-using int32 = System.Int32;
-using b2Fixture = Box2D.NetStandard.Dynamics.Fixture.Fixture;
-using b2Body = Box2D.NetStandard.Dynamics.Body.Body;
-using b2Contact = Box2D.NetStandard.Dynamics.Contacts.Contact;
+using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics {
   /// <summary>
@@ -41,7 +37,7 @@ namespace Box2D.NetStandard.Dynamics {
   /// </summary>
   internal class ContactManager {
     internal BroadPhase      m_broadPhase;
-    internal b2Contact         m_contactList;
+    internal Contact         m_contactList;
     internal int             m_contactCount;
     internal ContactFilter   m_contactFilter;
     internal ContactListener m_contactListener;
@@ -54,11 +50,11 @@ namespace Box2D.NetStandard.Dynamics {
       m_broadPhase      = new BroadPhase();
     }
 
-    internal void Destroy(b2Contact c) {
-      b2Fixture fixtureA = c.FixtureA;
-      b2Fixture fixtureB = c.FixtureB;
-      b2Body    bodyA    = fixtureA.Body;
-      b2Body    bodyB    = fixtureB.Body;
+    internal void Destroy(Contact c) {
+      Fixture fixtureA = c.FixtureA;
+      Fixture fixtureB = c.FixtureB;
+      Body    bodyA    = fixtureA.Body;
+      Body    bodyB    = fixtureB.Body;
 
       if (m_contactListener != null && c.Touching) {
         m_contactListener.EndContact(c);
@@ -110,20 +106,20 @@ namespace Box2D.NetStandard.Dynamics {
 
     internal void Collide() {
       // Update awake contacts.
-      b2Contact c = m_contactList;
+      Contact c = m_contactList;
       while (c != null) {
-        b2Fixture fixtureA = c.FixtureA;
-        b2Fixture fixtureB = c.FixtureB;
-        int32     indexA   = c.ChildIndexA;
-        int32     indexB   = c.ChildIndexB;
-        b2Body    bodyA    = fixtureA.Body;
-        b2Body    bodyB    = fixtureB.Body;
+        Fixture fixtureA = c.FixtureA;
+        Fixture fixtureB = c.FixtureB;
+        int     indexA   = c.ChildIndexA;
+        int     indexB   = c.ChildIndexB;
+        Body    bodyA    = fixtureA.Body;
+        Body    bodyB    = fixtureB.Body;
 
         // Is this contact flagged for filtering?
         if ((c.m_flags & CollisionFlags.Filter) == CollisionFlags.Filter) {
           // Should these bodies collide?
           if (bodyB.ShouldCollide(bodyA) == false) {
-            b2Contact cNuke = c;
+            Contact cNuke = c;
             c = cNuke.GetNext();
             Destroy(cNuke);
             continue;
@@ -131,7 +127,7 @@ namespace Box2D.NetStandard.Dynamics {
 
           // Check user filtering.
           if (m_contactFilter != null && m_contactFilter.ShouldCollide(fixtureA, fixtureB) == false) {
-            b2Contact cNuke = c;
+            Contact cNuke = c;
             c = cNuke.GetNext();
             Destroy(cNuke);
             continue;
@@ -150,13 +146,13 @@ namespace Box2D.NetStandard.Dynamics {
           continue;
         }
 
-        int32 proxyIdA = fixtureA.m_proxies[indexA].proxyId;
-        int32 proxyIdB = fixtureB.m_proxies[indexB].proxyId;
+        int proxyIdA = fixtureA.m_proxies[indexA].proxyId;
+        int proxyIdB = fixtureB.m_proxies[indexB].proxyId;
         bool  overlap  = m_broadPhase.TestOverlap(proxyIdA, proxyIdB);
 
         // Here we destroy contacts that cease to overlap in the broad-phase.
         if (overlap == false) {
-          b2Contact cNuke = c;
+          Contact cNuke = c;
           c = cNuke.GetNext();
           Destroy(cNuke);
           continue;
@@ -176,14 +172,14 @@ namespace Box2D.NetStandard.Dynamics {
       FixtureProxy proxyA = (FixtureProxy) proxyUserDataA;
       FixtureProxy proxyB = (FixtureProxy) proxyUserDataB;
 
-      b2Fixture fixtureA = proxyA.fixture;
-      b2Fixture fixtureB = proxyB.fixture;
+      Fixture fixtureA = proxyA.fixture;
+      Fixture fixtureB = proxyB.fixture;
 
-      int32 indexA = proxyA.childIndex;
-      int32 indexB = proxyB.childIndex;
+      int indexA = proxyA.childIndex;
+      int indexB = proxyB.childIndex;
 
-      b2Body bodyA = fixtureA.Body;
-      b2Body bodyB = fixtureB.Body;
+      Body bodyA = fixtureA.Body;
+      Body bodyB = fixtureB.Body;
 
       // Are the fixtures on the same body?
       if (bodyA == bodyB) {
@@ -196,10 +192,10 @@ namespace Box2D.NetStandard.Dynamics {
       ContactEdge edge = bodyB.GetContactList();
       while (edge != null) {
         if (edge.other == bodyA) {
-          b2Fixture fA = edge.contact.GetFixtureA();
-          b2Fixture fB = edge.contact.GetFixtureB();
-          int32     iA = edge.contact.GetChildIndexA();
-          int32     iB = edge.contact.GetChildIndexB();
+          Fixture fA = edge.contact.GetFixtureA();
+          Fixture fB = edge.contact.GetFixtureB();
+          int     iA = edge.contact.GetChildIndexA();
+          int     iB = edge.contact.GetChildIndexB();
 
           if (fA == fixtureA && fB == fixtureB && iA == indexA && iB == indexB) {
             // A contact already exists.

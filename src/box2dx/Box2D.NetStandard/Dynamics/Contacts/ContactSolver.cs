@@ -25,12 +25,16 @@
 // SOFTWARE.
 */
 
+//#define B2_DEBUG_SOLVER
+
 using System;
 using System.Diagnostics;
 using System.Numerics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
 using Math = System.Math;
 
@@ -57,14 +61,14 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       for (int i = 0; i < _count; ++i) {
         Contact contact = _contacts[i];
 
-        Fixture.Fixture  fixtureA = contact.m_fixtureA;
-        Fixture.Fixture  fixtureB = contact.m_fixtureB;
+        Fixture  fixtureA = contact.m_fixtureA;
+        Fixture  fixtureB = contact.m_fixtureB;
         Shape    shapeA   = fixtureA.Shape;
         Shape    shapeB   = fixtureB.Shape;
         float    radiusA  = shapeA.m_radius;
         float    radiusB  = shapeB.m_radius;
-        Body.Body     bodyA    = fixtureA.Body;
-        Body.Body     bodyB    = fixtureB.Body;
+        Body     bodyA    = fixtureA.Body;
+        Body     bodyB    = fixtureB.Body;
         Manifold manifold = contact.Manifold;
 
         int pointCount = manifold.pointCount;
@@ -83,8 +87,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         vc.invIB        = bodyB._invI;
         vc.contactIndex = i;
         vc.pointCount   = pointCount;
-        vc.K.SetZero();
-        vc.normalMass.SetZero();
+        vc.K = new Matrix3x2();// .SetZero();
+        vc.normalMass = new Matrix3x2();// .SetZero();
 
         _positionConstraints[i] = new ContactPositionConstraint();
         ContactPositionConstraint pc = _positionConstraints[i];
@@ -163,8 +167,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         Transform xfA = new Transform();
         Transform xfB = new Transform();
 
-        xfA.q.Set(aA);
-        xfB.q.Set(aB);
+        xfA.q = Matrix3x2.CreateRotation(aA);// .Set(aA);
+        xfB.q = Matrix3x2.CreateRotation(aB);// .Set(aB);
         xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
         xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
 
@@ -221,9 +225,12 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           const float k_maxConditionNumber = 1000.0f;
           if (k11 * k11 < k_maxConditionNumber * (k11 * k22 - k12 * k12)) {
             // K is safe to invert.
-            vc.K.ex       = new Vector2(k11, k12);
-            vc.K.ey       = new Vector2(k12, k22);
-            vc.normalMass = vc.K.GetInverse();
+            vc.K = new Matrix3x2(k11, k12, k12, k22,0,0);
+            
+            // vc.K.ex       = new Vector2(k11, k12);
+            // vc.K.ey       = new Vector2(k12, k22);
+            Matrix3x2.Invert(vc.K, out Matrix3x2 KT);
+            vc.normalMass = KT;
           }
           else {
             // The constraints are redundant, just use one.
@@ -460,7 +467,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             x.X = -cp1.normalMass * b.X;
             x.Y = 0.0f;
             vn1 = 0.0f;
-            vn2 = vc.K.ex.Y * x.X + b.Y;
+            vn2 = vc.K.M22 * x.X + b.Y;
             if (x.X >= 0.0f && vn2 >= 0.0f) {
               // Get the incremental impulse
               Vector2 d = x - a;
@@ -499,7 +506,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             //
             x.X = 0.0f;
             x.Y = -cp2.normalMass * b.Y;
-            vn1 = vc.K.ey.X * x.Y + b.X;
+            vn1 = vc.K.M12 * x.Y + b.X;
             vn2 = 0.0f;
 
             if (x.Y >= 0.0f && vn1 >= 0.0f) {
@@ -657,8 +664,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         for (int j = 0; j < pointCount; ++j) {
           Transform xfA = new Transform();
           Transform xfB = new Transform();
-          xfA.q.Set(aA);
-          xfB.q.Set(aB);
+          xfA.q = Matrix3x2.CreateRotation(aA);//  .Set(aA);
+          xfB.q = Matrix3x2.CreateRotation(aB);//  .Set(aB);
           xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
           xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
 
@@ -745,8 +752,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         for (int j = 0; j < pointCount; ++j) {
           Transform xfA = new Transform();
           Transform xfB = new Transform();
-          xfA.q.Set(aA);
-          xfB.q.Set(aB);
+          xfA.q = Matrix3x2.CreateRotation(aA); // .Set(aA);
+          xfB.q = Matrix3x2.CreateRotation(aB); // .Set(aB);
           xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
           xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
 

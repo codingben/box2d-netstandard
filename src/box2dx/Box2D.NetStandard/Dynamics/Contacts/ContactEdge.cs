@@ -25,6 +25,8 @@
 // SOFTWARE.
 */
 
+using Box2D.NetStandard.Dynamics.Bodies;
+
 namespace Box2D.NetStandard.Dynamics.Contacts {
   /// <summary>
   /// A contact edge is used to connect bodies and contacts together
@@ -37,7 +39,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     /// <summary>
     /// Provides quick access to the other body attached.
     /// </summary>
-    internal Body.Body other;
+    internal Body other;
 
     /// <summary>
     /// The contact.

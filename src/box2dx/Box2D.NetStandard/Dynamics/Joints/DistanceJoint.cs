@@ -44,6 +44,7 @@
 using System;
 using System.Numerics;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Bodies;
 using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Joints {
@@ -68,7 +69,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     /// <summary>
     /// Initialize the bodies, anchors, and length using the world anchors.
     /// </summary>
-    public void Initialize(Body.Body body1, Body.Body body2, Vector2 anchor1, Vector2 anchor2) {
+    public void Initialize(Body body1, Body body2, Vector2 anchor1, Vector2 anchor2) {
       BodyA        = body1;
       BodyB        = body2;
       LocalAnchorA = body1.GetLocalPoint(anchor1);
@@ -180,8 +181,8 @@ namespace Box2D.NetStandard.Dynamics.Joints {
 
       Rot qA = new Rot(aA), qB = new Rot(aB);
 
-      _rA = Common.Math.Mul(qA, _localAnchorA - _localCenterA);
-      _rB = Common.Math.Mul(qB, _localAnchorB - _localCenterB);
+      _rA = Math.Mul(qA, _localAnchorA - _localCenterA);
+      _rB = Math.Mul(qB, _localAnchorB - _localCenterB);
       _u  = cB + _rB - cA - _rA;
 
       // Handle singularity.
@@ -254,8 +255,8 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         return true;
       }
 
-      Body.Body b1 = _bodyA;
-      Body.Body b2 = _bodyB;
+      Body b1 = _bodyA;
+      Body b2 = _bodyB;
 
       Vector2 r1 = Math.Mul(b1.GetTransform().q, _localAnchorA - b1.GetLocalCenter());
       Vector2 r2 = Math.Mul(b2.GetTransform().q, _localAnchorB - b2.GetLocalCenter());

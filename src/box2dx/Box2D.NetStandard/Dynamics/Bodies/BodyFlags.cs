@@ -27,7 +27,7 @@
 
 using System;
 
-namespace Box2D.NetStandard.Dynamics.Body {
+namespace Box2D.NetStandard.Dynamics.Bodies {
   [Flags]
   public enum BodyFlags
   {

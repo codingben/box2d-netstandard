@@ -210,8 +210,8 @@ namespace Box2D.NetStandard.Collision {
         Array.Copy(oldBuffer, _pairBuffer, _pairCount);
       }
 
-      _pairBuffer[_pairCount].proxyIdA = System.Math.Min(proxyId, _queryProxyId);
-      _pairBuffer[_pairCount].proxyIdB = System.Math.Max(proxyId, _queryProxyId);
+      _pairBuffer[_pairCount].proxyIdA = Math.Min(proxyId, _queryProxyId);
+      _pairBuffer[_pairCount].proxyIdB = Math.Max(proxyId, _queryProxyId);
       ++_pairCount;
 
       return true;

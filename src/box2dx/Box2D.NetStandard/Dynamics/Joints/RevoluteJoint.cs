@@ -44,6 +44,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Bodies;
 using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Joints {
@@ -78,7 +79,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     /// Initialize the bodies, anchors, and reference angle using the world
     /// anchor.
     /// </summary>
-    public void Initialize(Body.Body body1, Body.Body body2, Vector2 anchor) {
+    public void Initialize(Body body1, Body body2, Vector2 anchor) {
       BodyA          = body1;
       BodyB          = body2;
       LocalAnchorA   = body1.GetLocalPoint(anchor);
@@ -144,7 +145,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
   public class RevoluteJoint : Joint {
     internal Vector2 _localAnchorA;
     internal Vector2 _localAnchorB;
-    private Vec3    _impulse;
+    private Vector3    _impulse;
     private float   _motorImpulse;
 
     private bool  _enableMotor;
@@ -184,8 +185,8 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     public float JointAngle {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get {
-        Body.Body b1 = _bodyA;
-        Body.Body b2 = _bodyB;
+        Body b1 = _bodyA;
+        Body b2 = _bodyB;
         return b2._sweep.a - b1._sweep.a - _referenceAngle;
       }
     }
@@ -197,8 +198,8 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     public float JointSpeed {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get {
-        Body.Body b1 = _bodyA;
-        Body.Body b2 = _bodyB;
+        Body b1 = _bodyA;
+        Body b2 = _bodyB;
         return b2._angularVelocity - b1._angularVelocity;
       }
     }
@@ -305,7 +306,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       _localAnchorB   = def.LocalAnchorB;
       _referenceAngle = def.ReferenceAngle;
 
-      _impulse      = new Vec3();
+      _impulse      = new Vector3();
       _motorImpulse = 0.0f;
 
       _lowerAngle     = def.LowerAngle;
@@ -415,7 +416,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         wB += iB * (Vectex.Cross(_rB, P) + _motorImpulse + _impulse.Z);
       }
       else {
-        _impulse.SetZero();
+        _impulse = Vector3.Zero;
         _motorImpulse = 0.0f;
       }
 
@@ -453,9 +454,9 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       if (_enableLimit && _limitState != LimitState.InactiveLimit && fixedRotation == false) {
         Vector2 Cdot1 = vB + Vectex.Cross(wB, _rB) - vA - Vectex.Cross(wA, _rA);
         float  Cdot2 = wB                               - wA;
-        Vec3   Cdot  = new Vec3(Cdot1.X, Cdot1.Y, Cdot2);
+        Vector3   Cdot  = new Vector3(Cdot1.X, Cdot1.Y, Cdot2);
 
-        Vec3 impulse = -_mass.Solve33(Cdot);
+        Vector3 impulse = -_mass.Solve33(Cdot);
 
         if (_limitState == LimitState.EqualLimits) {
           _impulse += impulse;
@@ -580,11 +581,11 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         float mA = _invMassA, mB = _invMassB;
         float iA = _invIA,    iB = _invIB;
 
-        Mat22 K = new Mat22();
-        K.ex.X = mA + mB + iA * rA.Y * rA.Y + iB * rB.Y * rB.Y;
-        K.ex.Y = -iA * rA.X * rA.Y - iB * rB.X * rB.Y;
-        K.ey.X = K.ex.Y;
-        K.ey.Y = mA + mB + iA * rA.X * rA.X + iB * rB.X * rB.X;
+        Matrix3x2 K = new Matrix3x2();
+        K.M11 = mA + mB + iA * rA.Y * rA.Y + iB * rB.Y * rB.Y;
+        K.M21 = -iA * rA.X * rA.Y - iB * rB.X * rB.Y;
+        K.M12 = K.M21;
+        K.M22 = mA + mB + iA * rA.X * rA.X + iB * rB.X * rB.X;
 
         Vector2 impulse = -K.Solve(C);
 

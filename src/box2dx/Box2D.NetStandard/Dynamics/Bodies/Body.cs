@@ -32,10 +32,10 @@ using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Contacts;
-using Box2D.NetStandard.Dynamics.Fixture;
+using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.Joints;
 
-namespace Box2D.NetStandard.Dynamics.Body {
+namespace Box2D.NetStandard.Dynamics.Bodies {
   /// <summary>
   /// A rigid body. These are created via World.CreateBody.
   /// </summary>
@@ -54,13 +54,13 @@ namespace Box2D.NetStandard.Dynamics.Body {
     /// </summary>
     /// <param name="def">the fixture definition.</param>
     /// <warning>This function is locked during callbacks.</warning>
-    public Fixture.Fixture CreateFixture(in FixtureDef def) {
+    public Fixture CreateFixture(in FixtureDef def) {
       Debug.Assert(_world.IsLocked() == false);
       if (_world.IsLocked() == true) {
         return null;
       }
 
-      Fixture.Fixture fixture = new Fixture.Fixture();
+      Fixture fixture = new Fixture();
       fixture.Create(this, def);
 
       if (HasFlag(BodyFlags.Enabled)) {
@@ -95,7 +95,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
     /// <param name="shape">the shape to be cloned.</param>
     /// <param name="density">the shape density (set to zero for static bodies).</param>
     /// <warning>This function is locked during callbacks.</warning>
-    public Fixture.Fixture CreateFixture(in Shape shape, float density = 0) {
+    public Fixture CreateFixture(in Shape shape, float density) {
       FixtureDef def = new FixtureDef();
       def.shape   = shape;
       def.density = density;
@@ -103,7 +103,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
       return CreateFixture(def);
     }
 
-    public void DestroyFixture(Fixture.Fixture fixture) {
+    public void DestroyFixture(Fixture fixture) {
       if (fixture == null) {
         return;
       }
@@ -117,7 +117,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
 
       // Remove the fixture from this body's singly linked list.
       Debug.Assert(_fixtureCount > 0);
-      Fixture.Fixture node  = _fixtureList;
+      Fixture node  = _fixtureList;
       bool    found = false;
       while (node != null) {
         if (node == fixture) {
@@ -138,8 +138,8 @@ namespace Box2D.NetStandard.Dynamics.Body {
         Contact c = edge.contact;
         edge = edge.next;
 
-        Fixture.Fixture fixtureA = c.GetFixtureA();
-        Fixture.Fixture fixtureB = c.GetFixtureB();
+        Fixture fixtureA = c.GetFixtureA();
+        Fixture fixtureB = c.GetFixtureB();
 
         if (fixture == fixtureA || fixture == fixtureB) {
           // This destroys the contact and removes it from
@@ -168,7 +168,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
         return;
       }
 
-      _xf.q.Set(angle);
+      _xf.q = Matrix3x2.CreateRotation(angle);//  .Set(angle);
       _xf.p = position;
 
       _sweep.c = Common.Math.Mul(_xf, _sweep.localCenter);
@@ -178,7 +178,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
       _sweep.a0 = angle;
 
       BroadPhase broadPhase = _world._contactManager.m_broadPhase;
-      for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
+      for (Fixture f = _fixtureList; f != null; f = f.m_next) {
         f.Synchronize(broadPhase, _xf, _xf);
       }
     }
@@ -342,7 +342,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
 
       // Accumulate mass over all fixtures.
       Vector2 localCenter = Vector2.Zero;
-      for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
+      for (Fixture f = _fixtureList; f != null; f = f.m_next) {
         if (f.m_density == 0.0f) {
           continue;
         }
@@ -456,7 +456,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
 
       // Touch the proxies so that new contacts will be created (when appropriate)
       BroadPhase broadPhase = _world._contactManager.m_broadPhase;
-      for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
+      for (Fixture f = _fixtureList; f != null; f = f.m_next) {
         int proxyCount = f.m_proxyCount;
         for (int i = 0; i < proxyCount; ++i) {
           broadPhase.TouchProxy(f.m_proxies[i].proxyId);
@@ -530,7 +530,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
 
         // Create all proxies.
         BroadPhase broadPhase = _world._contactManager.m_broadPhase;
-        for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
+        for (Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.CreateProxies(broadPhase, _xf);
         }
 
@@ -542,7 +542,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
 
         // Destroy all proxies.
         BroadPhase broadPhase = _world._contactManager.m_broadPhase;
-        for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
+        for (Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.DestroyProxies(broadPhase);
         }
 
@@ -582,7 +582,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
     public bool IsFixedRotation() => HasFlag(BodyFlags.FixedRotation);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Fixture.Fixture GetFixtureList() => _fixtureList;
+    public Fixture GetFixtureList() => _fixtureList;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public JointEdge GetJointList() => _jointList;
@@ -616,15 +616,15 @@ namespace Box2D.NetStandard.Dynamics.Body {
 
       if (IsAwake()) {
         Transform xf1 = new Transform();
-        xf1.q.Set(_sweep.a0);
+        xf1.q = Matrix3x2.CreateRotation(_sweep.a0);//  .Set(_sweep.a0);
         xf1.p = _sweep.c0 - Common.Math.Mul(xf1.q, _sweep.localCenter);
 
-        for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
+        for (Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.Synchronize(broadPhase, xf1, _xf);
         }
       }
       else {
-        for (Fixture.Fixture f = _fixtureList; f != null; f = f.m_next) {
+        for (Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.Synchronize(broadPhase, _xf, _xf);
         }
       }
@@ -632,7 +632,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void SynchronizeTransform() {
-      _xf.q.Set(_sweep.a);
+      _xf.q = Matrix3x2.CreateRotation(_sweep.a);// .Set(_sweep.a);
       _xf.p = _sweep.c - Common.Math.Mul(_xf.q, _sweep.localCenter);
     }
 
@@ -657,7 +657,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
       _sweep.Advance(alpha);
       _sweep.c = _sweep.c0;
       _sweep.a = _sweep.a0;
-      _xf.q.Set(_sweep.a);
+      _xf.q = Matrix3x2.CreateRotation(_sweep.a); // Set(_sweep.a);
       _xf.p = _sweep.c - Common.Math.Mul(_xf.q, _sweep.localCenter);
     }
 
@@ -683,7 +683,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
     internal Body  _prev;
     internal Body  _next;
 
-    internal Fixture.Fixture _fixtureList;
+    internal Fixture _fixtureList;
     internal int     _fixtureCount;
 
     internal JointEdge   _jointList;
@@ -718,7 +718,7 @@ namespace Box2D.NetStandard.Dynamics.Body {
       _world = world;
 
       _xf.p = bd.position;
-      _xf.q.Set(bd.angle);
+      _xf.q = Matrix3x2.CreateRotation(bd.angle); // .Set(bd.angle);
 
       _sweep.localCenter = Vector2.Zero;
       _sweep.c0          = _xf.p;

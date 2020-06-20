@@ -30,7 +30,7 @@ using System;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Contacts;
-using Box2D.NetStandard.Dynamics.Fixture;
+using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.Joints;
 
 #pragma warning disable 618
@@ -54,7 +54,7 @@ namespace Box2D.NetStandard.Dynamics
 		/// Called when any shape is about to be destroyed due
 		/// to the destruction of its parent body.
 		/// </summary>
-		public abstract void SayGoodbye(Fixture.Fixture fixture);
+		public abstract void SayGoodbye(Fixture fixture);
 	}
 
 	/// <summary>
@@ -68,7 +68,7 @@ namespace Box2D.NetStandard.Dynamics
 		/// If you implement your own collision filter you may want to build from this implementation.
 		/// @warning for performance reasons this is only called when the AABBs begin to overlap.
 		/// </summary>
-		public virtual bool ShouldCollide(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
+		public virtual bool ShouldCollide(Fixture fixtureA, Fixture fixtureB)
 		{
 			Filter filterA = fixtureA.m_filter;
 			Filter filterB = fixtureB.m_filter;
@@ -83,7 +83,7 @@ namespace Box2D.NetStandard.Dynamics
 		/// <summary>
 		/// Return true if the given shape should be considered for ray intersection.
 		/// </summary>
-		public bool RayCollide(object userData, Fixture.Fixture fixture)
+		public bool RayCollide(object userData, Fixture fixture)
 		{
 			//By default, cast userData as a shape, and then collide if the shapes would collide
 			if (userData == null)
@@ -91,7 +91,7 @@ namespace Box2D.NetStandard.Dynamics
 				return true;
 			}
 
-			return ShouldCollide((Fixture.Fixture)userData, fixture);
+			return ShouldCollide((Fixture)userData, fixture);
 		}
 	}
 

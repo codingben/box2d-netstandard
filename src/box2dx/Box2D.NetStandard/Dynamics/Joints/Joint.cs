@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Bodies;
 
 namespace Box2D.NetStandard.Dynamics.Joints
 {
@@ -92,7 +93,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// <summary>
 		/// Provides quick access to the other body attached.
 		/// </summary>
-		public Body.Body other;
+		public Body other;
 
 		/// <summary>
 		/// The joint.
@@ -138,12 +139,12 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// <summary>
 		/// The first attached body.
 		/// </summary>
-		public Body.Body BodyA;
+		public Body BodyA;
 
 		/// <summary>
 		/// The second attached body.
 		/// </summary>
-		public Body.Body BodyB;
+		public Body BodyB;
 
 		/// <summary>
 		/// Set this flag to true if the attached bodies should collide.
@@ -162,8 +163,8 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		internal Joint _next;
 		internal JointEdge _edgeA = new JointEdge();
 		internal JointEdge _edgeB = new JointEdge();
-		internal Body.Body _bodyA;
-		internal Body.Body _bodyB;
+		internal Body _bodyA;
+		internal Body _bodyB;
 
 		internal bool _islandFlag;
 		internal bool _collideConnected;
@@ -185,7 +186,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// Get the first body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body.Body GetBodyA()
+		public Body GetBodyA()
 		{
 			return _bodyA;
 		}
@@ -194,7 +195,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// Get the second body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body.Body GetBodyB()
+		public Body GetBodyB()
 		{
 			return _bodyB;
 		}
@@ -305,7 +306,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void ComputeXForm(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
 		{
-			xf.q.Set(angle);
+			xf.q = Matrix3x2.CreateRotation(angle); // .Set(angle);
 			xf.p = center - Math.Mul(xf.q, localCenter);
 		}
 	}

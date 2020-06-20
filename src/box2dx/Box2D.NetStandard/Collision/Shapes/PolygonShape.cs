@@ -25,6 +25,8 @@
 // SOFTWARE.
 */
 
+#define DEBUG
+
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -75,11 +77,11 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       Transform xf = new Transform();
       xf.p = center;
-      xf.q.Set(angle);
+      xf.q = Matrix3x2.CreateRotation(angle);// .Set(angle);
 
       for (int i = 0; i < m_count; i++) {
-        m_vertices[i] = Common.Math.Mul(xf,   m_vertices[i]);
-        m_normals[i]  = Common.Math.Mul(xf.q, m_normals[i]);
+        m_vertices[i] = Math.Mul(xf,   m_vertices[i]);
+        m_normals[i]  = Math.Mul(xf.q, m_normals[i]);
       }
     }
 

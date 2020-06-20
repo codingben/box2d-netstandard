@@ -98,6 +98,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Bodies;
 using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Joints {
@@ -128,7 +129,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     /// Initialize the bodies, anchors, axis, and reference angle using the world
     /// anchor and world axis.
     /// </summary>
-    public void Initialize(Body.Body body1, Body.Body body2, Vector2 anchor, Vector2 axis) {
+    public void Initialize(Body body1, Body body2, Vector2 anchor, Vector2 axis) {
       BodyA          = body1;
       BodyB          = body2;
       LocalAnchor1   = body1.GetLocalPoint(anchor);
@@ -226,7 +227,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     private float   _s1;
     private float   _s2;
     private float   _translation;
-    private Mat22   _K;
+    private Matrix3x2   _K;
 
     public override Vector2 Anchor1 {
       get { return _bodyA.GetWorldPoint(_localAnchorA); }
@@ -250,8 +251,8 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     /// </summary>
     public float JointTranslation {
       get {
-        Body.Body b1 = _bodyA;
-        Body.Body b2 = _bodyB;
+        Body b1 = _bodyA;
+        Body b2 = _bodyB;
 
         Vector2 p1   = b1.GetWorldPoint(_localAnchorA);
         Vector2 p2   = b2.GetWorldPoint(_localAnchorB);
@@ -268,8 +269,8 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     /// </summary>
     public float JointSpeed {
       get {
-        Body.Body b1 = _bodyA;
-        Body.Body b2 = _bodyB;
+        Body b1 = _bodyA;
+        Body b2 = _bodyB;
 
         Vector2 r1   = Math.Mul(b1.GetTransform().q, _localAnchorA - b1.GetLocalCenter());
         Vector2 r2   = Math.Mul(b2.GetTransform().q, _localAnchorB - b2.GetLocalCenter());
@@ -466,9 +467,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
           // For bodies with fixed rotation.
           k22 = 1.0f;
         }
-
-        _K.ex = new Vector2(k11, k12);
-        _K.ey = new Vector2(k12, k22);
+        _K = new Matrix3x2(k11,k12,k12,k22,0,0);
       }
 
       if (_enableLimit) {
@@ -622,8 +621,8 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       float iA = _invIA,    iB = _invIB;
 
       // Compute fresh Jacobians
-      Vector2 rA = Common.Math.Mul(qA, _localAnchorA - _localCenterA);
-      Vector2 rB = Common.Math.Mul(qB, _localAnchorB - _localCenterB);
+      Vector2 rA = Math.Mul(qA, _localAnchorA - _localCenterA);
+      Vector2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
       Vector2 d  = cB + rB - cA - rA;
 
       Vector2 axis = Math.Mul(qA, _localXAxisA);
@@ -634,7 +633,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       float s1 = Vectex.Cross(d + rA, perp);
       float s2 = Vectex.Cross(rB,     perp);
 
-      Vec3 impulse;
+      Vector3 impulse;
       Vector2 C1 = new Vector2();
       C1.X = Vector2.Dot(perp, d);
       C1.Y = aB - aA - _referenceAngle;
@@ -677,11 +676,11 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         float k33 = mA + mB + iA * a1 * a1 + iB * a2 * a2;
 
         Mat33 K = new Mat33();
-        K.ex.Set(k11, k12, k13);
-        K.ey.Set(k12, k22, k23);
-        K.ez.Set(k13, k23, k33);
+        K.ex = new Vector3(k11, k12, k13);
+        K.ey = new Vector3(k12, k22, k23);
+        K.ez = new Vector3(k13, k23, k33);
 
-        Vec3 C = new Vec3();
+        Vector3 C = new Vector3();
         C.X = C1.X;
         C.Y = C1.Y;
         C.Z = C2;
@@ -696,9 +695,10 @@ namespace Box2D.NetStandard.Dynamics.Joints {
           k22 = 1.0f;
         }
 
-        Mat22 K = new Mat22();
-        K.ex=new Vector2(k11, k12);
-        K.ey=new Vector2(k12, k22);
+        //Mat22 K = new Mat22();
+        Matrix3x2 K = new Matrix3x2(k11, k12, k12, k22, 0,0);
+        // K.ex=new Vector2(k11, k12);
+        // K.ey=new Vector2(k12, k22);
 
         Vector2 impulse1 = K.Solve(-C1);
         impulse.X = impulse1.X;

@@ -29,12 +29,13 @@ using System.Diagnostics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class EdgeAndCircleContact : Contact
 	{
-		public EdgeAndCircleContact(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
+		public EdgeAndCircleContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
 			Debug.Assert(fixtureA.Type == ShapeType.Edge);
@@ -45,7 +46,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 			m_manifold.points[0].tangentImpulse = 0.0f;
 		}
 
-		public static Contact Create(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
+		public static Contact Create(Fixture fixtureA, Fixture fixtureB)
 		{
 			return new EdgeAndCircleContact(fixtureA, fixtureB);
 		}

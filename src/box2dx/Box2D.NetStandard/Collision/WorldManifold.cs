@@ -56,8 +56,8 @@ namespace Box2D.NetStandard.Collision {
       switch (manifold.type) {
         case ManifoldType.Circles: {
           normal = new Vector2(1.0f, 0.0f);
-          Vector2 pointA = Common.Math.Mul(xfA, manifold.localPoint);
-          Vector2 pointB = Common.Math.Mul(xfB, manifold.points[0].localPoint);
+          Vector2 pointA = Math.Mul(xfA, manifold.localPoint);
+          Vector2 pointB = Math.Mul(xfB, manifold.points[0].localPoint);
           if (Vector2.DistanceSquared(pointA, pointB) > Settings.FLT_EPSILON_SQUARED) {
             normal = Vector2.Normalize(pointB - pointA);
           }
