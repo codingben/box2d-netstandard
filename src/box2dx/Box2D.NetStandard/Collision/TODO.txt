@@ -1,1 +1,8 @@
-﻿check broadphase, port dynamictree
+Todo:
+
+ChainShape
+FrictionJoint
+MotorJoint
+WeldJoint
+WheelJoint
+Rope
