@@ -44,7 +44,6 @@
 using System;
 using System.Numerics;
 using Box2D.NetStandard.Common;
-using b2Vec2 = System.Numerics.Vector2;
 using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Joints {
@@ -196,9 +195,9 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       Rot qA = new Rot(aA), qB = new Rot(aB);
 
       // Compute the effective masses.
-      b2Vec2 rA = Math.Mul((Rot) qA, _localAnchorA - _localCenterA);
-      b2Vec2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
-      b2Vec2 d  = cB + rB - cA - rA;
+      Vector2 rA = Math.Mul((Rot) qA, _localAnchorA - _localCenterA);
+      Vector2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
+      Vector2 d  = cB + rB - cA - rA;
 
       // Point to line constraint
       {
@@ -279,7 +278,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         _motorImpulse  *= data.step.dtRatio;
 
         float  axialImpulse = _springImpulse + _lowerImpulse         - _upperImpulse;
-        b2Vec2 P            = _impulse * _ay                         + axialImpulse * _ax;
+        Vector2 P            = _impulse * _ay                         + axialImpulse * _ax;
         float  LA           = _impulse * _sAy + axialImpulse * _sAx + _motorImpulse;
         float  LB           = _impulse * _sBy + axialImpulse * _sBx + _motorImpulse;
 
@@ -307,9 +306,9 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       float mA = _invMassA, mB = _invMassB;
       float iA = _invIA,    iB = _invIB;
 
-      b2Vec2 vA = data.velocities[_indexA].v;
+      Vector2 vA = data.velocities[_indexA].v;
       float  wA = data.velocities[_indexA].w;
-      b2Vec2 vB = data.velocities[_indexB].v;
+      Vector2 vB = data.velocities[_indexB].v;
       float  wB = data.velocities[_indexB].w;
 
       // Solve spring constraint
@@ -318,7 +317,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         float impulse = -_springMass * (Cdot + _bias + _gamma * _springImpulse);
         _springImpulse += impulse;
 
-        b2Vec2 P  = impulse * _ax;
+        Vector2 P  = impulse * _ax;
         float  LA = impulse * _sAx;
         float  LB = impulse * _sBx;
 
@@ -353,7 +352,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
           _lowerImpulse = MathF.Max(_lowerImpulse + impulse, 0.0f);
           impulse        = _lowerImpulse - oldImpulse;
 
-          b2Vec2 P  = impulse * _ax;
+          Vector2 P  = impulse * _ax;
           float  LA = impulse * _sAx;
           float  LB = impulse * _sBx;
 
@@ -374,7 +373,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
           _upperImpulse = MathF.Max(_upperImpulse + impulse, 0.0f);
           impulse        = _upperImpulse - oldImpulse;
 
-          b2Vec2 P  = impulse * _ax;
+          Vector2 P  = impulse * _ax;
           float  LA = impulse * _sAx;
           float  LB = impulse * _sBx;
 
@@ -391,7 +390,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         float impulse = -_mass * Cdot;
         _impulse += impulse;
 
-        b2Vec2 P  = impulse * _ay;
+        Vector2 P  = impulse * _ay;
         float  LA = impulse * _sAy;
         float  LB = impulse * _sBy;
 
@@ -409,9 +408,9 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     }
 
     internal override bool SolvePositionConstraints(in SolverData data) {
-      b2Vec2 cA = data.positions[_indexA].c;
+      Vector2 cA = data.positions[_indexA].c;
       float  aA = data.positions[_indexA].a;
-      b2Vec2 cB = data.positions[_indexB].c;
+      Vector2 cB = data.positions[_indexB].c;
       float  aB = data.positions[_indexB].a;
 
       float linearError = 0.0f;
@@ -419,11 +418,11 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       if (_enableLimit) {
         Rot qA=new Rot(aA), qB=new Rot(aB);
 
-        b2Vec2 rA = Math.Mul(qA, _localAnchorA - _localCenterA);
-        b2Vec2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
-        b2Vec2 d  = (cB                      - cA) + rB - rA;
+        Vector2 rA = Math.Mul(qA, _localAnchorA - _localCenterA);
+        Vector2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
+        Vector2 d  = (cB                      - cA) + rB - rA;
 
-        b2Vec2 ax  = Math.Mul(qA, _localXAxisA);
+        Vector2 ax  = Math.Mul(qA, _localXAxisA);
         float  sAx = Vectex.Cross(d + rA, _ax);
         float  sBx = Vectex.Cross(rB,     _ax);
                              
@@ -446,7 +445,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
             impulse = -C / invMass;
           }
 
-          b2Vec2 P  = impulse * ax;
+          Vector2 P  = impulse * ax;
           float  LA = impulse * sAx;
           float  LB = impulse * sBx;
 
@@ -463,11 +462,11 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       {
         Rot qA = new Rot(aA), qB = new Rot(aB);
 
-        b2Vec2 rA = Math.Mul(qA, _localAnchorA - _localCenterA);
-        b2Vec2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
-        b2Vec2 d  = (cB                      - cA) + rB - rA;
+        Vector2 rA = Math.Mul(qA, _localAnchorA - _localCenterA);
+        Vector2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
+        Vector2 d  = (cB                      - cA) + rB - rA;
 
-        b2Vec2 ay = Math.Mul(qA, _localYAxisA);
+        Vector2 ay = Math.Mul(qA, _localYAxisA);
 
         float sAy = Vectex.Cross(d + rA, ay);
         float sBy = Vectex.Cross(rB,     ay);
@@ -481,7 +480,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
           impulse = -C / invMass;
         }
 
-        b2Vec2 P  = impulse * ay;
+        Vector2 P  = impulse * ay;
         float  LA = impulse * sAy;
         float  LB = impulse * sBy;
 

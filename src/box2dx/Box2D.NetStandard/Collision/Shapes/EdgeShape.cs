@@ -29,7 +29,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 using Math = Box2D.NetStandard.Common.Math;
-using b2Vec2 = System.Numerics.Vector2;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
@@ -80,14 +79,14 @@ namespace Box2D.NetStandard.Collision.Shapes
     public override bool RayCast(out RayCastOutput output, in RayCastInput input, in Transform xf, int childIndex) {
       output = default;
       // Put the ray into the edge's frame of reference.
-      b2Vec2 p1 = Math.MulT(xf.q, input.p1 - xf.p);
-      b2Vec2 p2 = Math.MulT(xf.q, input.p2 - xf.p);
-      b2Vec2 d  = p2 - p1;
+      Vector2 p1 = Math.MulT(xf.q, input.p1 - xf.p);
+      Vector2 p2 = Math.MulT(xf.q, input.p2 - xf.p);
+      Vector2 d  = p2 - p1;
 
-      b2Vec2 v1 = m_vertex1;
-      b2Vec2 v2 = m_vertex2;
-      b2Vec2 e  = v2 - v1;
-      b2Vec2 normal = Vector2.Normalize(new Vector2(e.Y, -e.X));
+      Vector2 v1 = m_vertex1;
+      Vector2 v2 = m_vertex2;
+      Vector2 e  = v2 - v1;
+      Vector2 normal = Vector2.Normalize(new Vector2(e.Y, -e.X));
 
       // q = p1 + t * d
       // dot(normal, q - v1) = 0
@@ -106,11 +105,11 @@ namespace Box2D.NetStandard.Collision.Shapes
         return false;
       }
 
-      b2Vec2 q = p1 + t * d;
+      Vector2 q = p1 + t * d;
 
       // q = v1 + s * r
       // s = dot(q - v1, r) / dot(r, r)
-      b2Vec2 r  = v2 - v1;
+      Vector2 r  = v2 - v1;
       float  rr = Vector2.Dot(r, r);
       if (rr == 0.0f)
       {
@@ -136,13 +135,13 @@ namespace Box2D.NetStandard.Collision.Shapes
     }
 
     public override void ComputeAABB(out AABB aabb, in Transform xf, int childIndex) {
-      b2Vec2 v1 = Math.Mul(xf, m_vertex1);
-      b2Vec2 v2 = Math.Mul(xf, m_vertex2);
+      Vector2 v1 = Math.Mul(xf, m_vertex1);
+      Vector2 v2 = Math.Mul(xf, m_vertex2);
 
-      b2Vec2 lower = Vector2.Min(v1, v2);
-      b2Vec2 upper = Vector2.Max(v1, v2);
+      Vector2 lower = Vector2.Min(v1, v2);
+      Vector2 upper = Vector2.Max(v1, v2);
 
-      b2Vec2 r = new Vector2(m_radius, m_radius);
+      Vector2 r = new Vector2(m_radius, m_radius);
       aabb.lowerBound = lower - r;
       aabb.upperBound = upper + r;
     }

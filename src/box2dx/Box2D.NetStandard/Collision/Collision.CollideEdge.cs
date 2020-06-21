@@ -30,10 +30,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
-using b2Vec2 = System.Numerics.Vector2;
-using int32 = System.Int32;
 using Math = Box2D.NetStandard.Common.Math;
-using uint8 = System.Byte;
 
 namespace Box2D.NetStandard.Collision {
   public partial class Collision {
@@ -61,8 +58,8 @@ namespace Box2D.NetStandard.Collision {
 
       // Region A
       if (v <= 0.0f) {
-        b2Vec2 P  = A;
-        b2Vec2 d  = Q - P;
+        Vector2 P  = A;
+        Vector2 d  = Q - P;
         float  dd = Vector2.Dot(d, d);
         if (dd > radius * radius) {
           return;
@@ -70,9 +67,9 @@ namespace Box2D.NetStandard.Collision {
 
         // Is there an edge connected to A?
         if (edgeA.m_hasVertex0) {
-          b2Vec2 A1 = edgeA.m_vertex0;
-          b2Vec2 B1 = A;
-          b2Vec2 e1 = B1 - A1;
+          Vector2 A1 = edgeA.m_vertex0;
+          Vector2 B1 = A;
+          Vector2 e1 = B1 - A1;
           float  u1 = Vector2.Dot(e1, B1 - Q);
 
           // Is the circle in Region AB of the previous edge?
@@ -96,8 +93,8 @@ namespace Box2D.NetStandard.Collision {
 
       // Region B
       if (u <= 0.0f) {
-        b2Vec2 P  = B;
-        b2Vec2 d  = Q - P;
+        Vector2 P  = B;
+        Vector2 d  = Q - P;
         float  dd = Vector2.Dot(d, d);
         if (dd > radius * radius) {
           return;
@@ -105,9 +102,9 @@ namespace Box2D.NetStandard.Collision {
 
         // Is there an edge connected to B?
         if (edgeA.m_hasVertex3) {
-          b2Vec2 B2 = edgeA.m_vertex3;
-          b2Vec2 A2 = B;
-          b2Vec2 e2 = B2 - A2;
+          Vector2 B2 = edgeA.m_vertex3;
+          Vector2 A2 = B;
+          Vector2 e2 = B2 - A2;
           float  v2 = Vector2.Dot(e2, Q - A2);
 
           // Is the circle in Region AB of the next edge?
@@ -133,14 +130,14 @@ namespace Box2D.NetStandard.Collision {
         // Region AB
         float den = Vector2.Dot(e, e);
         Debug.Assert(den > 0.0f);
-        b2Vec2 P  = (1.0f / den) * (u * A + v * B);
-        b2Vec2 d  = Q - P;
+        Vector2 P  = (1.0f / den) * (u * A + v * B);
+        Vector2 d  = Q - P;
         float  dd = Vector2.Dot(d, d);
         if (dd > radius * radius) {
           return;
         }
 
-        b2Vec2 n = new Vector2(-e.Y, e.X);
+        Vector2 n = new Vector2(-e.Y, e.X);
         if (Vector2.Dot(n, Q - A) < 0.0f) {
           n = new Vector2(-n.X, -n.Y);
         }
@@ -177,31 +174,31 @@ namespace Box2D.NetStandard.Collision {
     };
 
     internal AxisType type;
-    internal int32    index;
+    internal int    index;
     internal float    separation;
   };
 
 // This holds polygon B expressed in frame A.
   class TempPolygon {
-    internal b2Vec2[] vertices = new Vector2[Settings.MaxPolygonVertices];
-    internal b2Vec2[] normals  = new Vector2[Settings.MaxPolygonVertices];
-    internal int32    count;
+    internal Vector2[] vertices = new Vector2[Settings.MaxPolygonVertices];
+    internal Vector2[] normals  = new Vector2[Settings.MaxPolygonVertices];
+    internal int    count;
   };
 
 // Reference face used for clipping
   struct ReferenceFace {
-    internal int32 i1;
-    internal int32 i2;
+    internal int i1;
+    internal int i2;
 
-    internal b2Vec2 v1;
-    internal b2Vec2 v2;
+    internal Vector2 v1;
+    internal Vector2 v2;
 
-    internal b2Vec2 normal;
+    internal Vector2 normal;
 
-    internal b2Vec2 sideNormal1;
+    internal Vector2 sideNormal1;
     internal float  sideOffset1;
 
-    internal b2Vec2 sideNormal2;
+    internal Vector2 sideNormal2;
     internal float  sideOffset2;
   };
 
@@ -216,12 +213,12 @@ namespace Box2D.NetStandard.Collision {
     TempPolygon m_polygonB;
 
     Transform  m_xf;
-    b2Vec2     m_centroidB;
-    b2Vec2     m_v0,      m_v1,      m_v2, m_v3;
-    b2Vec2     m_normal0, m_normal1, m_normal2;
-    b2Vec2     m_normal;
+    Vector2     m_centroidB;
+    Vector2     m_v0,      m_v1,      m_v2, m_v3;
+    Vector2     m_normal0, m_normal1, m_normal2;
+    Vector2     m_normal;
     // VertexType m_type1,      m_type2;
-    b2Vec2     m_lowerLimit, m_upperLimit;
+    Vector2     m_lowerLimit, m_upperLimit;
     float      m_radius;
     bool       m_front;
 
@@ -249,7 +246,7 @@ namespace Box2D.NetStandard.Collision {
       bool   hasVertex0 = edgeA.m_hasVertex0;
       bool   hasVertex3 = edgeA.m_hasVertex3;
       
-      b2Vec2 edge1      = Vector2.Normalize(m_v2 - m_v1);
+      Vector2 edge1      = Vector2.Normalize(m_v2 - m_v1);
       m_normal1 = new Vector2(edge1.Y, -edge1.X);
       float offset1 = Vector2.Dot(m_normal1, m_centroidB - m_v1);
       float offset0 = 0.0f, offset2 = 0.0f;
@@ -258,7 +255,7 @@ namespace Box2D.NetStandard.Collision {
 
       // Is there a preceding edge?
       if (hasVertex0) {
-        b2Vec2 edge0 = Vector2.Normalize(m_v1 - m_v0);
+        Vector2 edge0 = Vector2.Normalize(m_v1 - m_v0);
         m_normal0 = new Vector2(edge0.Y, -edge0.X);
         convex1   = Vectex.Cross(edge0, edge1) >= 0.0f;
         offset0   = Vector2.Dot(m_normal0, m_centroidB - m_v0);
@@ -266,7 +263,7 @@ namespace Box2D.NetStandard.Collision {
 
       // Is there a following edge?
       if (hasVertex3) {
-        b2Vec2 edge2 = Vector2.Normalize(m_v3 - m_v2);
+        Vector2 edge2 = Vector2.Normalize(m_v3 - m_v2);
         m_normal2 = new Vector2(edge2.Y, -edge2.X);
         convex2   = Vectex.Cross(edge1, edge2) > 0.0f;
         offset2   = Vector2.Dot(m_normal2, m_centroidB - m_v2);
@@ -402,7 +399,7 @@ namespace Box2D.NetStandard.Collision {
       // Get polygonB in frameA
       m_polygonB = new TempPolygon();
       m_polygonB.count = polygonB.m_count;
-      for (int32 i = 0; i < polygonB.m_count; ++i) {
+      for (int i = 0; i < polygonB.m_count; ++i) {
         m_polygonB.vertices[i] = Math.Mul(m_xf,   polygonB.m_vertices[i]);
         m_polygonB.normals[i]  = Math.Mul(m_xf.q, polygonB.m_normals[i]);
       }
@@ -449,9 +446,9 @@ namespace Box2D.NetStandard.Collision {
         manifold.type = ManifoldType.FaceA;
 
         // Search for the polygon normal that is most anti-parallel to the edge normal.
-        int32 bestIndex = 0;
+        int bestIndex = 0;
         float bestValue = Vector2.Dot(m_normal, m_polygonB.normals[0]);
-        for (int32 i = 1; i < m_polygonB.count; ++i) {
+        for (int i = 1; i < m_polygonB.count; ++i) {
           float value = Vector2.Dot(m_normal, m_polygonB.normals[i]);
           if (value < bestValue) {
             bestValue = value;
@@ -459,8 +456,8 @@ namespace Box2D.NetStandard.Collision {
           }
         }
 
-        int32 i1 = bestIndex;
-        int32 i2 = i1 + 1 < m_polygonB.count ? i1 + 1 : 0;
+        int i1 = bestIndex;
+        int i2 = i1 + 1 < m_polygonB.count ? i1 + 1 : 0;
 
         ie[0].v            = m_polygonB.vertices[i1];
         ie[0].id.cf.indexA = 0;
@@ -517,7 +514,7 @@ namespace Box2D.NetStandard.Collision {
       rf.sideOffset2 = Vector2.Dot(rf.sideNormal2, rf.v2);
 
       // Clip incident edge against extruded edge1 side edges.
-      int32        np;
+      int        np;
 
       // Clip to box side 1
       np = Collision.ClipSegmentToLine(out ClipVertex[] clipPoints1, ie, rf.sideNormal1, rf.sideOffset1, rf.i1);
@@ -541,8 +538,8 @@ namespace Box2D.NetStandard.Collision {
         manifold.localPoint  = polygonB.m_vertices[rf.i1];
       }
 
-      int32 pointCount = 0;
-      for (int32 i = 0; i < Settings.MaxManifoldPoints; ++i) {
+      int pointCount = 0;
+      for (int i = 0; i < Settings.MaxManifoldPoints; ++i) {
         float separation = Vector2.Dot(rf.normal, clipPoints2[i].v - rf.v1);
 
         if (separation <= m_radius) {
@@ -573,7 +570,7 @@ namespace Box2D.NetStandard.Collision {
       axis.type       = EPAxis.AxisType.EdgeA;
       axis.index      = m_front ? 0 : 1;
       axis.separation = float.MaxValue;
-      for (int32 i = 0; i < m_polygonB.count; ++i) {
+      for (int i = 0; i < m_polygonB.count; ++i) {
         float s = Vector2.Dot(m_normal, m_polygonB.vertices[i] - m_v1);
         if (s < axis.separation) {
           axis.separation = s;
@@ -588,9 +585,9 @@ namespace Box2D.NetStandard.Collision {
       axis.type       = EPAxis.AxisType.Unknown;
       axis.index      = -1;
       axis.separation = float.MinValue;
-      b2Vec2 perp = new Vector2(-m_normal.Y, m_normal.X);
-      for (int32 i = 0; i < m_polygonB.count; ++i) {
-        b2Vec2 n = -m_polygonB.normals[i];
+      Vector2 perp = new Vector2(-m_normal.Y, m_normal.X);
+      for (int i = 0; i < m_polygonB.count; ++i) {
+        Vector2 n = -m_polygonB.normals[i];
 
         float s1 = Vector2.Dot(n, m_polygonB.vertices[i] - m_v1);
         float s2 = Vector2.Dot(n, m_polygonB.vertices[i] - m_v2);
@@ -637,9 +634,9 @@ namespace Box2D.NetStandard.Collision {
   /// This must be 4 bytes or less.
   struct ContactFeature
   {
-    internal uint8 indexA;		///< Feature index on shapeA
-    internal uint8 indexB;		///< Feature index on shapeB
-    internal uint8 typeA;		///< The feature type on shapeA
-    internal uint8 typeB; ///< The feature type on shapeB
+    internal byte indexA;		///< Feature index on shapeA
+    internal byte indexB;		///< Feature index on shapeB
+    internal byte typeA;		///< The feature type on shapeA
+    internal byte typeB; ///< The feature type on shapeB
   };
 }

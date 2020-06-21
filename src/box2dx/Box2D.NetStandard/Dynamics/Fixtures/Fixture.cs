@@ -34,8 +34,6 @@ using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
-using int32 = System.Int32;
-using b2Vec2 = System.Numerics.Vector2; 
 
 namespace Box2D.NetStandard.Dynamics.Fixtures
 {
@@ -114,7 +112,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 			Debug.Assert(m_proxyCount == 0);
 
 			// Free the proxy array.
-			int32 childCount = m_shape.GetChildCount();
+			int childCount = m_shape.GetChildCount();
 			m_proxies = null;
 			
 			m_shape = null;
@@ -127,7 +125,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 			// Create proxies in the broad-phase.
 			m_proxyCount = m_shape.GetChildCount();
 
-			for (int32 i = 0; i < m_proxyCount; ++i)
+			for (int i = 0; i < m_proxyCount; ++i)
 			{
 				
 				FixtureProxy proxy = m_proxies[i];
@@ -141,7 +139,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 		internal void DestroyProxies(BroadPhase broadPhase)
 		{
 			// Destroy proxies in the broad-phase.
-			for (int32 i = 0; i < m_proxyCount; ++i)
+			for (int i = 0; i < m_proxyCount; ++i)
 			{
 				FixtureProxy proxy = m_proxies[i];
 				broadPhase.DestroyProxy(proxy.proxyId);
@@ -158,7 +156,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 				return;
 			}
 
-			for (int32 i = 0; i < m_proxyCount; ++i)
+			for (int i = 0; i < m_proxyCount; ++i)
 			{
 				FixtureProxy proxy = m_proxies[i];
 
@@ -168,7 +166,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 	
 				proxy.aabb.Combine(aabb1, aabb2);
 
-				b2Vec2 displacement = aabb2.GetCenter() - aabb1.GetCenter();
+				Vector2 displacement = aabb2.GetCenter() - aabb1.GetCenter();
 
 				broadPhase.MoveProxy(proxy.proxyId, proxy.aabb, displacement);
 			}
@@ -212,7 +210,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 			// Touch each proxy so that new pairs may be created
 			BroadPhase broadPhase = world._contactManager.m_broadPhase;
-			for (int32 i = 0; i < m_proxyCount; ++i)
+			for (int i = 0; i < m_proxyCount; ++i)
 			{
 				broadPhase.TouchProxy(m_proxies[i].proxyId);
 			}

@@ -30,7 +30,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 using Math = Box2D.NetStandard.Common.Math;
-using b2Vec2 = System.Numerics.Vector2;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
@@ -63,20 +62,20 @@ namespace Box2D.NetStandard.Collision.Shapes
 		public override int GetChildCount() => 1;
 
 		public override bool TestPoint(in Transform transform, in Vector2 p) {
-			b2Vec2 center = transform.p + Math.Mul(transform.q, m_p);
-			b2Vec2 d      = p           - center;
+			Vector2 center = transform.p + Math.Mul(transform.q, m_p);
+			Vector2 d      = p           - center;
 			return Vector2.Dot(d, d) <= m_radius * m_radius;
 		}
 
 		public override bool RayCast(out RayCastOutput output, in RayCastInput input, in Transform transform, int childIndex) {
 			output = default;
 			
-			b2Vec2 position = transform.p + Math.Mul(transform.q, m_p);
-			b2Vec2 s        = input.p1    - position;
+			Vector2 position = transform.p + Math.Mul(transform.q, m_p);
+			Vector2 s        = input.p1    - position;
 			float  b        = Vector2.Dot(s, s) - m_radius * m_radius;
 
 			// Solve quadratic equation.
-			b2Vec2 r     = input.p2 - input.p1;
+			Vector2 r     = input.p2 - input.p1;
 			float  c     =  Vector2.Dot(s, r);
 			float  rr    =  Vector2.Dot(r,  r);
 			float  sigma = c * c - rr * b;
@@ -103,7 +102,7 @@ namespace Box2D.NetStandard.Collision.Shapes
 		}
 
 		public override void ComputeAABB(out AABB aabb, in Transform transform, int childIndex) {
-			b2Vec2 p = transform.p   + Math.Mul(transform.q, m_p);
+			Vector2 p = transform.p   + Math.Mul(transform.q, m_p);
 			aabb.lowerBound=new Vector2(p.X - m_radius, p.Y - m_radius);
 			aabb.upperBound=new Vector2(p.X + m_radius, p.Y + m_radius);
 		}

@@ -153,7 +153,6 @@ using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
-using int32 = System.Int32;
 using b2Vec2 = System.Numerics.Vector2;
 
 
@@ -284,7 +283,7 @@ namespace Box2D.NetStandard.Dynamics {
         contactSolver.WarmStart();
       }
 
-      for (int32 i = 0; i < _jointCount; ++i) {
+      for (int i = 0; i < _jointCount; ++i) {
         _joints[i].InitVelocityConstraints(solverData);
       }
 
@@ -292,8 +291,8 @@ namespace Box2D.NetStandard.Dynamics {
 
       // Solve velocity constraints
       timer.Reset();
-      for (int32 i = 0; i < step.velocityIterations; ++i) {
-        for (int32 j = 0; j < _jointCount; ++j) {
+      for (int i = 0; i < step.velocityIterations; ++i) {
+        for (int j = 0; j < _jointCount; ++j) {
           _joints[j].SolveVelocityConstraints(solverData);
         }
 
@@ -305,7 +304,7 @@ namespace Box2D.NetStandard.Dynamics {
       profile.solveVelocity = timer.ElapsedMilliseconds;
 
       // Integrate positions
-      for (int32 i = 0; i < _bodyCount; ++i) {
+      for (int i = 0; i < _bodyCount; ++i) {
         b2Vec2 c = _positions[i].c;
         float  a = _positions[i].a;
         b2Vec2 v = _velocities[i].v;
@@ -337,11 +336,11 @@ namespace Box2D.NetStandard.Dynamics {
       // Solve position constraints
       timer.Restart();
       bool positionSolved = false;
-      for (int32 i = 0; i < step.positionIterations; ++i) {
+      for (int i = 0; i < step.positionIterations; ++i) {
         bool contactsOkay = contactSolver.SolvePositionConstraints();
 
         bool jointsOkay = true;
-        for (int32 j = 0; j < _jointCount; ++j) {
+        for (int j = 0; j < _jointCount; ++j) {
           bool jointOkay = _joints[j].SolvePositionConstraints(solverData);
           jointsOkay = jointsOkay && jointOkay;
         }
@@ -354,7 +353,7 @@ namespace Box2D.NetStandard.Dynamics {
       }
 
       // Copy state buffers back to the bodies
-      for (int32 i = 0; i < _bodyCount; ++i) {
+      for (int i = 0; i < _bodyCount; ++i) {
         Body body = _bodies[i];
         body._sweep.c         = _positions[i].c;
         body._sweep.a         = _positions[i].a;
@@ -373,7 +372,7 @@ namespace Box2D.NetStandard.Dynamics {
         const float linTolSqr = Settings.LinearSleepTolerance  * Settings.LinearSleepTolerance;
         const float angTolSqr = Settings.AngularSleepTolerance * Settings.AngularSleepTolerance;
 
-        for (int32 i = 0; i < _bodyCount; ++i) {
+        for (int i = 0; i < _bodyCount; ++i) {
           Body b = _bodies[i];
           if (b.Type()==BodyType.Static) {
             continue;
@@ -392,7 +391,7 @@ namespace Box2D.NetStandard.Dynamics {
         }
 
         if (minSleepTime >= Settings.TimeToSleep && positionSolved) {
-          for (int32 i = 0; i < _bodyCount; ++i) {
+          for (int i = 0; i < _bodyCount; ++i) {
             Body b = _bodies[i];
             b.SetAwake(false);
           }
