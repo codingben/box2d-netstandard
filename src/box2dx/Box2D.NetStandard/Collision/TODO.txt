@@ -1,5 +1,4 @@
 Todo:
 
 ChainShape
-FrictionJoint
 Rope
