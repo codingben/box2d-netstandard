@@ -13,48 +13,48 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
   public class DistanceJointDef : JointDef {
     public DistanceJointDef() {
       Type         = JointType.DistanceJoint;
-      LocalAnchorA = new Vector2(0.0f, 0.0f);
-      LocalAnchorB = new Vector2(0.0f, 0.0f);
-      Length       = 1.0f;
-      FrequencyHz  = 0.0f;
-      DampingRatio = 0.0f;
+      localAnchorA = new Vector2(0.0f, 0.0f);
+      localAnchorB = new Vector2(0.0f, 0.0f);
+      length       = 1.0f;
+      frequencyHz  = 0.0f;
+      dampingRatio = 0.0f;
     }
 
     /// <summary>
     /// Initialize the bodies, anchors, and length using the world anchors.
     /// </summary>
     public void Initialize(Body body1, Body body2, Vector2 anchor1, Vector2 anchor2) {
-      BodyA        = body1;
-      BodyB        = body2;
-      LocalAnchorA = body1.GetLocalPoint(anchor1);
-      LocalAnchorB = body2.GetLocalPoint(anchor2);
+      bodyA        = body1;
+      bodyB        = body2;
+      localAnchorA = body1.GetLocalPoint(anchor1);
+      localAnchorB = body2.GetLocalPoint(anchor2);
       Vector2 d = anchor2 - anchor1;
-      Length = d.Length();
+      length = d.Length();
     }
 
     /// <summary>
     /// The local anchor point relative to body1's origin.
     /// </summary>
-    public Vector2 LocalAnchorA;
+    public Vector2 localAnchorA;
 
     /// <summary>
     /// The local anchor point relative to body2's origin.
     /// </summary>
-    public Vector2 LocalAnchorB;
+    public Vector2 localAnchorB;
 
     /// <summary>
     /// The equilibrium length between the anchor points.
     /// </summary>
-    public float Length;
+    public float length;
 
     /// <summary>
     /// The response speed.
     /// </summary>
-    public float FrequencyHz;
+    public float frequencyHz;
 
     /// <summary>
     /// The damping ratio. 0 = no damping, 1 = critical damping.
     /// </summary>
-    public float DampingRatio;
+    public float dampingRatio;
   }
 }

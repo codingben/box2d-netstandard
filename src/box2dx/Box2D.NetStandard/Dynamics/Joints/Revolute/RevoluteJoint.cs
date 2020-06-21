@@ -217,19 +217,19 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute {
 
     public RevoluteJoint(RevoluteJointDef def)
       : base(def) {
-      _localAnchorA   = def.LocalAnchorA;
-      _localAnchorB   = def.LocalAnchorB;
-      _referenceAngle = def.ReferenceAngle;
+      _localAnchorA   = def.localAnchorA;
+      _localAnchorB   = def.localAnchorB;
+      _referenceAngle = def.referenceAngle;
 
       _impulse      = new Vector3();
       _motorImpulse = 0.0f;
 
-      _lowerAngle     = def.LowerAngle;
-      _upperAngle     = def.UpperAngle;
-      _maxMotorTorque = def.MaxMotorTorque;
-      _motorSpeed     = def.MotorSpeed;
-      _enableLimit    = def.EnableLimit;
-      _enableMotor    = def.EnableMotor;
+      _lowerAngle     = def.lowerAngle;
+      _upperAngle     = def.upperAngle;
+      _maxMotorTorque = def.maxMotorTorque;
+      _motorSpeed     = def.motorSpeed;
+      _enableLimit    = def.enableLimit;
+      _enableMotor    = def.enableMotor;
       _limitState      = LimitState.InactiveLimit;
     }
 

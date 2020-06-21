@@ -83,7 +83,8 @@ namespace Box2D.NetStandard.Collision {
 
         // Build a linked list for the free list. The parent
         // pointer becomes the "next" pointer.
-        for (int i = m_nodeCount; i < m_nodeCapacity - 1; ++i) {
+        for (int i = m_nodeCount; i < m_nodeCapacity; ++i) {
+          m_nodes[i] = new TreeNode();
           m_nodes[i].pn.next   = i + 1;
           m_nodes[i].height = -1;
         }

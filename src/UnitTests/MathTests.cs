@@ -1,4 +1,3 @@
-using Box2DX.Common;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -112,7 +112,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     /// </summary>
     public bool bullet;
 
-    internal bool  awake;
+    public bool  awake;
     public bool  enabled;
     public float gravityScale;
   }

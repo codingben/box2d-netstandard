@@ -13,16 +13,16 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
   public class PrismaticJointDef : JointDef {
     public PrismaticJointDef() {
       Type             = JointType.PrismaticJoint;
-      LocalAnchor1     = Vector2.Zero;
-      LocalAnchor2     = Vector2.Zero;
-      LocalAxis1       = new Vector2(1.0f, 0.0f);
-      ReferenceAngle   = 0.0f;
-      EnableLimit      = false;
-      LowerTranslation = 0.0f;
-      UpperTranslation = 0.0f;
-      EnableMotor      = false;
-      MaxMotorForce    = 0.0f;
-      MotorSpeed       = 0.0f;
+      localAnchorA     = Vector2.Zero;
+      localAnchorB     = Vector2.Zero;
+      localAxisA       = new Vector2(1.0f, 0.0f);
+      referenceAngle   = 0.0f;
+      enableLimit      = false;
+      lowerTranslation = 0.0f;
+      upperTranslation = 0.0f;
+      enableMotor      = false;
+      maxMotorForce    = 0.0f;
+      motorSpeed       = 0.0f;
     }
 
     /// <summary>
@@ -30,62 +30,62 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
     /// anchor and world axis.
     /// </summary>
     public void Initialize(Body body1, Body body2, Vector2 anchor, Vector2 axis) {
-      BodyA          = body1;
-      BodyB          = body2;
-      LocalAnchor1   = body1.GetLocalPoint(anchor);
-      LocalAnchor2   = body2.GetLocalPoint(anchor);
-      LocalAxis1     = body1.GetLocalVector(axis);
-      ReferenceAngle = body2.GetAngle() - body1.GetAngle();
+      bodyA          = body1;
+      bodyB          = body2;
+      localAnchorA   = body1.GetLocalPoint(anchor);
+      localAnchorB   = body2.GetLocalPoint(anchor);
+      localAxisA     = body1.GetLocalVector(axis);
+      referenceAngle = body2.GetAngle() - body1.GetAngle();
     }
 
     /// <summary>
     /// The local anchor point relative to body1's origin.
     /// </summary>
-    public Vector2 LocalAnchor1;
+    public Vector2 localAnchorA;
 
     /// <summary>
     /// The local anchor point relative to body2's origin.
     /// </summary>
-    public Vector2 LocalAnchor2;
+    public Vector2 localAnchorB;
 
     /// <summary>
     /// The local translation axis in body1.
     /// </summary>
-    public Vector2 LocalAxis1;
+    public Vector2 localAxisA;
 
     /// <summary>
     /// The constrained angle between the bodies: body2_angle - body1_angle.
     /// </summary>
-    public float ReferenceAngle;
+    public float referenceAngle;
 
     /// <summary>
     /// Enable/disable the joint limit.
     /// </summary>
-    public bool EnableLimit;
+    public bool enableLimit;
 
     /// <summary>
     /// The lower translation limit, usually in meters.
     /// </summary>
-    public float LowerTranslation;
+    public float lowerTranslation;
 
     /// <summary>
     /// The upper translation limit, usually in meters.
     /// </summary>
-    public float UpperTranslation;
+    public float upperTranslation;
 
     /// <summary>
     /// Enable/disable the joint motor.
     /// </summary>
-    public bool EnableMotor;
+    public bool enableMotor;
 
     /// <summary>
     /// The maximum motor torque, usually in N-m.
     /// </summary>
-    public float MaxMotorForce;
+    public float maxMotorForce;
 
     /// <summary>
     /// The desired motor speed in radians per second.
     /// </summary>
-    public float MotorSpeed;
+    public float motorSpeed;
   }
 }

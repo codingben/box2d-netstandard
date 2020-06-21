@@ -252,7 +252,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Body GetBody() => Body;
 
-		Fixture GetNext() => m_next;
+		public Fixture GetNext() => m_next;
 		public Fixture Next {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 

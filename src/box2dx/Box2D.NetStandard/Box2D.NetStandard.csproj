@@ -13,7 +13,6 @@
     <FileVersion>2.0.0.0</FileVersion>
     <Version>2.0-alpha</Version>
     <PackageVersion>2.0-alpha</PackageVersion>
-    <PackageLicenseUrl>https://github.com/benzuk/box2d-netstandard/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

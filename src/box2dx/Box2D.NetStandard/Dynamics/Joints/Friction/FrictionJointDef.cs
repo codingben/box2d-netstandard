@@ -13,10 +13,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction {
     }
 
     public void Initialize(Body bA, Body bB, in Vector2 anchor) {
-      BodyA        = bA;
-      BodyB        = bB;
-      localAnchorA = BodyA.GetLocalPoint(anchor);
-      localAnchorB = BodyB.GetLocalPoint(anchor);
+      bodyA        = bA;
+      bodyB        = bB;
+      localAnchorA = bodyA.GetLocalPoint(anchor);
+      localAnchorB = bodyB.GetLocalPoint(anchor);
     }
   }
 }
