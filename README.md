@@ -2,7 +2,9 @@
 
 # Box2D .NET Standard 
 
-Box2D is the C# port of C++ Box2D by Ihar Kalasouski 2008.
+Box2D .NET Standard is the port of Box2D from C++ to C# by Ben Ukhanov & Hugh Phoenix-Hulme 2020.
+
+Loosely based on Box2DX by Ihar Kalasouski 2008.
 
 - The purpose of this repository is to create Box2D .NET Standard library
 - The .NET Standard supports .NET Framework, .NET Core, and [.NET 5+ later](https://medium.com/capgemini-dynamics-365-team/future-of-net-net-5-microsoft-build-2019-from-a-net-developer-point-of-view-7a1158fb0691)
@@ -55,4 +57,4 @@ Anyone who wants to contribute to this repository:
 - [Discord](https://discord.gg/NKYgCBP)
 
 ## License
-Original C++ Box2D is developed by Erin Catto, and uses the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
+Original C++ Box2D is developed by Erin Catto, under the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
