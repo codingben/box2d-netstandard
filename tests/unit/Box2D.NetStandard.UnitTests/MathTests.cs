@@ -1,7 +1,8 @@
+using Box2D.NetStandard.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests {
+namespace Box2D.NetStandard.UnitTests {
   public class MathTests {
     private ITestOutputHelper output;
 
