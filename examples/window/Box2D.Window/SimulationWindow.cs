@@ -274,7 +274,7 @@ namespace Box2D.Window
                 GL.Color3(0.0f, 1.0f, 0.0f);
                 GL.Vertex2(a.X, a.Y);
 
-                System.Numerics.Vector2 ey = new System.Numerics.Vector2(xf.q.M21, xf.q.M22);
+                System.Numerics.Vector2 ey = new System.Numerics.Vector2(xf.q.M12, xf.q.M22);
                 
                 b = a + (kAxisScale * ey);
 
