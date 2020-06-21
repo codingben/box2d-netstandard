@@ -4,7 +4,9 @@
 
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics;
-using Color = Box2D.NetStandard.Dynamics.Color;
+using Box2D.NetStandard.Dynamics.World;
+using Box2D.NetStandard.Dynamics.World.Callbacks;
+using Color = Box2D.NetStandard.Dynamics.World.Color;
 
 namespace Box2D.Window
 {

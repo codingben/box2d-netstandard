@@ -29,12 +29,13 @@ using System.Diagnostics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class PolygonContact : Contact
 	{
-		public PolygonContact(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
+		public PolygonContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
 			Debug.Assert(fixtureA.Type == ShapeType.Polygon);
@@ -42,7 +43,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 		}
 
 		
-		public new static Contact Create(Fixture.Fixture fixtureA, Fixture.Fixture fixtureB)
+		public new static Contact Create(Fixture fixtureA, Fixture fixtureB)
 		{
 			return new PolygonContact(fixtureA, fixtureB);
 		}

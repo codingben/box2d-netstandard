@@ -29,8 +29,6 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
-using int32 = System.Int32;
-using b2Vec2 = System.Numerics.Vector2;
 
 namespace Box2D.NetStandard.Collision {
   internal class Simplex {
@@ -71,13 +69,13 @@ namespace Box2D.NetStandard.Collision {
       // Copy data from cache.
       m_count = cache.count;
       SimplexVertex[] vertices = m_v;
-      for (int32 i = 0; i < m_count; ++i) {
+      for (int i = 0; i < m_count; ++i) {
         unsafe {
           SimplexVertex v = vertices[i];
           v.indexA = cache.indexA[i];
           v.indexB = cache.indexB[i];
-          b2Vec2 wALocal = proxyA.GetVertex(v.indexA);
-          b2Vec2 wBLocal = proxyB.GetVertex(v.indexB);
+          Vector2 wALocal = proxyA.GetVertex(v.indexA);
+          Vector2 wBLocal = proxyB.GetVertex(v.indexB);
           v.wA = Math.Mul(transformA, wALocal);
           v.wB = Math.Mul(transformB, wBLocal);
           v.w  = v.wB - v.wA;
@@ -101,8 +99,8 @@ namespace Box2D.NetStandard.Collision {
         SimplexVertex v = vertices[0];
         v.indexA = 0;
         v.indexB = 0;
-        b2Vec2 wALocal = proxyA.GetVertex(0);
-        b2Vec2 wBLocal = proxyB.GetVertex(0);
+        Vector2 wALocal = proxyA.GetVertex(0);
+        Vector2 wBLocal = proxyB.GetVertex(0);
         v.wA   = Math.Mul(transformA, wALocal);
         v.wB   = Math.Mul(transformB, wBLocal);
         v.w    = v.wB - v.wA;
@@ -123,7 +121,7 @@ namespace Box2D.NetStandard.Collision {
         }
     }
 
-    internal b2Vec2 GetSearchDirection()
+    internal Vector2 GetSearchDirection()
     {
       switch (m_count)
       {
@@ -132,7 +130,7 @@ namespace Box2D.NetStandard.Collision {
 
         case 2:
         {
-          b2Vec2 e12 = m_v2.w - m_v1.w;
+          Vector2 e12 = m_v2.w - m_v1.w;
           float  sgn = Vectex.Cross(e12, -m_v1.w);
           if (sgn > 0.0f)
           {

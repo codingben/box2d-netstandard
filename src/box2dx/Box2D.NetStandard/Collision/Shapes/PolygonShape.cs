@@ -25,13 +25,13 @@
 // SOFTWARE.
 */
 
+#define DEBUG
+
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 using Math = Box2D.NetStandard.Common.Math;
-using b2Vec2 = System.Numerics.Vector2;
-using int32 = System.Int32;
 
 namespace Box2D.NetStandard.Collision.Shapes {
   /// <summary>
@@ -75,11 +75,11 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       Transform xf = new Transform();
       xf.p = center;
-      xf.q.Set(angle);
+      xf.q = Matrix3x2.CreateRotation(angle);// .Set(angle);
 
       for (int i = 0; i < m_count; i++) {
-        m_vertices[i] = Common.Math.Mul(xf,   m_vertices[i]);
-        m_normals[i]  = Common.Math.Mul(xf.q, m_normals[i]);
+        m_vertices[i] = Math.Mul(xf,   m_vertices[i]);
+        m_normals[i]  = Math.Mul(xf.q, m_normals[i]);
       }
     }
 
@@ -132,13 +132,13 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       int n = System.Math.Min(count, Settings.MaxPolygonVertices);
       // Perform welding and copy vertices into local buffer.
-      b2Vec2[] ps        = new Vector2[Settings.MaxPolygonVertices];
-      int32    tempCount = 0;
-      for (int32 i = 0; i < n; ++i) {
-        b2Vec2 v = vertices[i];
+      Vector2[] ps        = new Vector2[Settings.MaxPolygonVertices];
+      int    tempCount = 0;
+      for (int i = 0; i < n; ++i) {
+        Vector2 v = vertices[i];
 
         bool unique = true;
-        for (int32 j = 0; j < tempCount; ++j) {
+        for (int j = 0; j < tempCount; ++j) {
           if (Vector2.DistanceSquared(v, ps[j]) < ((0.5f * Settings.LinearSlop) * (0.5f * Settings.LinearSlop))) {
             unique = false;
             break;
@@ -162,9 +162,9 @@ namespace Box2D.NetStandard.Collision.Shapes {
       // http://en.wikipedia.org/wiki/Gift_wrapping_algorithm
 
       // Find the right most point on the hull
-      int32 i0 = 0;
+      int i0 = 0;
       float x0 = ps[0].X;
-      for (int32 i = 1; i < n; ++i) {
+      for (int i = 1; i < n; ++i) {
         float x = ps[i].X;
         if (x > x0 || (x == x0 && ps[i].Y < ps[i0].Y)) {
           i0 = i;
@@ -172,23 +172,23 @@ namespace Box2D.NetStandard.Collision.Shapes {
         }
       }
 
-      int32[] hull = new int32[Settings.MaxPolygonVertices];
-      int32   m    = 0;
-      int32   ih   = i0;
+      int[] hull = new int[Settings.MaxPolygonVertices];
+      int   m    = 0;
+      int   ih   = i0;
 
       for (;;) {
         Debug.Assert(m < Settings.MaxPolygonVertices);
         hull[m] = ih;
 
-        int32 ie = 0;
-        for (int32 j = 1; j < n; ++j) {
+        int ie = 0;
+        for (int j = 1; j < n; ++j) {
           if (ie == ih) {
             ie = j;
             continue;
           }
 
-          b2Vec2 r = ps[ie] - ps[hull[m]];
-          b2Vec2 v = ps[j]  - ps[hull[m]];
+          Vector2 r = ps[ie] - ps[hull[m]];
+          Vector2 v = ps[j]  - ps[hull[m]];
           float  c = Vectex.Cross(r, v);
           if (c < 0.0f) {
             ie = j;
@@ -218,15 +218,15 @@ namespace Box2D.NetStandard.Collision.Shapes {
       m_count = m;
 
       // Copy vertices.
-      for (int32 i = 0; i < m; ++i) {
+      for (int i = 0; i < m; ++i) {
         m_vertices[i] = ps[hull[i]];
       }
 
       // Compute normals. Ensure the edges have non-zero length.
-      for (int32 i = 0; i < m; ++i) {
-        int32  i1   = i;
-        int32  i2   = i + 1 < m ? i + 1 : 0;
-        b2Vec2 edge = m_vertices[i2] - m_vertices[i1];
+      for (int i = 0; i < m; ++i) {
+        int  i1   = i;
+        int  i2   = i + 1 < m ? i + 1 : 0;
+        Vector2 edge = m_vertices[i2] - m_vertices[i1];
         Debug.Assert(edge.LengthSquared() > Settings.FLT_EPSILON_SQUARED);
         m_normals[i] = Vector2.Normalize(Vectex.Cross(edge, 1.0f));
       }
@@ -236,9 +236,9 @@ namespace Box2D.NetStandard.Collision.Shapes {
     }
 
     public override bool TestPoint(in Transform xf, in Vector2 p) {
-      b2Vec2 pLocal = Math.MulT(xf.q, p - xf.p);
+      Vector2 pLocal = Math.MulT(xf.q, p - xf.p);
 
-      for (int32 i = 0; i < m_count; ++i) {
+      for (int i = 0; i < m_count; ++i) {
         float dot = Vector2.Dot(m_normals[i], pLocal - m_vertices[i]);
         if (dot > 0.0f) {
           return false;
@@ -252,15 +252,15 @@ namespace Box2D.NetStandard.Collision.Shapes {
       int                                          childIndex) {
       output = default;
       // Put the ray into the polygon's frame of reference.
-      b2Vec2 p1 = Math.MulT(xf.q, input.p1 - xf.p);
-      b2Vec2 p2 = Math.MulT(xf.q, input.p2 - xf.p);
-      b2Vec2 d  = p2 - p1;
+      Vector2 p1 = Math.MulT(xf.q, input.p1 - xf.p);
+      Vector2 p2 = Math.MulT(xf.q, input.p2 - xf.p);
+      Vector2 d  = p2 - p1;
 
       float lower = 0.0f, upper = input.maxFraction;
 
-      int32 index = -1;
+      int index = -1;
 
-      for (int32 i = 0; i < m_count; ++i) {
+      for (int i = 0; i < m_count; ++i) {
         // p = p1 + a * d
         // dot(normal, p - v) = 0
         // dot(normal, p1 - v) + a * dot(normal, d) = 0
@@ -311,16 +311,16 @@ namespace Box2D.NetStandard.Collision.Shapes {
     }
 
     public override void ComputeAABB(out AABB aabb, in Transform xf, int childIndex) {
-      b2Vec2 lower = Math.Mul(xf, m_vertices[0]);
-      b2Vec2 upper = lower;
+      Vector2 lower = Math.Mul(xf, m_vertices[0]);
+      Vector2 upper = lower;
 
-      for (int32 i = 1; i < m_count; ++i) {
-        b2Vec2 v = Math.Mul(xf, m_vertices[i]);
+      for (int i = 1; i < m_count; ++i) {
+        Vector2 v = Math.Mul(xf, m_vertices[i]);
         lower = Vector2.Min(lower, v);
         upper = Vector2.Max(upper, v);
       }
 
-      b2Vec2 r = new Vector2(m_radius, m_radius);
+      Vector2 r = new Vector2(m_radius, m_radius);
       aabb.lowerBound = lower - r;
       aabb.upperBound = upper + r;
     }
@@ -358,10 +358,10 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       // s is the reference point for forming triangles.
       // It's location doesn't change the result (except for rounding error).
-      b2Vec2 s = Vector2.Zero;
+      Vector2 s = Vector2.Zero;
 
       // This code would put the reference point inside the polygon.
-      for (int32 i = 0; i < m_count; ++i) {
+      for (int i = 0; i < m_count; ++i) {
         s += m_vertices[i];
       }
 
@@ -369,10 +369,10 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       const float k_inv3 = 1.0f / 3.0f;
 
-      for (int32 i = 0; i < m_count; ++i) {
+      for (int i = 0; i < m_count; ++i) {
         // Triangle vertices.
-        b2Vec2 e1 = m_vertices[i] - s;
-        b2Vec2 e2 = i + 1 < m_count ? m_vertices[i + 1] - s : m_vertices[0] - s;
+        Vector2 e1 = m_vertices[i] - s;
+        Vector2 e2 = i + 1 < m_count ? m_vertices[i + 1] - s : m_vertices[0] - s;
 
         float D = Vectex.Cross(e1, e2);
 

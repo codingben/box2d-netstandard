@@ -48,7 +48,7 @@ namespace Box2D.NetStandard.Common
 			xf = new Transform();
 			xf.p = (1.0f - alpha) * c0 + alpha * c;
 			float angle = (1.0f - alpha) * a0 + alpha * a;
-			xf.q.Set(angle);
+			xf.q = Matrix3x2.CreateRotation(angle);// .Set(angle);
 
 			// Shift to origin
 			xf.p -= Math.Mul(xf.q, localCenter);

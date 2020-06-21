@@ -32,8 +32,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
   public class ContactVelocityConstraint {
     internal VelocityConstraintPoint[] points = new VelocityConstraintPoint[Settings.MaxManifoldPoints];
     internal Vector2                   normal;
-    internal Mat22                     normalMass;
-    internal Mat22                     K;
+    internal Matrix3x2 normalMass;
+    internal Matrix3x2 K;
     internal int                       indexA;
     internal int                       indexB;
     internal float                     invMassA;

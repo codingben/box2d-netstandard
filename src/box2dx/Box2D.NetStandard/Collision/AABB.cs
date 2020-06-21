@@ -28,8 +28,6 @@
 using System;
 using System.Numerics;
 using Box2D.NetStandard.Common;
-using b2Vec2 = System.Numerics.Vector2;
-using int32 = System.Int32;
 
 namespace Box2D.NetStandard.Collision {
   /// <summary>
@@ -40,20 +38,20 @@ namespace Box2D.NetStandard.Collision {
     /// <summary>
     /// The lower vertex
     /// </summary>
-    internal b2Vec2 lowerBound;
+    internal Vector2 lowerBound;
 
     /// <summary>
     /// The upper vertex
     /// </summary>
-    internal b2Vec2 upperBound;
+    internal Vector2 upperBound;
 
     /// Get the center of the AABB.
-    internal b2Vec2 GetCenter() {
+    internal Vector2 GetCenter() {
       return 0.5f * (lowerBound + upperBound);
     }
 
     /// Get the extents of the AABB (half-widths).
-    internal b2Vec2 GetExtents() {
+    internal Vector2 GetExtents() {
       return 0.5f * (upperBound - lowerBound);
     }
 
@@ -91,13 +89,13 @@ namespace Box2D.NetStandard.Collision {
       float tmin = float.MinValue;
       float tmax = float.MaxValue;
 
-      b2Vec2 p    = input.p1;
-      b2Vec2 d    = input.p2 - input.p1;
-      b2Vec2 absD = Vector2.Abs(d);
+      Vector2 p    = input.p1;
+      Vector2 d    = input.p2 - input.p1;
+      Vector2 absD = Vector2.Abs(d);
 
-      b2Vec2 normal = Vector2.Zero;
+      Vector2 normal = Vector2.Zero;
 
-      for (int32 i = 0; i < 2; ++i) {
+      for (int i = 0; i < 2; ++i) {
         if (absD.GetIdx(i) < Settings.FLT_EPSILON) {
           // Parallel.
           if (p.GetIdx(i) < lowerBound.GetIdx(i) || upperBound.GetIdx(i) < p.GetIdx(i)) {
@@ -147,7 +145,7 @@ namespace Box2D.NetStandard.Collision {
     }
 
     bool IsValid() {
-      b2Vec2 d     = upperBound - lowerBound;
+      Vector2 d     = upperBound - lowerBound;
       bool   valid = d.X >= 0.0f && d.Y >= 0.0f;
       valid = valid && lowerBound.IsValid() && upperBound.IsValid();
       return valid;

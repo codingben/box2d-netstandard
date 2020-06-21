@@ -44,14 +44,20 @@ namespace Box2D.NetStandard.Common
 		/// <summary>
 		/// Rotation
 		/// </summary>
-		public Mat22 q;
+		// public Mat22 q;
+		public Matrix3x2 q;
 
 		/// <summary>
 		/// Initialize using a position vector and a rotation matrix.
 		/// </summary>
 		/// <param name="position"></param>
 		/// <param name="R"></param>
-		public Transform(Vector2 position, Mat22 rotation)
+		// public Transform(Vector2 position, Mat22 rotation)
+		// {
+		// 	p = position;
+		// 	q = rotation;
+		// }
+		public Transform(Vector2 position, Matrix3x2 rotation)
 		{
 			p = position;
 			q = rotation;
@@ -63,25 +69,34 @@ namespace Box2D.NetStandard.Common
 		public void SetIdentity()
 		{
 			p = Vector2.Zero;
-			q.SetIdentity();
+			// q.SetIdentity();
+			q = Matrix3x2.Identity;
 		}
 
 		/// Set this based on the position and angle.
 		public void Set(Vector2 p, float angle)
 		{
 			this.p = p;
-			q.Set(angle);
+			q = Matrix3x2.CreateRotation(angle); //=.Set(angle);
 		}
 
 		/// Calculate the angle that the rotation matrix represents.
 		public float GetAngle()
 		{
-			return MathF.Atan2(q.ex.Y, q.ex.X);
+		//	|  ex  |  ey  |
+		//  +------+------+
+		//	| ex.X | ey.X |
+		//  | M11  | M12  |
+		//  +------+------+
+		//  | ex.Y | ey.Y |
+		//  | M21  | M22  |
+		//  +------+------+
+			return MathF.Atan2(q.M21, q.M11);
 		}
 
 		public static Transform Identity {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => new Transform(Vector2.Zero, Mat22.Identity);
+			get => new Transform(Vector2.Zero, Matrix3x2.Identity);
 		}
 	}
 }

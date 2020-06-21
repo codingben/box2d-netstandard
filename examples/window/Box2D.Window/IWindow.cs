@@ -3,7 +3,7 @@
 */
 
 using Box2D.NetStandard.Common;
-using Color = Box2D.NetStandard.Dynamics.Color;
+using Color = Box2D.NetStandard.Dynamics.World.Color;
 
 namespace Box2D.Window
 {

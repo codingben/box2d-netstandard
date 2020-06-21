@@ -6,6 +6,16 @@ the box's position over time.
 
 This is a good example of how to get up and running with Box2D.
 
+### [1. Creating a World](#c1)
+### [2. Creating a Ground Box](#c2)  
+### [3. Creating a Dynamic Body](#c3)
+### [4. Simulating the World](#c4)
+### [5. Cleanup](#c5)
+### [6. Further Reading](#c6)
+
+
+
+<a name="c1"></a>
 ## Creating a World
 Every Box2D program begins with the creation of a b2World object.
 b2World is the physics hub that manages memory, objects, and simulation.
@@ -30,6 +40,7 @@ World world = new World(gravity);
 
 So now we have our physics world, let's start adding some stuff to it.
 
+<a name="c2"></a>
 ## Creating a Ground Box
 Bodies are built using the following steps:
 1. Define a body with position, damping, etc.
@@ -103,6 +114,7 @@ morphing shapes is not a rigid body, but Box2D is a rigid body engine.
 Many of the assumptions made in Box2D are based on the rigid body model.
 If this is violated many things will break
 
+<a name="c3"></a>
 ## Creating a Dynamic Body
 So now we have a ground body. We can use the same technique to create a
 dynamic body. The main difference, besides dimensions, is that we must
@@ -156,6 +168,7 @@ body.CreateFixture(fixtureDef);
 
 That's it for initialization. We are now ready to begin simulating.
 
+<a name="c4"></a>
 ## Simulating the World
 So we have initialized the ground box and a dynamic box. Now we are
 ready to set Newton loose to do his thing. We just have a couple more
@@ -242,7 +255,13 @@ output should look like this:
 0.00 1.01 0.00
 ```
 
+<a name="c5"></a>
 ## Cleanup
 When a world leaves scope and there are no more references to the bodies, joints and fixtures contained therein,
 all the memory reserved for bodies, fixtures, and joints is tidied up by the Garbage Collector.
 If this is news to you, you should read about the way .net manages memory.
+
+<a name="c6"></a>
+## Further Reading
+
+Chris Campbell has produced [a comprehensive tutorial](https://www.iforce2d.net/b2dtut/) which also explains some of the quirks of Box2D and how to avoid or overcome them. You should also check out his [Really Useful Box2D Editor (R.U.B.E.)](https://www.iforce2d.net/rube/)
