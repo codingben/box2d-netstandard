@@ -2,5 +2,4 @@ Todo:
 
 ChainShape
 FrictionJoint
-MotorJoint
 Rope
