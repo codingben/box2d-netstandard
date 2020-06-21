@@ -3,6 +3,4 @@ Todo:
 ChainShape
 FrictionJoint
 MotorJoint
-WeldJoint
-WheelJoint
 Rope
