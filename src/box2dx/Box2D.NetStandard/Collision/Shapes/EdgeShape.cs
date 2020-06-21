@@ -36,18 +36,13 @@ namespace Box2D.NetStandard.Collision.Shapes
     internal Vector2 m_vertex1;
     internal Vector2 m_vertex2;
 
-    internal Vector2 m_vertex0;
-    internal Vector2 m_vertex3;
-    internal bool m_hasVertex0;
-    internal bool m_hasVertex3;
+    internal Vector2? m_vertex0;
+    internal Vector2? m_vertex3;
+
 
     public EdgeShape() {
       m_type = ShapeType.Edge;
       m_radius = Settings.PolygonRadius;
-      m_vertex0 = Vector2.Zero;
-      m_vertex3=Vector2.Zero;
-      m_hasVertex0 = false;
-      m_hasVertex3 = false;
     }
 
     public Vector2 Vertex1 {
@@ -63,8 +58,6 @@ namespace Box2D.NetStandard.Collision.Shapes
     public void Set(in Vector2 v1, in Vector2 v2) {
       m_vertex1    = v1;
       m_vertex2    = v2;
-      m_hasVertex0 = false;
-      m_hasVertex3 = false;
     }
 
 

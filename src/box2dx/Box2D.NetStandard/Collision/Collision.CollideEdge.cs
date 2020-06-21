@@ -66,8 +66,8 @@ namespace Box2D.NetStandard.Collision {
         }
 
         // Is there an edge connected to A?
-        if (edgeA.m_hasVertex0) {
-          Vector2 A1 = edgeA.m_vertex0;
+        if (edgeA.m_vertex0.HasValue) {
+          Vector2 A1 = edgeA.m_vertex0.Value;
           Vector2 B1 = A;
           Vector2 e1 = B1 - A1;
           float  u1 = Vector2.Dot(e1, B1 - Q);
@@ -101,8 +101,8 @@ namespace Box2D.NetStandard.Collision {
         }
 
         // Is there an edge connected to B?
-        if (edgeA.m_hasVertex3) {
-          Vector2 B2 = edgeA.m_vertex3;
+        if (edgeA.m_vertex3.HasValue) {
+          Vector2 B2 = edgeA.m_vertex3.Value;
           Vector2 A2 = B;
           Vector2 e2 = B2 - A2;
           float  v2 = Vector2.Dot(e2, Q - A2);
@@ -214,7 +214,8 @@ namespace Box2D.NetStandard.Collision {
 
     Transform  m_xf;
     Vector2     m_centroidB;
-    Vector2     m_v0,      m_v1,      m_v2, m_v3;
+    private Vector2? m_v0, m_v3;
+    Vector2     m_v1,      m_v2;
     Vector2     m_normal0, m_normal1, m_normal2;
     Vector2     m_normal;
     // VertexType m_type1,      m_type2;
@@ -243,9 +244,6 @@ namespace Box2D.NetStandard.Collision {
       m_v2        = edgeA.m_vertex2;
       m_v3        = edgeA.m_vertex3;
       
-      bool   hasVertex0 = edgeA.m_hasVertex0;
-      bool   hasVertex3 = edgeA.m_hasVertex3;
-      
       Vector2 edge1      = Vector2.Normalize(m_v2 - m_v1);
       m_normal1 = new Vector2(edge1.Y, -edge1.X);
       float offset1 = Vector2.Dot(m_normal1, m_centroidB - m_v1);
@@ -254,23 +252,23 @@ namespace Box2D.NetStandard.Collision {
       bool convex1 = false, convex2 = false;
 
       // Is there a preceding edge?
-      if (hasVertex0) {
-        Vector2 edge0 = Vector2.Normalize(m_v1 - m_v0);
+      if (m_v0.HasValue) {
+        Vector2 edge0 = Vector2.Normalize(m_v1 - m_v0.Value);
         m_normal0 = new Vector2(edge0.Y, -edge0.X);
         convex1   = Vectex.Cross(edge0, edge1) >= 0.0f;
-        offset0   = Vector2.Dot(m_normal0, m_centroidB - m_v0);
+        offset0   = Vector2.Dot(m_normal0, m_centroidB - m_v0.Value);
       }
 
       // Is there a following edge?
-      if (hasVertex3) {
-        Vector2 edge2 = Vector2.Normalize(m_v3 - m_v2);
+      if (m_v3.HasValue) {
+        Vector2 edge2 = Vector2.Normalize(m_v3.Value - m_v2);
         m_normal2 = new Vector2(edge2.Y, -edge2.X);
         convex2   = Vectex.Cross(edge1, edge2) > 0.0f;
         offset2   = Vector2.Dot(m_normal2, m_centroidB - m_v2);
       }
 
       // Determine front or back collision. Determine collision normal limits.
-      if (hasVertex0 && hasVertex3) {
+      if (m_v0.HasValue && m_v3.HasValue) {
         if (convex1 && convex2) {
           m_front = offset0 >= 0.0f || offset1 >= 0.0f || offset2 >= 0.0f;
           if (m_front) {
@@ -324,7 +322,7 @@ namespace Box2D.NetStandard.Collision {
           }
         }
       }
-      else if (hasVertex0) {
+      else if (m_v0.HasValue) {
         if (convex1) {
           m_front = offset0 >= 0.0f || offset1 >= 0.0f;
           if (m_front) {
@@ -353,7 +351,7 @@ namespace Box2D.NetStandard.Collision {
         }
       }
 
-      else if (hasVertex3) {
+      else if (m_v3.HasValue) {
         if (convex2) {
           m_front = offset1 >= 0.0f || offset2 >= 0.0f;
           if (m_front) {
