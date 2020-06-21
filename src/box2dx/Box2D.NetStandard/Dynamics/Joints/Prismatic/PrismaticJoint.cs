@@ -99,96 +99,10 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2D.NetStandard.Dynamics.Joints {
-  /// <summary>
-  /// Prismatic joint definition. This requires defining a line of
-  /// motion using an axis and an anchor point. The definition uses local
-  /// anchor points and a local axis so that the initial configuration
-  /// can violate the constraint slightly. The joint translation is zero
-  /// when the local anchor points coincide in world space. Using local
-  /// anchors and a local axis helps when saving and loading a game.
-  /// </summary>
-  public class PrismaticJointDef : JointDef {
-    public PrismaticJointDef() {
-      Type             = JointType.PrismaticJoint;
-      LocalAnchor1     = Vector2.Zero;
-      LocalAnchor2     = Vector2.Zero;
-      LocalAxis1       = new Vector2(1.0f, 0.0f);
-      ReferenceAngle   = 0.0f;
-      EnableLimit      = false;
-      LowerTranslation = 0.0f;
-      UpperTranslation = 0.0f;
-      EnableMotor      = false;
-      MaxMotorForce    = 0.0f;
-      MotorSpeed       = 0.0f;
-    }
-
-    /// <summary>
-    /// Initialize the bodies, anchors, axis, and reference angle using the world
-    /// anchor and world axis.
-    /// </summary>
-    public void Initialize(Body body1, Body body2, Vector2 anchor, Vector2 axis) {
-      BodyA          = body1;
-      BodyB          = body2;
-      LocalAnchor1   = body1.GetLocalPoint(anchor);
-      LocalAnchor2   = body2.GetLocalPoint(anchor);
-      LocalAxis1     = body1.GetLocalVector(axis);
-      ReferenceAngle = body2.GetAngle() - body1.GetAngle();
-    }
-
-    /// <summary>
-    /// The local anchor point relative to body1's origin.
-    /// </summary>
-    public Vector2 LocalAnchor1;
-
-    /// <summary>
-    /// The local anchor point relative to body2's origin.
-    /// </summary>
-    public Vector2 LocalAnchor2;
-
-    /// <summary>
-    /// The local translation axis in body1.
-    /// </summary>
-    public Vector2 LocalAxis1;
-
-    /// <summary>
-    /// The constrained angle between the bodies: body2_angle - body1_angle.
-    /// </summary>
-    public float ReferenceAngle;
-
-    /// <summary>
-    /// Enable/disable the joint limit.
-    /// </summary>
-    public bool EnableLimit;
-
-    /// <summary>
-    /// The lower translation limit, usually in meters.
-    /// </summary>
-    public float LowerTranslation;
-
-    /// <summary>
-    /// The upper translation limit, usually in meters.
-    /// </summary>
-    public float UpperTranslation;
-
-    /// <summary>
-    /// Enable/disable the joint motor.
-    /// </summary>
-    public bool EnableMotor;
-
-    /// <summary>
-    /// The maximum motor torque, usually in N-m.
-    /// </summary>
-    public float MaxMotorForce;
-
-    /// <summary>
-    /// The desired motor speed in radians per second.
-    /// </summary>
-    public float MotorSpeed;
-  }
-
+namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
   /// <summary>
   /// A prismatic joint. This joint provides one degree of freedom: translation
   /// along an axis fixed in body1. Relative rotation is prevented. You can
@@ -229,13 +143,9 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     private float   _translation;
     private Matrix3x2   _K;
 
-    public override Vector2 Anchor1 {
-      get { return _bodyA.GetWorldPoint(_localAnchorA); }
-    }
+    public override Vector2 GetAnchorA => _bodyA.GetWorldPoint(_localAnchorA);
 
-    public override Vector2 Anchor2 {
-      get { return _bodyB.GetWorldPoint(_localAnchorB); }
-    }
+    public override Vector2 GetAnchorB => _bodyB.GetWorldPoint(_localAnchorB);
 
     public override Vector2 GetReactionForce(float inv_dt) {
       return inv_dt * (_impulse.X * _perp + (_motorImpulse + _lowerImpulse + _upperImpulse) * _axis);
@@ -249,8 +159,9 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     /// <summary>
     /// Get the current joint translation, usually in meters.
     /// </summary>
-    public float JointTranslation {
-      get {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float GetJointTranslation(){
+       
         Body b1 = _bodyA;
         Body b2 = _bodyB;
 
@@ -259,16 +170,14 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         Vector2 d    = p2 - p1;
         Vector2 axis = b1.GetWorldVector(_localXAxisA);
 
-        float translation = Vector2.Dot(d, axis);
-        return translation;
-      }
-    }
+        return Vector2.Dot(d, axis);
+
+  }
 
     /// <summary>
     /// Get the current joint translation speed, usually in meters per second.
     /// </summary>
-    public float JointSpeed {
-      get {
+    public float JointSpeed( ) {
         Body b1 = _bodyA;
         Body b2 = _bodyB;
 
@@ -284,10 +193,10 @@ namespace Box2D.NetStandard.Dynamics.Joints {
         float   w1 = b1._angularVelocity;
         float   w2 = b2._angularVelocity;
 
-        float speed = Vector2.Dot(d,    Vectex.Cross(w1, axis)) +
+        return Vector2.Dot(d,    Vectex.Cross(w1, axis)) +
                       Vector2.Dot(axis, v2 + Vectex.Cross(w2, r2) - v1 - Vectex.Cross(w1, r1));
-        return speed;
-      }
+       
+      
     }
 
     /// <summary>
@@ -327,6 +236,7 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     /// <summary>
     /// Set the joint limits, usually in meters.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetLimits(float lower, float upper) {
       Debug.Assert(lower <= upper);
       _bodyA.SetAwake(true);

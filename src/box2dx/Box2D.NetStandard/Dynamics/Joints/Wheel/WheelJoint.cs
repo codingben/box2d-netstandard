@@ -42,40 +42,15 @@
 // J = [0 0 -1 0 0 1]
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2D.NetStandard.Dynamics.Joints {
-  public class WheelJointDef : JointDef {
-    public WheelJointDef() {
-      Type             = JointType.WheelJoint;
-      LocalAnchor1     = Vector2.Zero;
-      LocalAnchor2     = Vector2.Zero;
-      LocalAxisA       = Vector2.Zero;
-      EnableLimit      = false;
-      LowerTranslation = 0f;
-      UpperTranslation = 0f;
-      EnableMotor      = false;
-      MaxMotorTorque   = 0f;
-      MotorSpeed       = 0f;
-      Stiffness        = 0f;
-      Damping          = 0f;
-    }
-
-    public Vector2 LocalAnchor1;
-    public Vector2 LocalAnchor2;
-    public Vector2 LocalAxisA;
-    public bool    EnableLimit;
-    public float   LowerTranslation;
-    public float   UpperTranslation;
-    public bool    EnableMotor;
-    public float   MaxMotorTorque;
-    public float   MotorSpeed;
-    public float   Stiffness;
-    public float   Damping;
-  }
-
+namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
   public class WheelJoint : Joint {
     private Vector2 _localAnchorA;
     private Vector2 _localAnchorB;
@@ -155,19 +130,140 @@ namespace Box2D.NetStandard.Dynamics.Joints {
       _stiffness = def.Stiffness;
       _damping   = def.Damping;
     }
+    
+    public override Vector2 GetAnchorA => _bodyA.GetWorldPoint(_localAnchorA);
 
+    public override Vector2 GetAnchorB => _bodyB.GetWorldPoint(_localAnchorB);
 
-    public override Vector2 Anchor1 => _bodyA.GetWorldPoint(_localAnchorA);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public override Vector2 GetReactionForce(float inv_dt) => inv_dt * (_impulse * _ay + _springImpulse * _ax);
 
-    public override Vector2 Anchor2 => _bodyB.GetWorldPoint(_localAnchorB);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public override float GetReactionTorque(float inv_dt) => inv_dt * _motorImpulse;
 
-    public override Vector2 GetReactionForce(float inv_dt) {
-      throw new NotImplementedException();
+    public float GetJointTranslation() {
+      Body bA = _bodyA;
+      Body bB = _bodyB;
+
+      Vector2 pA = bA.GetWorldPoint(_localAnchorA);
+      Vector2 pB = bB.GetWorldPoint(_localAnchorB);
+      Vector2 d = pB - pA;
+      Vector2 axis = bA.GetWorldVector(_localXAxisA);
+
+      return Vector2.Dot(d, axis);
+    } 
+
+    public float GetJointLinearSpeed()
+    {
+      Body bA = _bodyA;
+      Body bB = _bodyB;
+
+      Vector2 rA   = Math.Mul(bA._xf.q, _localAnchorA - bA._sweep.localCenter);
+      Vector2 rB   = Math.Mul(bB._xf.q, _localAnchorB - bB._sweep.localCenter);
+      Vector2 p1   = bA._sweep.c + rA;
+      Vector2 p2   = bB._sweep.c + rB;
+      Vector2 d    = p2            - p1;
+      Vector2 axis = Math.Mul(bA._xf.q, _localXAxisA);
+      
+      Vector2 vA = bA._linearVelocity;
+      Vector2 vB = bB._linearVelocity;
+      float  wA =  bA._angularVelocity;
+      float  wB =  bB._angularVelocity;
+
+      return Vector2.Dot(d, Vectex.Cross(wA, axis)) + Vector2.Dot(axis, vB + Vectex.Cross(wB, rB) - vA - Vectex.Cross(wA, rA));
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float GetJointAngle() => _bodyB._sweep.a - _bodyA._sweep.a;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float GetJointAngularSpeed() => _bodyB._angularVelocity - _bodyA._angularVelocity;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsLimitEnabled() => _enableLimit;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EnableLimit(bool flag)
+    {
+      if (flag != _enableLimit)
+      {
+        _bodyA.SetAwake(true);
+        _bodyB.SetAwake(true);
+        _enableLimit  = flag;
+        _lowerImpulse = 0.0f;
+        _upperImpulse = 0.0f;
+      }
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    float GetLowerLimit() => _lowerTranslation;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    float GetUpperLimit() => _upperTranslation;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    void SetLimits(float lower, float upper)
+    {
+      Debug.Assert(lower <= upper);
+      if (lower != _lowerTranslation || upper != _upperTranslation)
+      {
+        _bodyA.SetAwake(true);
+        _bodyB.SetAwake(true);
+        _lowerTranslation = lower;
+        _upperTranslation = upper;
+        _lowerImpulse     = 0.0f;
+        _upperImpulse     = 0.0f;
+      }
     }
 
-    public override float GetReactionTorque(float inv_dt) {
-      throw new NotImplementedException();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] bool IsMotorEnabled() => _enableMotor;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    void EnableMotor(bool flag)
+    {
+      if (flag != _enableMotor)
+      {
+        _bodyA.SetAwake(true);
+        _bodyB.SetAwake(true);
+        _enableMotor = flag;
+      }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] void SetMotorSpeed(float speed)
+    {
+      if (speed != _motorSpeed)
+      {
+        _bodyA.SetAwake(true);
+        _bodyB.SetAwake(true);
+        _motorSpeed = speed;
+      }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] void SetMaxMotorTorque(float torque)
+    {
+      if (torque != _maxMotorTorque)
+      {
+        _bodyA.SetAwake(true);
+        _bodyB.SetAwake(true);
+        _maxMotorTorque = torque;
+      }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    float GetMotorTorque(float inv_dt) => inv_dt * _motorImpulse;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    void SetStiffness(float stiffness) =>_stiffness = stiffness;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    float GetStiffness() => _stiffness;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    void SetDamping(float damping) => _damping = damping;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    float GetDamping() => _damping;
+
 
     internal override void InitVelocityConstraints(in SolverData data) {
       _indexA       = _bodyA._islandIndex;

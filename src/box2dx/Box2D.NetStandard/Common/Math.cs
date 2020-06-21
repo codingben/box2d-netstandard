@@ -88,7 +88,7 @@ namespace Box2D.NetStandard.Common {
     /// <summary>
     /// Random floating point number in range [lo, hi]
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Random(float lo, float hi) {
       float r = (float) (s_rnd.Next() & RAND_LIMIT);
       r /= RAND_LIMIT;
@@ -113,7 +113,7 @@ namespace Box2D.NetStandard.Common {
       return x + 1;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsPowerOfTwo(uint x) {
       bool result = x > 0 && (x & (x - 1)) == 0;
       return result;
@@ -131,8 +131,9 @@ namespace Box2D.NetStandard.Common {
     // internal static Mat22 Abs(Mat22 A) => new Mat22(Vector2.Abs(A.ex), Vector2.Abs(A.ey));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Matrix3x2 Abs(Matrix3x2 A) => new Matrix3x2(MathF.Abs(A.M11),MathF.Abs(A.M12),MathF.Abs(A.M21),MathF.Abs(22),0,0);
-    
+    internal static Matrix3x2 Abs(Matrix3x2 A) =>
+      new Matrix3x2(MathF.Abs(A.M11), MathF.Abs(A.M12), MathF.Abs(A.M21), MathF.Abs(22), 0, 0);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Swap<T>(ref T a, ref T b) {
       T tmp = a;
@@ -147,18 +148,16 @@ namespace Box2D.NetStandard.Common {
     // [MethodImpl(MethodImplOptions.AggressiveInlining)]
     // internal static Vector2 Mul(Mat22 A, Vector2 v) =>
     //   new Vector2(A.ex.X * v.X + A.ey.X * v.Y, A.ex.Y * v.X + A.ey.Y * v.Y);
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 Mul(Matrix3x2 A, Vector2 v) =>
       Vector2.Transform(v, A);
-    
+
     /// <summary>
     /// Multiply a matrix transpose times a vector. If a rotation matrix is provided,
     /// then this transforms the vector from one frame to another (inverse transform).
     /// </summary>
     // [MethodImpl(MethodImplOptions.AggressiveInlining)]
     // internal static Vector2 MulT(Mat22 A, Vector2 v) => new Vector2(Vector2.Dot(v, A.ex), Vector2.Dot(v, A.ey));
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 MulT(Matrix3x2 A, Vector2 v) {
       Matrix3x2.Invert(A, out Matrix3x2 AT);
@@ -189,13 +188,12 @@ namespace Box2D.NetStandard.Common {
     //   C.Set(c1, c2);
     //   return C;
     // }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Matrix3x2 MulT(Matrix3x2 A, Matrix3x2 B) {
       Matrix3x2.Invert(A, out Matrix3x2 AT);
       return AT * B;
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 Mul(Transform T, Vector2 v) => T.p + Mul(T.q, v);
 
@@ -222,13 +220,12 @@ namespace Box2D.NetStandard.Common {
     internal static Vector2 MulT(Rot q, Vector2 v) =>
       new Vector2(q.c  * v.X + q.s * v.Y,
                   -q.s * v.X + q.c * v.Y);
-    
-    
+
+
     // v2 = A.q.Rot(B.q.Rot(v1) + B.p) + A.p
 //    = (A.q * B.q).Rot(v1) + A.q.Rot(B.p) + A.p
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Transform Mul(in Transform A, in Transform  B)
-    {
+    internal static Transform Mul(in Transform A, in Transform B) {
       Transform C;
       C.q = Mul(A.q, B.q);
       C.p = Mul(A.q, B.p) + A.p;
@@ -238,12 +235,15 @@ namespace Box2D.NetStandard.Common {
 // v2 = A.q' * (B.q * v1 + B.p - A.p)
 //    = A.q' * B.q * v1 + A.q' * (B.p - A.p)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Transform MulT(in Transform  A, in Transform  B)
-    {
+    internal static Transform MulT(in Transform A, in Transform B) {
       Transform C;
       C.q = MulT(A.q, B.q);
       C.p = MulT(A.q, B.p - A.p);
       return C;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Vector2 Mul22(in Mat33 A, in Vector2 v) =>
+      new Vector2(A.ex.X * v.X + A.ey.X * v.X, A.ex.Y * v.X + A.ey.Y * v.Y);
   }
 }

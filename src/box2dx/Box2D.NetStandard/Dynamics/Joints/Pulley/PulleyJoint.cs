@@ -48,94 +48,12 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
-using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2D.NetStandard.Dynamics.Joints {
-  /// <summary>
-  /// Pulley joint definition. This requires two ground anchors,
-  /// two dynamic body anchor points, max lengths for each side,
-  /// and a pulley ratio.
-  /// </summary>
-  public class PulleyJointDef : JointDef {
-    public PulleyJointDef() {
-      Type             = JointType.PulleyJoint;
-      GroundAnchorA    = new Vector2(-1.0f, 1.0f);
-      GroundAnchorB    = new Vector2(1.0f,  1.0f);
-      LocalAnchorA     = new Vector2(-1.0f, 0.0f);
-      LocalAnchorB     = new Vector2(1.0f,  0.0f);
-      LengthA          = 0.0f;
-      LengthB          = 0.0f;
-      Ratio            = 1.0f;
-      CollideConnected = true;
-    }
-
-    /// Initialize the bodies, anchors, lengths, max lengths, and ratio using the world anchors.
-    public void Initialize(Body body1,         Body    body2,
-      Vector2                   groundAnchor1, Vector2 groundAnchor2,
-      Vector2                   anchor1,       Vector2 anchor2,
-      float                     ratio) {
-      BodyA         = body1;
-      BodyB         = body2;
-      GroundAnchorA = groundAnchor1;
-      GroundAnchorB = groundAnchor2;
-      LocalAnchorA  = body1.GetLocalPoint(anchor1);
-      LocalAnchorB  = body2.GetLocalPoint(anchor2);
-      Vector2 dA = anchor1 - groundAnchor1;
-      LengthA = dA.Length();
-      Vector2 dB = anchor2 - groundAnchor2;
-      LengthB = dB.Length();
-      Ratio   = ratio;
-      Debug.Assert(ratio > Settings.FLT_EPSILON);
-    }
-
-    /// <summary>
-    /// The first ground anchor in world coordinates. This point never moves.
-    /// </summary>
-    public Vector2 GroundAnchorA;
-
-    /// <summary>
-    /// The second ground anchor in world coordinates. This point never moves.
-    /// </summary>
-    public Vector2 GroundAnchorB;
-
-    /// <summary>
-    /// The local anchor point relative to body1's origin.
-    /// </summary>
-    public Vector2 LocalAnchorA;
-
-    /// <summary>
-    /// The local anchor point relative to body2's origin.
-    /// </summary>
-    public Vector2 LocalAnchorB;
-
-    /// <summary>
-    /// The a reference length for the segment attached to body1.
-    /// </summary>
-    public float LengthA;
-
-    /// <summary>
-    /// The maximum length of the segment attached to body1.
-    /// </summary>
-    public float MaxLength1;
-
-    /// <summary>
-    /// The a reference length for the segment attached to body2.
-    /// </summary>
-    public float LengthB;
-
-    /// <summary>
-    /// The maximum length of the segment attached to body2.
-    /// </summary>
-    public float MaxLength2;
-
-    /// <summary>
-    /// The pulley ratio, used to simulate a block-and-tackle.
-    /// </summary>
-    public float Ratio;
-  }
-
+namespace Box2D.NetStandard.Dynamics.Joints.Pulley {
   /// <summary>
   /// The pulley joint is connected to two bodies and two fixed ground points.
   /// The pulley supports a ratio such that:
@@ -173,60 +91,52 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     private float   _mass;
 
 
-    public override Vector2 Anchor1 {
-      get { return _bodyA.GetWorldPoint(_localAnchorA); }
-    }
+    public override Vector2 GetAnchorA => _bodyA.GetWorldPoint(_localAnchorA);
 
-    public override Vector2 Anchor2 {
-      get { return _bodyB.GetWorldPoint(_localAnchorB); }
-    }
+    public override Vector2 GetAnchorB => _bodyB.GetWorldPoint(_localAnchorB);
 
-    public override Vector2 GetReactionForce(float inv_dt) {
-      Vector2 P = _impulse * _uB;
-      return inv_dt * P;
-    }
+    public override Vector2 GetReactionForce(float inv_dt) => inv_dt * _impulse * _uB;
 
-    public override float GetReactionTorque(float inv_dt) {
-      return 0.0f;
-    }
+    public override float GetReactionTorque(float inv_dt) => 0.0f;
 
     /// <summary>
     /// Get the first ground anchor.
     /// </summary>
     public Vector2 GroundAnchorA {
-      get { return _groundAnchorA; }
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => _groundAnchorA;
     }
 
     /// <summary>
     /// Get the second ground anchor.
     /// </summary>
     public Vector2 GroundAnchorB {
-      get { return  _groundAnchorB; }
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => _groundAnchorB;
     }
 
     /// <summary>
     /// Get the current length of the segment attached to body1.
     /// </summary>
     public float LengthA {
-      get {
-        return _lengthA;
-      }
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => _lengthA;
     }
 
     /// <summary>
     /// Get the current length of the segment attached to body2.
     /// </summary>
     public float LengthB {
-      get {
-        return _lengthB;
-      }
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => _lengthB;
     }
 
     /// <summary>
     /// Get the pulley ratio.
     /// </summary>
     public float Ratio {
-      get { return _ratio; }
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => _ratio;
     }
 
     public PulleyJoint(PulleyJointDef def)

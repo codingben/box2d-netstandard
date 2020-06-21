@@ -152,21 +152,9 @@ using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Joints;
-using Box2D.NetStandard.Dynamics.World;
-using b2Vec2 = System.Numerics.Vector2;
+using Box2D.NetStandard.Dynamics.World.Callbacks;
 
-
-namespace Box2D.NetStandard.Dynamics {
-  public struct Position {
-    public Vector2 c;
-    public float   a;
-  }
-
-  public struct Velocity {
-    public Vector2 v;
-    public float   w;
-  }
-
+namespace Box2D.NetStandard.Dynamics.World {
   public class Island : IDisposable {
     public ContactListener _listener;
 
@@ -249,7 +237,7 @@ namespace Box2D.NetStandard.Dynamics {
           // v2 = exp(-c * dt) * v1
           // Pade approximation:
           // v2 = v1 * 1 / (1 + c * dt)
-          
+
           v *= 1.0f / (1.0f + h * b._linearDamping);
           w *= 1.0f / (1.0f + h * b._angularDamping);
         }
@@ -275,7 +263,7 @@ namespace Box2D.NetStandard.Dynamics {
       contactSolverDef.count      = _contactCount;
       contactSolverDef.positions  = _positions;
       contactSolverDef.velocities = _velocities;
-      
+
       ContactSolver contactSolver = new ContactSolver(contactSolverDef);
       contactSolver.InitializeVelocityConstraints();
 
@@ -305,13 +293,13 @@ namespace Box2D.NetStandard.Dynamics {
 
       // Integrate positions
       for (int i = 0; i < _bodyCount; ++i) {
-        b2Vec2 c = _positions[i].c;
-        float  a = _positions[i].a;
-        b2Vec2 v = _velocities[i].v;
-        float  w = _velocities[i].w;
+        Vector2 c = _positions[i].c;
+        float   a = _positions[i].a;
+        Vector2 v = _velocities[i].v;
+        float   w = _velocities[i].w;
 
         // Check for large velocities
-        b2Vec2 translation = h * v;
+        Vector2 translation = h * v;
         if (Vector2.Dot(translation, translation) > Settings.MaxTranslationSquared) {
           float ratio = Settings.MaxTranslation / translation.Length();
           v *= ratio;
@@ -374,19 +362,19 @@ namespace Box2D.NetStandard.Dynamics {
 
         for (int i = 0; i < _bodyCount; ++i) {
           Body b = _bodies[i];
-          if (b.Type()==BodyType.Static) {
+          if (b.Type() == BodyType.Static) {
             continue;
           }
 
-          if (!b.HasFlag(BodyFlags.AutoSleep)        ||
-              b._angularVelocity * b._angularVelocity     > angTolSqr ||
+          if (!b.HasFlag(BodyFlags.AutoSleep)                               ||
+              b._angularVelocity * b._angularVelocity           > angTolSqr ||
               Vector2.Dot(b._linearVelocity, b._linearVelocity) > linTolSqr) {
             b._sleepTime = 0.0f;
-            minSleepTime  = 0.0f;
+            minSleepTime = 0.0f;
           }
           else {
             b._sleepTime += h;
-            minSleepTime  =  System.Math.Min(minSleepTime, b._sleepTime);
+            minSleepTime =  System.Math.Min(minSleepTime, b._sleepTime);
           }
         }
 
@@ -523,11 +511,5 @@ namespace Box2D.NetStandard.Dynamics {
         _listener.PostSolve(c, impulse);
       }
     }
-  }
-
-  public class SolverData {
-    internal TimeStep   step;
-    internal Position[] positions;
-    internal Velocity[] velocities;
   }
 }

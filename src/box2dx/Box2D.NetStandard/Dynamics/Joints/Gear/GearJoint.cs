@@ -48,40 +48,14 @@
 
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.Joints.Prismatic;
+using Box2D.NetStandard.Dynamics.Joints.Revolute;
+using Box2D.NetStandard.Dynamics.World;
 
-namespace Box2D.NetStandard.Dynamics.Joints {
-  /// <summary>
-  /// Gear joint definition. This definition requires two existing
-  /// revolute or prismatic joints (any combination will work).
-  /// The provided joints must attach a dynamic body to a static body.
-  /// </summary>
-  public class GearJointDef : JointDef {
-    public GearJointDef() {
-      Type   = JointType.GearJoint;
-      Joint1 = null;
-      Joint2 = null;
-      Ratio  = 1.0f;
-    }
-
-    /// <summary>
-    /// The first revolute/prismatic joint attached to the gear joint.
-    /// </summary>
-    public Joint Joint1;
-
-    /// <summary>
-    /// The second revolute/prismatic joint attached to the gear joint.
-    /// </summary>
-    public Joint Joint2;
-
-    /// <summary>
-    /// The gear ratio.
-    /// @see GearJoint for explanation.
-    /// </summary>
-    public float Ratio;
-  }
-
+namespace Box2D.NetStandard.Dynamics.Joints.Gear {
   /// <summary>
   /// A gear joint is used to connect two joints together. Either joint
   /// can be a revolute or prismatic joint. You specify a gear ratio
@@ -136,22 +110,20 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     private float     _JwD;
 
 
-    public override Vector2 Anchor1 => _bodyA.GetWorldPoint(_localAnchorA);
-    public override Vector2 Anchor2 => _bodyB.GetWorldPoint(_localAnchorB);
-    public override Vector2 GetReactionForce(float inv_dt) {
-      return _impulse * _JvAC;
-    }
+    public override Vector2 GetAnchorA => _bodyA.GetWorldPoint(_localAnchorA);
+    public override Vector2 GetAnchorB => _bodyB.GetWorldPoint(_localAnchorB);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public override Vector2 GetReactionForce(float inv_dt) => _impulse * _JvAC;
 
-    public override float GetReactionTorque(float inv_dt) {
-      return inv_dt * _impulse * _JwA;
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public override float GetReactionTorque(float inv_dt) => inv_dt * _impulse * _JwA;
 
     /// <summary>
     /// Get the gear ratio.
     /// </summary>
     public float Ratio {
-      get { return _ratio; }
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => _ratio;
     }
 
     public GearJoint(GearJointDef def)

@@ -36,49 +36,11 @@
 using System;
 using System.Numerics;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2D.NetStandard.Dynamics.Joints
+namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 {
-	/// <summary>
-	/// Mouse joint definition. This requires a world target point,
-	/// tuning parameters, and the time step.
-	/// </summary>
-	public class MouseJointDef : JointDef
-	{
-		public MouseJointDef()
-		{
-			Type = JointType.MouseJoint;
-			Target=Vector2.Zero;
-			MaxForce = 0.0f;
-			FrequencyHz = 5.0f;
-			DampingRatio = 0.7f;
-		}
-
-		/// <summary>
-		/// The initial world target point. This is assumed
-		/// to coincide with the body anchor initially.
-		/// </summary>
-		public Vector2 Target;
-
-		/// <summary>
-		/// The maximum constraint force that can be exerted
-		/// to move the candidate body. Usually you will express
-		/// as some multiple of the weight (multiplier * mass * gravity).
-		/// </summary>
-		public float MaxForce;
-
-		/// <summary>
-		/// The response speed.
-		/// </summary>
-		public float FrequencyHz;
-
-		/// <summary>
-		/// The damping ratio. 0 = no damping, 1 = critical damping.
-		/// </summary>
-		public float DampingRatio;
-	}
-
 	/// <summary>
 	/// A mouse joint is used to make a point on a body track a
 	/// specified world point. This a soft constraint with a maximum
@@ -105,15 +67,9 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		private Matrix3x2 _mass;
 		private Vector2 _C;
 
-		public override Vector2 Anchor1
-		{
-			get { return _targetA; }
-		}
+		public override Vector2 GetAnchorA => _targetA;
 
-		public override Vector2 Anchor2
-		{
-			get { return _bodyB.GetWorldPoint(_localAnchor); }
-		}
+		public override Vector2 GetAnchorB => _bodyB.GetWorldPoint(_localAnchor);
 
 		public override Vector2 GetReactionForce(float inv_dt)
 		{
@@ -251,9 +207,6 @@ namespace Box2D.NetStandard.Dynamics.Joints
 			data.velocities[_indexB].w = wB;
 		}
 
-		internal override bool SolvePositionConstraints(in SolverData data)
-		{
-			return true;
-		}
+		internal override bool SolvePositionConstraints(in SolverData data) => true;
 	}
 }

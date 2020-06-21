@@ -31,127 +31,17 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.Joints.Distance;
+using Box2D.NetStandard.Dynamics.Joints.Gear;
+using Box2D.NetStandard.Dynamics.Joints.Mouse;
+using Box2D.NetStandard.Dynamics.Joints.Prismatic;
+using Box2D.NetStandard.Dynamics.Joints.Pulley;
+using Box2D.NetStandard.Dynamics.Joints.Revolute;
+using Box2D.NetStandard.Dynamics.Joints.Wheel;
+using Box2D.NetStandard.Dynamics.World;
 
 namespace Box2D.NetStandard.Dynamics.Joints
 {
-	public enum JointType
-	{
-		UnknownJoint,
-		RevoluteJoint,
-		PrismaticJoint,
-		DistanceJoint,
-		PulleyJoint,
-		MouseJoint,
-		GearJoint,
-		LineJoint,
-		WheelJoint
-	}
-
-	public enum LimitState
-	{
-		InactiveLimit,
-		AtLowerLimit,
-		AtUpperLimit,
-		EqualLimits
-	}
-
-	public struct Jacobian
-	{
-		public Vector2 Linear1;
-		public float Angular1;
-		public Vector2 Linear2;
-		public float Angular2;
-
-		public void SetZero()
-		{
-			Linear1=Vector2.Zero; Angular1 = 0.0f;
-			Linear2=Vector2.Zero; Angular2 = 0.0f;
-		}
-
-		public void Set(Vector2 x1, float a1, Vector2 x2, float a2)
-		{
-			Linear1 = x1; Angular1 = a1;
-			Linear2 = x2; Angular2 = a2;
-		}
-
-		public float Compute(Vector2 x1, float a1, Vector2 x2, float a2)
-		{
-			return Vector2.Dot(Linear1, x1) + Angular1 * a1 + Vector2.Dot(Linear2, x2) + Angular2 * a2;
-		}
-	}
-
-#warning "CAS"
-	/// <summary>
-	/// A joint edge is used to connect bodies and joints together
-	/// in a joint graph where each body is a node and each joint
-	/// is an edge. A joint edge belongs to a doubly linked list
-	/// maintained in each attached body. Each joint has two joint
-	/// nodes, one for each attached body.
-	/// </summary>
-	public class JointEdge
-	{
-		/// <summary>
-		/// Provides quick access to the other body attached.
-		/// </summary>
-		public Body other;
-
-		/// <summary>
-		/// The joint.
-		/// </summary>
-		public Joint joint;
-
-		/// <summary>
-		/// The previous joint edge in the body's joint list.
-		/// </summary>
-		public JointEdge Prev;
-
-		/// <summary>
-		/// The next joint edge in the body's joint list.
-		/// </summary>
-		public JointEdge next;
-	}
-
-#warning "CAS"
-	/// <summary>
-	/// Joint definitions are used to construct joints.
-	/// </summary>
-	public class JointDef
-	{
-		public JointDef()
-		{
-			Type = JointType.UnknownJoint;
-			UserData = null;
-			BodyA = null;
-			BodyB = null;
-			CollideConnected = false;
-		}
-
-		/// <summary>
-		/// The joint type is set automatically for concrete joint types.
-		/// </summary>
-		public JointType Type;
-
-		/// <summary>
-		/// Use this to attach application specific data to your joints.
-		/// </summary>
-		public object UserData;
-
-		/// <summary>
-		/// The first attached body.
-		/// </summary>
-		public Body BodyA;
-
-		/// <summary>
-		/// The second attached body.
-		/// </summary>
-		public Body BodyB;
-
-		/// <summary>
-		/// Set this flag to true if the attached bodies should collide.
-		/// </summary>
-		public bool CollideConnected;
-	}
-
 	/// <summary>
 	/// The base joint class. Joints are used to constraint two bodies together in
 	/// various fashions. Some joints also feature limits and motors.
@@ -181,36 +71,31 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// </summary>
 		public JointType Type => _type;
 		
-
 		/// <summary>
 		/// Get the first body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetBodyA()
-		{
-			return _bodyA;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Body GetBodyA() => _bodyA;
 
 		/// <summary>
 		/// Get the second body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
-		public Body GetBodyB()
-		{
-			return _bodyB;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Body GetBodyB() => _bodyB;
 
 		/// <summary>
 		/// Get the anchor point on body1 in world coordinates.
 		/// </summary>
 		/// <returns></returns>
-		public abstract Vector2 Anchor1 { get; }
+		public abstract Vector2 GetAnchorA { get; }
 
 		/// <summary>
 		/// Get the anchor point on body2 in world coordinates.
 		/// </summary>
 		/// <returns></returns>
-		public abstract Vector2 Anchor2 { get; }
+		public abstract Vector2 GetAnchorB { get; }
 
 		/// <summary>
 		/// Get the reaction force on body2 at the joint anchor.
@@ -226,10 +111,8 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// Get the next joint the world joint list.
 		/// </summary>
 		/// <returns></returns>
-		public Joint GetNext()
-		{
-			return _next;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
+		public Joint GetNext() => _next;
 
 		/// <summary>
 		/// Get/Set the user data pointer.
@@ -237,8 +120,10 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// <returns></returns>
 		public object UserData
 		{
-			get { return _userData; }
-			set { _userData = value; }
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _userData;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set => _userData = value;
 		}
 
 		protected Joint(JointDef def)
@@ -276,10 +161,6 @@ namespace Box2D.NetStandard.Dynamics.Joints
 				case JointType.GearJoint:
 					joint = new GearJoint((GearJointDef) def);
 					break;
-				// case JointType.LineJoint: {
-				// 	joint = new LineJoint((LineJointDef) def);
-				// }
-				// 	break;
 				case JointType.WheelJoint:
 					joint = new WheelJoint((WheelJointDef) def);
 					break;
@@ -290,11 +171,6 @@ namespace Box2D.NetStandard.Dynamics.Joints
 			}
 
 			return joint;
-		}
-
-		internal static void Destroy(Joint joint)
-		{
-			joint = null;
 		}
 
 		internal abstract void InitVelocityConstraints(in SolverData data);

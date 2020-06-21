@@ -36,6 +36,8 @@ using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.Joints;
+using Box2D.NetStandard.Dynamics.Joints.Pulley;
+using Box2D.NetStandard.Dynamics.World.Callbacks;
 
 namespace Box2D.NetStandard.Dynamics.World {
   /// <summary>
@@ -435,8 +437,6 @@ namespace Box2D.NetStandard.Dynamics.World {
 
       j._edgeB.Prev = null;
       j._edgeB.next = null;
-
-      Joint.Destroy(j);
 
       Debug.Assert(_jointCount > 0);
       --_jointCount;
@@ -1062,8 +1062,8 @@ namespace Box2D.NetStandard.Dynamics.World {
       Transform xf2 = b2.GetTransform();
       Vector2   x1  = xf1.p;
       Vector2   x2  = xf2.p;
-      Vector2   p1  = joint.Anchor1;
-      Vector2   p2  = joint.Anchor2;
+      Vector2   p1  = joint.GetAnchorA;
+      Vector2   p2  = joint.GetAnchorB;
 
       Color color = new Color(0.5f, 0.8f, 0.8f);
 

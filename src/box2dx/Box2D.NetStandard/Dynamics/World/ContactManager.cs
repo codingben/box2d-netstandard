@@ -30,8 +30,9 @@ using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Fixtures;
+using Box2D.NetStandard.Dynamics.World.Callbacks;
 
-namespace Box2D.NetStandard.Dynamics {
+namespace Box2D.NetStandard.Dynamics.World {
   /// <summary>
   /// Delegate of World.
   /// </summary>

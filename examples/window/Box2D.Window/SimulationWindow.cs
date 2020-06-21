@@ -10,7 +10,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 using OpenTK.Input;
 using Math = System.Math;
-using Color = Box2D.NetStandard.Dynamics.Color;
+using Color = Box2D.NetStandard.Dynamics.World.Color;
 
 namespace Box2D.Window
 {
