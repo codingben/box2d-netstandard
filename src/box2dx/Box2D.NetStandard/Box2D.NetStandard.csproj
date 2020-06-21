@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Erin Catto, Ben Ukhanov, Hugh Phoenix-Hulme</Authors>
     <Copyright>Copyright © Erin Catto, Ben Ukhanov, Hugh Phoenix-Hulme 2020</Copyright>
-    <PackageTags>Box2D, Physics, netcore, netstandard</PackageTags>
+    <PackageTags>Box2D, Physics, .NET, Standard, Core</PackageTags>
     <Description>Box2D.NetStandard is the C# port of C++ Box2D. This package supports .NET Standard 2.1.</Description>
     <PackageProjectUrl>https://github.com/benzuk/box2d-netstandard</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
