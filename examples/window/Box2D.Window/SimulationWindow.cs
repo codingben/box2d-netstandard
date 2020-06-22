@@ -102,7 +102,7 @@ namespace Box2D.Window
             base.OnRenderFrame(eventArgs);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(OpenTK.Color.CornflowerBlue);
+            GL.ClearColor(OpenTK.Color.Black);
 
             view?.Update();
 

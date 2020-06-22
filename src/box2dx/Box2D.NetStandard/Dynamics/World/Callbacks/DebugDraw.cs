@@ -1,6 +1,5 @@
 using System;
 using System.Numerics;
-using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Dynamics.World.Callbacks {

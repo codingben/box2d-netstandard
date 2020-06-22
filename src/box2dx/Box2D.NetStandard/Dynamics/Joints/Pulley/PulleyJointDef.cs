@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using System.Numerics;
-using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Pulley {

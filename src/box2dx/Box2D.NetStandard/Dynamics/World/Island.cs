@@ -145,7 +145,6 @@ However, we can compute sin+cos of the same angle fast.
 */
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
@@ -209,9 +208,7 @@ namespace Box2D.NetStandard.Dynamics.World {
       _jointCount   = 0;
     }
 
-    internal void Solve(Profile profile, in TimeStep step, in Vector2 gravity, bool allowSleep) {
-      Stopwatch timer = Stopwatch.StartNew();
-
+    internal void Solve(in TimeStep step, in Vector2 gravity, bool allowSleep) {
       float h = step.dt;
       // Integrate velocities and apply damping.
       for (int i = 0; i < _bodyCount; ++i) {
@@ -248,7 +245,6 @@ namespace Box2D.NetStandard.Dynamics.World {
         _velocities[i].w = w;
       }
 
-      timer.Restart();
 
       // Solver data
       SolverData solverData = new SolverData();
@@ -275,10 +271,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         _joints[i].InitVelocityConstraints(solverData);
       }
 
-      profile.solveInit = timer.ElapsedMilliseconds;
-
       // Solve velocity constraints
-      timer.Reset();
       for (int i = 0; i < step.velocityIterations; ++i) {
         for (int j = 0; j < _jointCount; ++j) {
           _joints[j].SolveVelocityConstraints(solverData);
@@ -289,7 +282,6 @@ namespace Box2D.NetStandard.Dynamics.World {
 
       // Store impulses for warm starting
       contactSolver.StoreImpulses();
-      profile.solveVelocity = timer.ElapsedMilliseconds;
 
       // Integrate positions
       for (int i = 0; i < _bodyCount; ++i) {
@@ -322,7 +314,6 @@ namespace Box2D.NetStandard.Dynamics.World {
       }
 
       // Solve position constraints
-      timer.Restart();
       bool positionSolved = false;
       for (int i = 0; i < step.positionIterations; ++i) {
         bool contactsOkay = contactSolver.SolvePositionConstraints();
@@ -349,8 +340,6 @@ namespace Box2D.NetStandard.Dynamics.World {
         body._angularVelocity = _velocities[i].w;
         body.SynchronizeTransform();
       }
-
-      profile.solvePosition = timer.ElapsedMilliseconds;
 
       Report(contactSolver._velocityConstraints);
 

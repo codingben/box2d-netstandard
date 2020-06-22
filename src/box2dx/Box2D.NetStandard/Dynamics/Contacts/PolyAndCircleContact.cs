@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using System.Diagnostics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;

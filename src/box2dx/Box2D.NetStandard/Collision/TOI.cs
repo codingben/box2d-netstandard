@@ -26,17 +26,17 @@
 */
 
 using System;
-using System.Diagnostics;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Contacts;
 
 namespace Box2D.NetStandard.Collision {
   public static class TOI {
-    internal static void TimeOfImpact(out TOIOutput output, in TOIInput input) {
-      //b2Timer timer;
+    internal static TOIOutput TimeOfImpact(in TOIInput input) {
 
+      TOIOutput output = default;
       //++_toiCalls;
-      output = new TOIOutput {state = TOIOutputState.Unknown, t = input.tMax};
+      output.t = input.tMax;
+      output.state = TOIOutputState.Unknown;
 
       DistanceProxy proxyA = input.proxyA;
       DistanceProxy proxyB = input.proxyB;
@@ -63,7 +63,7 @@ namespace Box2D.NetStandard.Collision {
       // Prepare input for distance query.
       SimplexCache cache = new SimplexCache();
       cache.count = 0;
-      DistanceInput distanceInput = new DistanceInput();
+      DistanceInput distanceInput;
       distanceInput.proxyA   = input.proxyA;
       distanceInput.proxyB   = input.proxyB;
       distanceInput.useRadii = false;
@@ -96,7 +96,7 @@ namespace Box2D.NetStandard.Collision {
         }
 
         // Initialize the separating axis.
-        SeparationFunction fcn = new SeparationFunction();
+        SeparationFunction fcn = default;
         fcn.Initialize(cache, proxyA, sweepA, proxyB, sweepB, t1);
 
         // Compute the TOI on the separating axis. We do this by successively
@@ -215,6 +215,7 @@ namespace Box2D.NetStandard.Collision {
       // float time = timer.GetMilliseconds();
       // b2_toiMaxTime = b2Max(b2_toiMaxTime, time);
       // b2_toiTime += time;
+      return output;
     }
   }
 }

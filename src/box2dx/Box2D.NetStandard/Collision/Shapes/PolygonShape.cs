@@ -27,7 +27,6 @@
 
 //#define DEBUG
 
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;

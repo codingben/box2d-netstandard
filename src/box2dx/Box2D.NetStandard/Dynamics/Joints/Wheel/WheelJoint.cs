@@ -42,7 +42,6 @@
 // J = [0 0 -1 0 0 1]
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;

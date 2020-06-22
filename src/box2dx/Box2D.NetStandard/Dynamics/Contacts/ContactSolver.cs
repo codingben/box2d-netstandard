@@ -28,7 +28,6 @@
 //#define B2_DEBUG_SOLVER
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;

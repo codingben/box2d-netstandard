@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using System.Diagnostics;
 using System.Numerics;
 
 namespace Box2D.NetStandard.Common

@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
@@ -70,17 +69,15 @@ namespace Box2D.NetStandard.Collision {
       m_count = cache.count;
       SimplexVertex[] vertices = m_v;
       for (int i = 0; i < m_count; ++i) {
-        unsafe {
-          SimplexVertex v = vertices[i];
-          v.indexA = cache.indexA[i];
-          v.indexB = cache.indexB[i];
-          Vector2 wALocal = proxyA.GetVertex(v.indexA);
-          Vector2 wBLocal = proxyB.GetVertex(v.indexB);
-          v.wA = Math.Mul(transformA, wALocal);
-          v.wB = Math.Mul(transformB, wBLocal);
-          v.w  = v.wB - v.wA;
-          v.a  = 0.0f;
-        }
+        SimplexVertex v = vertices[i];
+        v.indexA = cache.indexA[i];
+        v.indexB = cache.indexB[i];
+        Vector2 wALocal = proxyA.GetVertex(v.indexA);
+        Vector2 wBLocal = proxyB.GetVertex(v.indexB);
+        v.wA = Math.Mul(transformA, wALocal);
+        v.wB = Math.Mul(transformB, wBLocal);
+        v.w  = v.wB - v.wA;
+        v.a  = 0.0f;
       }
 
       // Compute the new simplex metric, if it is substantially different than
@@ -114,10 +111,8 @@ namespace Box2D.NetStandard.Collision {
       cache.count  = (ushort) m_count;
       SimplexVertex[] vertices = m_v;
         for (int i = 0; i < m_count; ++i) {
-          unsafe {
-            cache.indexA[i] = (byte) (vertices[i].indexA);
-            cache.indexB[i] = (byte) (vertices[i].indexB);
-          }
+          cache.indexA[i] = (byte) (vertices[i].indexA);
+          cache.indexB[i] = (byte) (vertices[i].indexB);
         }
     }
 

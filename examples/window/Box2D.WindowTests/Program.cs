@@ -7,9 +7,11 @@ using System.Threading;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 using Box2D.Window;
+using OpenTK;
 using TestWorlds;
 
 namespace Box2D.WindowTests
@@ -22,7 +24,7 @@ namespace Box2D.WindowTests
         static Program()
         {
             //world = CreateWorld();
-            world = RubeGoldberg.CreateWorld();
+            world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
             //world = CollisionTest.CreateWorld();
             //world = PolyEdgeTest.CreateWorld();
         }
@@ -37,8 +39,10 @@ namespace Box2D.WindowTests
                 game.SetView(new CameraView());
 
                 var physicsDrawer = new DrawPhysics(game);
-                physicsDrawer.AppendFlags(DrawFlags.Aabb);
+                //physicsDrawer.AppendFlags(DrawFlags.Aabb);
                 physicsDrawer.AppendFlags(DrawFlags.Shape);
+                //physicsDrawer.AppendFlags(DrawFlags.Pair);
+                physicsDrawer.AppendFlags(DrawFlags.Joint);
 
                 world.SetDebugDraw(physicsDrawer);
 

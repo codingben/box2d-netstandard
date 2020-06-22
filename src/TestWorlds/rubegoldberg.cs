@@ -20,11 +20,11 @@ using Box2D.NetStandard.Dynamics.World;
 
 namespace TestWorlds {
   public static class RubeGoldberg {
-    public static World CreateWorld() {
+    public static World CreateWorld(out Body[] bodies, out Joint[] joints) {
       Vector2 gravity = new Vector2(0.000000000000000e+00f, -1.000000000000000e+01f);
       World   world   = new World(gravity);
-      Body[]  bodies  = new Body[51];
-      Joint[] joints  = new Joint[21];
+      bodies  = new Body[51];
+      joints  = new Joint[21];
       {
         BodyDef bd = new BodyDef();
         bd.type            = BodyType.Static;
@@ -1834,10 +1834,11 @@ namespace TestWorlds {
         bodies[19]      = world.CreateBody(bd);
 
         {
+          // I think this is the ball on the end of the distance joint
           FixtureDef fd = new FixtureDef();
           fd.friction            = 2.000000029802322e-01f;
           fd.restitution         = 2.000000029802322e-01f;
-          fd.density             = 2.000000000000000e+00f;
+          fd.density             = 1.000000000000000e+00f;
           fd.isSensor            = false;
           fd.filter.categoryBits = (ushort) (1);
           fd.filter.maskBits     = (ushort) (65535);

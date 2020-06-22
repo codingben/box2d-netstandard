@@ -41,6 +41,9 @@ namespace Box2D.NetStandard.Common {
     [Obsolete("Warning: Implicit cast from System.Numerics.Vector2 to Vec2. You are advised to change your code to expect Vector2.")]
     public static implicit operator Vec2(Vector2 src) => new Vec2(src.X, src.Y);
 
+    [Obsolete("Warning: Implicit cast from System.Numerics.Vector2 to Vec2. You are advised to change your code to expect Vector2.")]
+    public static implicit operator Vec2((float, float) src) => new Vec2(src.Item1, src.Item2);
+
     public float X, Y;
 
     /// <summary>

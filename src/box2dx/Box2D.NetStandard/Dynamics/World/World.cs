@@ -26,7 +26,6 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Collision;
@@ -72,9 +71,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     private bool _continuousPhysics;
     private bool _subStepping;
 
-
     private bool    _stepComplete;
-    private Profile _profile;
 
     private Action DrawDebugDataStub = () => { };
 
@@ -143,8 +140,6 @@ namespace Box2D.NetStandard.Dynamics.World {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal ContactManager GetContactManager() => _contactManager;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal Profile GetProfile() => _profile;
 
     /// <summary>
     /// Construct a world object.
@@ -471,9 +466,6 @@ namespace Box2D.NetStandard.Dynamics.World {
 
     // Find islands, integrate and solve constraints, solve position constraints
     private void Solve(TimeStep step) {
-      _profile.solveInit     = 0.0f;
-      _profile.solveVelocity = 0.0f;
-      _profile.solvePosition = 0.0f;
 
       // Size the island for the worst case.
       Island island = new Island(_bodyCount,
@@ -598,12 +590,8 @@ namespace Box2D.NetStandard.Dynamics.World {
           }
         }
 
-        Profile profile = new Profile();
-        island.Solve(profile, step, _gravity, _allowSleep);
-        _profile.solveInit     += profile.solveInit;
-        _profile.solveVelocity += profile.solveVelocity;
-        _profile.solvePosition += profile.solvePosition;
-
+        island.Solve(step, _gravity, _allowSleep);
+        
         // Post solve cleanup.
         for (int i = 0; i < island._bodyCount; ++i) {
           // Allow static bodies to participate in other islands.
@@ -617,7 +605,6 @@ namespace Box2D.NetStandard.Dynamics.World {
       stack = null;
 
       {
-        Stopwatch timer = Stopwatch.StartNew();
         // Synchronize fixtures, check for out of range bodies.
         for (Body b = _bodyList; b != null; b = b.GetNext()) {
           // If a body was not in an island then it did not move.
@@ -635,7 +622,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
         // Look for new contacts.
         _contactManager.FindNewContacts();
-        _profile.broadphase = timer.ElapsedMilliseconds;
+        
       }
     }
 
@@ -741,7 +728,7 @@ namespace Box2D.NetStandard.Dynamics.World {
             input.sweepB = bB._sweep;
             input.tMax   = 1.0f;
 
-            TOI.TimeOfImpact(out TOIOutput output, in input);
+            TOIOutput output = TOI.TimeOfImpact(in input);
 
             // Beta is the fraction of the remaining portion of the .
             float beta = output.t;
@@ -937,8 +924,6 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <param name="iterations">For the velocity constraint solver.</param>
     /// <param name="iterations">For the positionconstraint solver.</param>
     public void Step(float dt, int velocityIterations, int positionIterations) {
-      Stopwatch stepTimer = Stopwatch.StartNew();
-
       if (_newContacts) {
         _contactManager.FindNewContacts();
         _newContacts = false;
@@ -963,23 +948,17 @@ namespace Box2D.NetStandard.Dynamics.World {
 
       // Update contacts. This is where some contacts are destroyed.
       {
-        Stopwatch timer = Stopwatch.StartNew();
         _contactManager.Collide();
-        _profile.collide = timer.ElapsedMilliseconds;
       }
 
       // Integrate velocities, solve velocity constraints, and integrate positions.
       if (_stepComplete && step.dt > 0.0f) {
-        Stopwatch timer = Stopwatch.StartNew();
         Solve(step);
-        _profile.solve = timer.ElapsedMilliseconds;
       }
 
       // Handle TOI events.
       if (_continuousPhysics && step.dt > 0.0f) {
-        Stopwatch timer = Stopwatch.StartNew();
         SolveTOI(step);
-        _profile.solveTOI = timer.ElapsedMilliseconds;
       }
 
       if (step.dt > 0.0f) {
@@ -992,7 +971,6 @@ namespace Box2D.NetStandard.Dynamics.World {
 
       _locked = false;
 
-      _profile.step = stepTimer.ElapsedMilliseconds;
     }
 
     public void ClearForces() {
