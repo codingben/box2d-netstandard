@@ -22,6 +22,7 @@ namespace Box2D.WindowTests
         {
             //world = CreateWorld();
             world = RubeGoldberg.CreateWorld();
+            //world = CollisionTest.CreateWorld();
         }
 
         private static void Main()

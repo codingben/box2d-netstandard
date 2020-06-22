@@ -1103,7 +1103,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         case ShapeType.Circle: {
           CircleShape circle = (CircleShape) fixture.Shape;
 
-          Vector2 center = Common.Math.Mul(xf, circle.m_p);
+          Vector2 center = Math.Mul(xf, circle.m_p);
           float   radius = circle.m_radius;
           Vector2 axis   = new Vector2(xf.q.M11, xf.q.M21);
 
@@ -1120,7 +1120,7 @@ namespace Box2D.NetStandard.Dynamics.World {
           Vector2[] vertices = new Vector2[Settings.MaxPolygonVertices];
 
           for (int i = 0; i < vertexCount; ++i) {
-            vertices[i] = Common.Math.Mul(xf, localVertices[i]);
+            vertices[i] = Math.Mul(xf, localVertices[i]);
           }
 
           _debugDraw.DrawSolidPolygon(Vec2.ConvertArray(vertices), vertexCount, color);
@@ -1130,7 +1130,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         case ShapeType.Edge: {
           EdgeShape edge = (EdgeShape) fixture.Shape;
 
-          _debugDraw.DrawSegment(Common.Math.Mul(xf, edge.m_vertex1), Common.Math.Mul(xf, edge.m_vertex2), color);
+          _debugDraw.DrawSegment(Math.Mul(xf, edge.m_vertex1), Math.Mul(xf, edge.m_vertex2), color);
         }
           break;
       }

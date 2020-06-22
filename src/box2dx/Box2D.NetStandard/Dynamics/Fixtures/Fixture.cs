@@ -89,7 +89,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 			m_body = body;
 			m_next = null;
 
-			m_filter = def.Filter;
+			m_filter = def.filter;
 
 			m_isSensor = def.isSensor;
 
