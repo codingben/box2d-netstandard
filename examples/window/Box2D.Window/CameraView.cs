@@ -15,8 +15,8 @@ namespace Box2D.Window
 
         public CameraView()
         {
-            Position = Vector2.Zero;
-            Zoom = WindowSettings.MinimumCameraZoom;
+            Position = new Vector2(12,5);
+            Zoom = .05f;// WindowSettings.MinimumCameraZoom;
         }
 
         public void Update()

@@ -144,5 +144,12 @@ namespace Box2D.NetStandard.Collision.Shapes
       massData.center = 0.5f * (m_vertex1 + m_vertex2);
       massData.I      = 0.0f;
     }
+
+    public void Set(Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3) {
+      m_vertex0 = v0;
+      m_vertex1 = v1;
+      m_vertex2 = v2;
+      m_vertex3 = v3;
+    }
   }
 }

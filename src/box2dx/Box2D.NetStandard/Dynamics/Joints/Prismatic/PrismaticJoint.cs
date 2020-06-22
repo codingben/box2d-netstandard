@@ -297,11 +297,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
 
     public PrismaticJoint(PrismaticJointDef def)
       : base(def) {
-      _localAnchorA = def.LocalAnchor1;
-      _localAnchorB = def.LocalAnchor2;
-      _localXAxisA  = Vector2.Normalize(def.LocalAxis1);
+      _localAnchorA = def.localAnchorA;
+      _localAnchorB = def.localAnchorB;
+      _localXAxisA  = Vector2.Normalize(def.localAxisA);
       _localYAxisA  = Vectex.Cross(1.0f, _localXAxisA);
-      _referenceAngle     = def.ReferenceAngle;
+      _referenceAngle     = def.referenceAngle;
 
       _impulse=Vector2.Zero;
       _axialMass    = 0.0f;
@@ -309,13 +309,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
       _lowerImpulse = 0.0f;
       _upperImpulse = 0.0f;
 
-      _lowerTranslation = def.LowerTranslation;
-      _upperTranslation = def.UpperTranslation;
+      _lowerTranslation = def.lowerTranslation;
+      _upperTranslation = def.upperTranslation;
 
-      _maxMotorForce = def.MaxMotorForce;
-      _motorSpeed    = def.MotorSpeed;
-      _enableLimit   = def.EnableLimit;
-      _enableMotor   = def.EnableMotor;
+      _maxMotorForce = def.maxMotorForce;
+      _motorSpeed    = def.motorSpeed;
+      _enableLimit   = def.enableLimit;
+      _enableMotor   = def.enableMotor;
 
       _axis = Vector2.Zero;
       _perp = Vector2.Zero;

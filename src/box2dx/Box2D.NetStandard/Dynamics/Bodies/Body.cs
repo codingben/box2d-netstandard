@@ -171,7 +171,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       _xf.q = Matrix3x2.CreateRotation(angle);//  .Set(angle);
       _xf.p = position;
 
-      _sweep.c = Common.Math.Mul(_xf, _sweep.localCenter);
+      _sweep.c = Math.Mul(_xf, _sweep.localCenter);
       _sweep.a = angle;
 
       _sweep.c0 = _sweep.c;
@@ -316,7 +316,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       // Move center of mass.
       Vector2 oldCenter = _sweep.c;
       _sweep.localCenter = massData.center;
-      _sweep.c0          = _sweep.c = Common.Math.Mul(_xf, _sweep.localCenter);
+      _sweep.c0          = _sweep.c = Math.Mul(_xf, _sweep.localCenter);
 
       // Update center of mass velocity.
       _linearVelocity += Vectex.Cross(_angularVelocity, _sweep.c - oldCenter);
@@ -373,23 +373,23 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       // Move center of mass.
       Vector2 oldCenter = _sweep.c;
       _sweep.localCenter = localCenter;
-      _sweep.c0          = _sweep.c = Common.Math.Mul(_xf, _sweep.localCenter);
+      _sweep.c0          = _sweep.c = Math.Mul(_xf, _sweep.localCenter);
 
       // Update center of mass velocity.
       _linearVelocity += Vectex.Cross(_angularVelocity, _sweep.c - oldCenter);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Vector2 GetWorldPoint(in Vector2 localPoint) => Common.Math.Mul(_xf, localPoint);
+    public Vector2 GetWorldPoint(in Vector2 localPoint) => Math.Mul(_xf, localPoint);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Vector2 GetWorldVector(in Vector2 localVector) => Common.Math.Mul(_xf.q, localVector);
+    public Vector2 GetWorldVector(in Vector2 localVector) => Math.Mul(_xf.q, localVector);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Vector2 GetLocalPoint(in Vector2 worldPoint) => Common.Math.MulT(_xf, worldPoint);
+    public Vector2 GetLocalPoint(in Vector2 worldPoint) => Math.MulT(_xf, worldPoint);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Vector2 GetLocalVector(in Vector2 worldVector) => Common.Math.MulT(_xf.q, worldVector);
+    public Vector2 GetLocalVector(in Vector2 worldVector) => Math.MulT(_xf.q, worldVector);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Vector2 GetLinearVelocityFromWorldPoint(in Vector2 worldPoint) =>
@@ -617,7 +617,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       if (IsAwake()) {
         Transform xf1 = new Transform();
         xf1.q = Matrix3x2.CreateRotation(_sweep.a0);//  .Set(_sweep.a0);
-        xf1.p = _sweep.c0 - Common.Math.Mul(xf1.q, _sweep.localCenter);
+        xf1.p = _sweep.c0 - Math.Mul(xf1.q, _sweep.localCenter);
 
         for (Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.Synchronize(broadPhase, xf1, _xf);
@@ -633,7 +633,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void SynchronizeTransform() {
       _xf.q = Matrix3x2.CreateRotation(_sweep.a);// .Set(_sweep.a);
-      _xf.p = _sweep.c - Common.Math.Mul(_xf.q, _sweep.localCenter);
+      _xf.p = _sweep.c - Math.Mul(_xf.q, _sweep.localCenter);
     }
 
     internal bool ShouldCollide(in Body other) {
@@ -658,7 +658,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       _sweep.c = _sweep.c0;
       _sweep.a = _sweep.a0;
       _xf.q = Matrix3x2.CreateRotation(_sweep.a); // Set(_sweep.a);
-      _xf.p = _sweep.c - Common.Math.Mul(_xf.q, _sweep.localCenter);
+      _xf.p = _sweep.c - Math.Mul(_xf.q, _sweep.localCenter);
     }
 
     internal BodyType  _type;

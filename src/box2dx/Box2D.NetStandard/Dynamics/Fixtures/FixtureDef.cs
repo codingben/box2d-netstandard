@@ -63,7 +63,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures {
     /// <summary>
     /// Contact filtering data.
     /// </summary>
-    public Filter Filter = new Filter();
+    public Filter filter = new Filter();
 
     public Shape shape;
   }

@@ -225,7 +225,7 @@ namespace Box2D.NetStandard.Collision
 
 				if (separation <= totalRadius)
 				{
-					ManifoldPoint cp = manifold.points[pointCount];
+					ManifoldPoint cp = new ManifoldPoint();
 					cp.localPoint = Math.MulT(xf2, clipPoints2[i].v);
 					cp.id         = clipPoints2[i].id;
 					if (flip!=0)
@@ -237,6 +237,8 @@ namespace Box2D.NetStandard.Collision
 						cp.id.cf.typeA  = cf.typeB;
 						cp.id.cf.typeB  = cf.typeA;
 					}
+
+					manifold.points[pointCount] = cp;
 					++pointCount;
 				}
 			}

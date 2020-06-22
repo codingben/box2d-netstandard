@@ -55,7 +55,8 @@ namespace Box2D.NetStandard.Collision
 			manifold.localPoint = circleA.m_p;
 			manifold.localNormal = Vector2.Zero;
 			manifold.pointCount = 1;
-
+			
+			manifold.points[0]=new ManifoldPoint();
 			manifold.points[0].localPoint = circleB.m_p;
 			manifold.points[0].id.key = 0;
 		}

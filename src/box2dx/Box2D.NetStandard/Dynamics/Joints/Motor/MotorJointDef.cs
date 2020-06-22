@@ -13,13 +13,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
 
     /// Initialize the bodies and offsets using the current transforms.
     public void Initialize(Body bA, Body bB) {
-      BodyA = bA;
-      BodyB = bB;
-      Vector2 xB = BodyB.GetPosition();
-      linearOffset = BodyA.GetLocalPoint(xB);
+      bodyA = bA;
+      bodyB = bB;
+      Vector2 xB = bodyB.GetPosition();
+      linearOffset = bodyA.GetLocalPoint(xB);
 
-      float angleA = BodyA.GetAngle();
-      float angleB = BodyB.GetAngle();
+      float angleA = bodyA.GetAngle();
+      float angleB = bodyB.GetAngle();
       angularOffset = angleB - angleA;
     }
 

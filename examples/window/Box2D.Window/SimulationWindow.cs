@@ -33,20 +33,17 @@ namespace Box2D.Window
             this.view = view;
         }
 
+        private int mouseLast = 0;
+        
         protected override void OnMouseWheel(MouseWheelEventArgs eventArgs)
         {
             base.OnMouseWheel(eventArgs);
+            
+            int mouseDelta = eventArgs.Value - mouseLast;
+            mouseLast = eventArgs.Value;
 
-            var value = (float)eventArgs.Value / 1000;
-            if (value < WindowSettings.MinimumCameraZoom)
-            {
-                value = WindowSettings.MinimumCameraZoom;
-            }
-
-            if (view != null)
-            {
-                view.Zoom = value;
-            }
+            if (mouseDelta > 0) view.Zoom *= 1.2f;
+            if (mouseDelta < 0) view.Zoom /= 1.2f;
         }
 
         protected override void OnKeyDown(KeyboardKeyEventArgs eventArgs)

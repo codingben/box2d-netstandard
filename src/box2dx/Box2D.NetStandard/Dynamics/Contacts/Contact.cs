@@ -500,10 +500,10 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
         // Compute a tentative new simplex vertex using support points.
         SimplexVertex vertex = vertices[simplex.m_count];
-        vertex.indexA = proxyA.GetSupport(Common.Math.MulT(transformA.q, -d));
-        vertex.wA     = Common.Math.Mul(transformA, proxyA.GetVertex(vertex.indexA));
-        vertex.indexB = proxyB.GetSupport(Common.Math.MulT(transformB.q, d));
-        vertex.wB     = Common.Math.Mul(transformB, proxyB.GetVertex(vertex.indexB));
+        vertex.indexA = proxyA.GetSupport(Math.MulT(transformA.q, -d));
+        vertex.wA     = Math.Mul(transformA, proxyA.GetVertex(vertex.indexA));
+        vertex.indexB = proxyB.GetSupport(Math.MulT(transformB.q, d));
+        vertex.wB     = Math.Mul(transformB, proxyB.GetVertex(vertex.indexB));
         vertex.w      = vertex.wB - vertex.wA;
 
         // Iteration count is equated to the number of support point calls.

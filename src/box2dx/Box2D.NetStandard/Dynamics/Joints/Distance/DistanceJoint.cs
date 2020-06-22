@@ -89,11 +89,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
 
     public DistanceJoint(DistanceJointDef def)
       : base(def) {
-      _localAnchorA = def.LocalAnchorA;
-      _localAnchorB = def.LocalAnchorB;
-      _length       = def.Length;
-      _frequencyHz  = def.FrequencyHz;
-      _dampingRatio = def.DampingRatio;
+      _localAnchorA = def.localAnchorA;
+      _localAnchorB = def.localAnchorB;
+      _length       = def.length;
+      _frequencyHz  = def.frequencyHz;
+      _dampingRatio = def.dampingRatio;
       _impulse      = 0.0f;
       _gamma        = 0.0f;
       _bias         = 0.0f;

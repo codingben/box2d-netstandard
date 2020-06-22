@@ -38,6 +38,7 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.Joints.Pulley;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
+using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.World {
   /// <summary>
@@ -55,28 +56,28 @@ namespace Box2D.NetStandard.Dynamics.World {
     private int _jointCount;
 
     private Vector2 _gravity;
-    private bool _allowSleep;
+    private bool    _allowSleep;
 
     private DestructionListener _destructionListener;
-    private DebugDraw _debugDraw;
+    private DebugDraw           _debugDraw;
 
     private float _inv_dt0;
-    
+
     internal bool _newContacts;
-    private bool _locked;
-    private bool _clearForces;
+    private  bool _locked;
+    private  bool _clearForces;
 
     // These are for debugging the solver
     private bool _warmStarting;
     private bool _continuousPhysics;
     private bool _subStepping;
-    
-    
-    private bool _stepComplete;
+
+
+    private bool    _stepComplete;
     private Profile _profile;
 
-    private Action  DrawDebugDataStub = () => { };
-    
+    private Action DrawDebugDataStub = () => { };
+
     /// <summary>
     /// Get\Set global gravity vector.
     /// </summary>
@@ -86,7 +87,7 @@ namespace Box2D.NetStandard.Dynamics.World {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       set => _gravity = value;
     }
-    
+
     /// <summary>
     /// Get the world body list. With the returned body, use Body.GetNext to get
     /// the next body in the world list. A null body indicates the end of the list.
@@ -105,7 +106,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Contact GetContactList() => _contactManager.m_contactList;
-    
+
     /// <summary>
     /// Get the number of bodies.
     /// </summary>
@@ -126,7 +127,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetContactCount() => _contactManager.m_contactCount;
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetGravity(in Vector2 gravity) => _gravity = gravity;
 
@@ -144,7 +145,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Profile GetProfile() => _profile;
-    
+
     /// <summary>
     /// Construct a world object.
     /// </summary>
@@ -178,7 +179,7 @@ namespace Box2D.NetStandard.Dynamics.World {
       _contactManager = new ContactManager();
     }
 
-    
+
     /// <summary>
     /// Register a destruction listener.
     /// </summary>
@@ -352,11 +353,11 @@ namespace Box2D.NetStandard.Dynamics.World {
         j._bodyB._jointList.Prev = j._edgeB;
       j._bodyB._jointList = j._edgeB;
 
-      Body bodyA = def.BodyA;
-      Body bodyB = def.BodyB;
+      Body bodyA = def.bodyA;
+      Body bodyB = def.bodyB;
 
       // If the joint prevents collisions, then flag any contacts for filtering.
-      if (def.CollideConnected == false) {
+      if (def.collideConnected == false) {
         ContactEdge edge = bodyB._contactList;
         while (edge != null) {
           if (edge.other == bodyA) {
@@ -466,9 +467,9 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
       }
     }
-    
-    
-        // Find islands, integrate and solve constraints, solve position constraints
+
+
+    // Find islands, integrate and solve constraints, solve position constraints
     private void Solve(TimeStep step) {
       _profile.solveInit     = 0.0f;
       _profile.solveVelocity = 0.0f;
@@ -515,7 +516,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         // Reset island and stack.
         island.Clear();
         int stackCount = 0;
-        stack[stackCount++] =  seed;
+        stack[stackCount++] = seed;
         seed.SetFlag(BodyFlags.Island);
 
         // Perform a depth first search (DFS) on the constraint graph.
@@ -526,7 +527,7 @@ namespace Box2D.NetStandard.Dynamics.World {
           island.Add(b);
 
           // Make sure the body is awake (without resetting sleep timer).
-          b.SetFlag( BodyFlags.Awake);
+          b.SetFlag(BodyFlags.Awake);
 
           // To keep islands as small as possible, we don't
           // propagate islands across static bodies.
@@ -567,7 +568,7 @@ namespace Box2D.NetStandard.Dynamics.World {
             }
 
             Debug.Assert(stackCount < stackSize);
-            stack[stackCount++] =  other;
+            stack[stackCount++] = other;
             other.SetFlag(BodyFlags.Island);
           }
 
@@ -592,7 +593,7 @@ namespace Box2D.NetStandard.Dynamics.World {
             }
 
             Debug.Assert(stackCount < stackSize);
-            stack[stackCount++] =  other;
+            stack[stackCount++] = other;
             other.SetFlag(BodyFlags.Island);
           }
         }
@@ -637,9 +638,9 @@ namespace Box2D.NetStandard.Dynamics.World {
         _profile.broadphase = timer.ElapsedMilliseconds;
       }
     }
-    
-    
-        // Find TOI contacts and solve them.
+
+
+    // Find TOI contacts and solve them.
     private void SolveTOI(in TimeStep step) {
       Island island = new Island(2 * Settings.MaxTOIContacts, Settings.MaxTOIContacts, 0,
                                  _contactManager.m_contactListener);
@@ -647,7 +648,7 @@ namespace Box2D.NetStandard.Dynamics.World {
       if (_stepComplete) {
         for (Body b = _bodyList; b != null; b = b._next) {
           b.UnsetFlag(BodyFlags.Island);
-          b._sweep.alpha0 =  0.0f;
+          b._sweep.alpha0 = 0.0f;
         }
 
         for (Contact c = _contactManager.m_contactList; c != null; c = c.m_next) {
@@ -806,8 +807,8 @@ namespace Box2D.NetStandard.Dynamics.World {
           island.Add(bB);
           island.Add(minContact);
 
-          bA.SetFlag( BodyFlags.Island);
-          bB.SetFlag( BodyFlags.Island);
+          bA.SetFlag(BodyFlags.Island);
+          bB.SetFlag(BodyFlags.Island);
           minContact.m_flags |= CollisionFlags.Island;
 
           // Get contacts on bodyA and bodyB.
@@ -879,7 +880,7 @@ namespace Box2D.NetStandard.Dynamics.World {
                 }
 
                 // Add the other body to the island.
-                other.SetFlag( BodyFlags.Island);
+                other.SetFlag(BodyFlags.Island);
 
                 if (other._type != BodyType.Static) {
                   other.SetAwake(true);
@@ -1102,7 +1103,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         case ShapeType.Circle: {
           CircleShape circle = (CircleShape) fixture.Shape;
 
-          Vector2 center = Common.Math.Mul(xf, circle.m_p);
+          Vector2 center = Math.Mul(xf, circle.m_p);
           float   radius = circle.m_radius;
           Vector2 axis   = new Vector2(xf.q.M11, xf.q.M21);
 
@@ -1119,7 +1120,7 @@ namespace Box2D.NetStandard.Dynamics.World {
           Vector2[] vertices = new Vector2[Settings.MaxPolygonVertices];
 
           for (int i = 0; i < vertexCount; ++i) {
-            vertices[i] = Common.Math.Mul(xf, localVertices[i]);
+            vertices[i] = Math.Mul(xf, localVertices[i]);
           }
 
           _debugDraw.DrawSolidPolygon(Vec2.ConvertArray(vertices), vertexCount, color);
@@ -1129,12 +1130,163 @@ namespace Box2D.NetStandard.Dynamics.World {
         case ShapeType.Edge: {
           EdgeShape edge = (EdgeShape) fixture.Shape;
 
-          _debugDraw.DrawSegment(Common.Math.Mul(xf, edge.m_vertex1), Common.Math.Mul(xf, edge.m_vertex2), color);
+          _debugDraw.DrawSegment(Math.Mul(xf, edge.m_vertex1), Math.Mul(xf, edge.m_vertex2), color);
         }
           break;
       }
     }
 
-    private void DrawDebugData() { }
+    public void DrawDebugData() {
+      var flags = _debugDraw.Flags;
+      if (flags.HasFlag(DrawFlags.Shape)) {
+        for (Body b = _bodyList; b != null; b = b.GetNext()) {
+          Transform xf = b.GetTransform();
+          for (Fixture f = b.GetFixtureList(); f != null; f = f.GetNext()) {
+            if (b.Type() == BodyType.Dynamic && b._mass == 0.0f) {
+              // Bad body
+              DrawShape(f, xf, new Color(1.0f, 0.0f, 0.0f));
+            }
+            else if (b.IsEnabled() == false) {
+              DrawShape(f, xf, new Color(0.5f, 0.5f, 0.3f));
+            }
+            else if (b.Type() == BodyType.Static) {
+              DrawShape(f, xf, new Color(0.5f, 0.9f, 0.5f));
+            }
+            else if (b.Type() == BodyType.Kinematic) {
+              DrawShape(f, xf, new Color(0.5f, 0.5f, 0.9f));
+            }
+            else if (b.IsAwake() == false) {
+              DrawShape(f, xf, new Color(0.6f, 0.6f, 0.6f));
+            }
+            else {
+              DrawShape(f, xf, new Color(0.9f, 0.7f, 0.7f));
+            }
+          }
+        }
+      }
+
+      if (flags.HasFlag(DrawFlags.Joint)) {
+        for (Joint j = _jointList; j != null; j = j.GetNext()) {
+          j.Draw(_debugDraw);
+        }
+      }
+
+      if (flags.HasFlag(DrawFlags.Pair)) {
+        Color color = new Color(0.3f, 0.9f, 0.9f);
+        for (Contact c = _contactManager.m_contactList; c != null; c = c.GetNext()) {
+          Fixture fixtureA = c.GetFixtureA();
+          Fixture fixtureB = c.GetFixtureB();
+          int     indexA   = c.GetChildIndexA();
+          int     indexB   = c.GetChildIndexB();
+          Vector2 cA       = fixtureA.GetAABB(indexA).GetCenter();
+          Vector2 cB       = fixtureB.GetAABB(indexB).GetCenter();
+
+          _debugDraw.DrawSegment(cA, cB, color);
+        }
+      }
+
+      if (flags.HasFlag(DrawFlags.Aabb)) {
+        Color      color = new Color(0.9f, 0.3f, 0.9f);
+        BroadPhase bp    = _contactManager.m_broadPhase;
+
+        for (Body b = _bodyList; b != null; b = b.GetNext()) {
+          if (b.IsEnabled() == false) {
+            continue;
+          }
+
+          for (Fixture f = b.GetFixtureList(); f != null; f = f.GetNext()) {
+            for (int i = 0; i < f.m_proxyCount; ++i) {
+              FixtureProxy proxy = f.m_proxies[i];
+              AABB         aabb  = bp.GetFatAABB(proxy.proxyId);
+              Vec2[]       vs    = new Vec2[4];
+              vs[0] = new Vec2(aabb.lowerBound.X, aabb.lowerBound.Y);
+              vs[1] = new Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
+              vs[2] = new Vec2(aabb.upperBound.X, aabb.upperBound.Y);
+              vs[3] = new Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
+
+              _debugDraw.DrawPolygon(vs, 4, color);
+            }
+          }
+        }
+      }
+
+      if (flags.HasFlag(DrawFlags.CenterOfMass)) {
+        for (Body b = _bodyList; b != null; b = b.GetNext()) {
+          Transform xf = b.GetTransform();
+          xf.p = b.GetWorldCenter();
+          _debugDraw.DrawTransform(xf);
+        }
+      }
+    }
+
+    private void DrawShape(Fixture fixture, in Transform xf, in Color color) {
+      switch (fixture.Type) {
+        case ShapeType.Circle: {
+          CircleShape circle = (CircleShape) fixture.Shape;
+
+          Vec2  center = Math.Mul(xf, circle.m_p);
+          float radius = circle.m_radius;
+          Vec2  axis   = Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
+
+          _debugDraw.DrawSolidCircle(center, radius, axis, color);
+        }
+          break;
+
+        case ShapeType.Edge: {
+          EdgeShape edge = (EdgeShape) fixture.Shape;
+          Vector2   v1   = Math.Mul(xf, edge.m_vertex1);
+          Vector2   v2   = Math.Mul(xf, edge.m_vertex2);
+          _debugDraw.DrawSegment(v1, v2, color);
+        }
+          break;
+
+        case ShapeType.Chain: {
+          ChainShape chain    = (ChainShape) fixture.Shape;
+          int        count    = chain.m_count;
+          Vector2[]  vertices = chain.m_vertices;
+
+          Color ghostColor = new Color(0.75f * color.R, 0.75f * color.G, 0.75f * color.B, color.A);
+
+          Vector2 v1 = Math.Mul(xf, vertices[0]);
+          _debugDraw.DrawPoint(v1, 4.0f, color);
+
+          if (chain.m_hasPrevVertex) {
+            Vector2 vp = Math.Mul(xf, chain.m_prevVertex.Value);
+            _debugDraw.DrawSegment(vp, v1, ghostColor);
+            _debugDraw.DrawCircle(vp, 0.1f, ghostColor);
+          }
+
+          for (int i = 1; i < count; ++i) {
+            Vector2 v2 = Math.Mul(xf, vertices[i]);
+            _debugDraw.DrawSegment(v1, v2, color);
+            _debugDraw.DrawPoint(v2, 4.0f, color);
+            v1 = v2;
+          }
+
+          if (chain.m_hasNextVertex) {
+            Vector2 vn = Math.Mul(xf, chain.m_nextVertex.Value);
+            _debugDraw.DrawSegment(v1, vn, ghostColor);
+            _debugDraw.DrawCircle(vn, 0.1f, ghostColor);
+          }
+        }
+          break;
+
+        case ShapeType.Polygon: {
+          PolygonShape poly        = (PolygonShape) fixture.Shape;
+          int          vertexCount = poly.m_count;
+          Vec2[]       vertices    = new Vec2[Settings.MaxPolygonVertices];
+
+          for (int i = 0; i < vertexCount; ++i) {
+            vertices[i] = Math.Mul(xf, poly.m_vertices[i]);
+          }
+
+          _debugDraw.DrawSolidPolygon(vertices, vertexCount, color);
+        }
+          break;
+
+        default:
+          break;
+      }
+    }
   }
 }

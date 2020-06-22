@@ -18,15 +18,15 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute {
   public class RevoluteJointDef : JointDef {
     public RevoluteJointDef() {
       Type           = JointType.RevoluteJoint;
-      LocalAnchorA   = Vector2.Zero;
-      LocalAnchorB   = Vector2.Zero;
-      ReferenceAngle = 0.0f;
-      LowerAngle     = 0.0f;
-      UpperAngle     = 0.0f;
-      MaxMotorTorque = 0.0f;
-      MotorSpeed     = 0.0f;
-      EnableLimit    = false;
-      EnableMotor    = false;
+      localAnchorA   = Vector2.Zero;
+      localAnchorB   = Vector2.Zero;
+      referenceAngle = 0.0f;
+      lowerAngle     = 0.0f;
+      upperAngle     = 0.0f;
+      maxMotorTorque = 0.0f;
+      motorSpeed     = 0.0f;
+      enableLimit    = false;
+      enableMotor    = false;
     }
 
     /// <summary>
@@ -34,57 +34,57 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute {
     /// anchor.
     /// </summary>
     public void Initialize(Body body1, Body body2, Vector2 anchor) {
-      BodyA          = body1;
-      BodyB          = body2;
-      LocalAnchorA   = body1.GetLocalPoint(anchor);
-      LocalAnchorB   = body2.GetLocalPoint(anchor);
-      ReferenceAngle = body2.GetAngle() - body1.GetAngle();
+      bodyA          = body1;
+      bodyB          = body2;
+      localAnchorA   = body1.GetLocalPoint(anchor);
+      localAnchorB   = body2.GetLocalPoint(anchor);
+      referenceAngle = body2.GetAngle() - body1.GetAngle();
     }
 
     /// <summary>
     /// The local anchor point relative to body1's origin.
     /// </summary>
-    public Vector2 LocalAnchorA;
+    public Vector2 localAnchorA;
 
     /// <summary>
     /// The local anchor point relative to body2's origin.
     /// </summary>
-    public Vector2 LocalAnchorB;
+    public Vector2 localAnchorB;
 
     /// <summary>
     /// The body2 angle minus body1 angle in the reference state (radians).
     /// </summary>
-    public float ReferenceAngle;
+    public float referenceAngle;
 
     /// <summary>
     /// A flag to enable joint limits.
     /// </summary>
-    public bool EnableLimit;
+    public bool enableLimit;
 
     /// <summary>
     /// The lower angle for the joint limit (radians).
     /// </summary>
-    public float LowerAngle;
+    public float lowerAngle;
 
     /// <summary>
     /// The upper angle for the joint limit (radians).
     /// </summary>
-    public float UpperAngle;
+    public float upperAngle;
 
     /// <summary>
     /// A flag to enable the joint motor.
     /// </summary>
-    public bool EnableMotor;
+    public bool enableMotor;
 
     /// <summary>
     /// The desired motor speed. Usually in radians per second.
     /// </summary>
-    public float MotorSpeed;
+    public float motorSpeed;
 
     /// <summary>
     /// The maximum motor torque used to achieve the desired motor speed.
     /// Usually in N-m.
     /// </summary>
-    public float MaxMotorTorque;
+    public float maxMotorTorque;
   }
 }

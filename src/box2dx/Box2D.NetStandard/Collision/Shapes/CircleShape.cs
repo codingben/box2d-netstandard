@@ -48,11 +48,13 @@ namespace Box2D.NetStandard.Collision.Shapes
 		public Vector2 Center {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => m_p;
+			set => m_p = value;
 		}
-		
+
 		public float Radius {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => m_radius;
+			set => m_radius = value;
 		}
 
 		public override Shape Clone() {

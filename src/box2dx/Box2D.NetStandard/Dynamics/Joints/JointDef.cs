@@ -10,9 +10,9 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     {
       Type             = JointType.UnknownJoint;
       UserData         = null;
-      BodyA            = null;
-      BodyB            = null;
-      CollideConnected = false;
+      bodyA            = null;
+      bodyB            = null;
+      collideConnected = false;
     }
 
     /// <summary>
@@ -28,16 +28,16 @@ namespace Box2D.NetStandard.Dynamics.Joints {
     /// <summary>
     /// The first attached body.
     /// </summary>
-    public Body BodyA;
+    public Body bodyA;
 
     /// <summary>
     /// The second attached body.
     /// </summary>
-    public Body BodyB;
+    public Body bodyB;
 
     /// <summary>
     /// Set this flag to true if the attached bodies should collide.
     /// </summary>
-    public bool CollideConnected;
+    public bool collideConnected;
   }
 }

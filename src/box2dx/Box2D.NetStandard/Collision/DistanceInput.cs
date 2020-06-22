@@ -33,11 +33,11 @@ namespace Box2D.NetStandard.Collision {
   /// You have to option to use the shape radii
   /// in the computation.
   /// </summary>
-  internal struct DistanceInput {
+  internal class DistanceInput {
     internal Transform     transformA;
     internal Transform     transformB;
     internal bool          useRadii;
-    internal DistanceProxy proxyA;
-    internal DistanceProxy proxyB;
+    internal DistanceProxy proxyA = new DistanceProxy();
+    internal DistanceProxy proxyB = new DistanceProxy();
   }
 }

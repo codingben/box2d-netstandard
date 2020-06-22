@@ -4,15 +4,17 @@ namespace Box2D.NetStandard.Dynamics.World {
   /// </summary>
   public struct Color
   {
-    public float R, G, B;
+    public float R, G, B, A;
 
-    public Color(float r, float g, float b)
+    public Color(float r, float g, float b, float a = 1f)
     {
       R = r; G = g; B = b;
+      A = a;
     }
-    public void Set(float r, float g, float b)
+    public void Set(float r, float g, float b, float a = 1f)
     {
       R = r; G = g; B = b;
+      A = a;
     }
   }
 }

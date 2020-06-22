@@ -39,6 +39,7 @@ using Box2D.NetStandard.Dynamics.Joints.Pulley;
 using Box2D.NetStandard.Dynamics.Joints.Revolute;
 using Box2D.NetStandard.Dynamics.Joints.Wheel;
 using Box2D.NetStandard.Dynamics.World;
+using Box2D.NetStandard.Dynamics.World.Callbacks;
 
 namespace Box2D.NetStandard.Dynamics.Joints
 {
@@ -131,9 +132,9 @@ namespace Box2D.NetStandard.Dynamics.Joints
 			_type = def.Type;
 			_prev = null;
 			_next = null;
-			_bodyA = def.BodyA;
-			_bodyB = def.BodyB;
-			_collideConnected = def.CollideConnected;
+			_bodyA = def.bodyA;
+			_bodyB = def.bodyB;
+			_collideConnected = def.collideConnected;
 			_islandFlag = false;
 			_userData = def.UserData;
 		}
@@ -184,6 +185,54 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		{
 			xf.q = Matrix3x2.CreateRotation(angle); // .Set(angle);
 			xf.p = center - Math.Mul(xf.q, localCenter);
+		}
+
+		public void Draw(DebugDraw draw) {
+			Transform  xf1 = _bodyA.GetTransform();
+			Transform  xf2 = _bodyB.GetTransform();
+			Vector2            x1 = xf1.p;
+			Vector2            x2 = xf2.p;
+			Vector2            p1 = GetAnchorA;
+			Vector2            p2 = GetAnchorB;
+
+			Color color = new Color(0.5f, 0.8f, 0.8f);
+
+			switch (_type)
+			{
+				case JointType.DistanceJoint:
+					draw.DrawSegment(p1, p2, color);
+					break;
+
+				case JointType.PulleyJoint:
+				{
+					PulleyJoint pulley = (PulleyJoint)this;
+					Vector2 s1 = pulley.GroundAnchorA;
+					Vector2         s2     = pulley.GroundAnchorB;
+					draw.DrawSegment(s1, p1, color);
+					draw.DrawSegment(s2, p2, color);
+					draw.DrawSegment(s1, s2, color);
+				}
+					break;
+
+				case JointType.MouseJoint:
+				{
+					Color c = new Color();
+					c.Set(0.0f, 1.0f, 0.0f);
+					draw.DrawPoint(p1, 4.0f, c);
+					draw.DrawPoint(p2, 4.0f, c);
+
+					c.Set(0.8f, 0.8f, 0.8f);
+					draw.DrawSegment(p1, p2, c);
+
+				}
+					break;
+
+				default:
+					draw.DrawSegment(x1, p1, color);
+					draw.DrawSegment(p1, p2, color);
+					draw.DrawSegment(x2, p2, color);
+					break;
+			}
 		}
 	}
 }
