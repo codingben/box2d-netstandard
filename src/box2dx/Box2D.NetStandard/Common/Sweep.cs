@@ -60,7 +60,7 @@ namespace Box2D.NetStandard.Common
 		/// <param name="t">The new initial time.</param>
 		public void Advance(float alpha)
 		{
-			Debug.Assert(alpha0 < 1.0f);
+			//Debug.Assert(alpha0 < 1.0f);
 			float beta = (alpha - alpha0) / (1.0f - alpha0);
 			c0     += beta * (c - c0);
 			a0     += beta * (a - a0);

@@ -255,8 +255,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
     public static void AddType(ContactCreateFcn createFcn, ContactDestroyFcn destoryFcn,
       ShapeType                                 type1,     ShapeType         type2) {
-      Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
-      Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
+      //Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
+      //Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
 
       if (s_registers[(int) type1] == null)
         s_registers[(int) type1] = new ContactRegister[(int) ShapeType.TypeCount];
@@ -294,8 +294,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       ShapeType type1 = fixtureA.Type;
       ShapeType type2 = fixtureB.Type;
 
-      Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
-      Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
+      //Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
+      //Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
 
       ContactCreateFcn createFcn = s_registers[(int) type1][(int) type2].CreateFcn;
       if (createFcn != null) {
@@ -312,7 +312,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     }
 
     public static void Destroy(ref Contact contact) {
-      Debug.Assert(s_initialized == true);
+      //Debug.Assert(s_initialized == true);
 
       Fixture fixtureA = contact.m_fixtureA;
       Fixture fixtureB = contact.m_fixtureB;
@@ -327,8 +327,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       ShapeType typeA = fixtureA.Type;
       ShapeType typeB = fixtureB.Type;
 
-      Debug.Assert(ShapeType.Invalid < typeA && typeA < ShapeType.TypeCount);
-      Debug.Assert(ShapeType.Invalid < typeB && typeB < ShapeType.TypeCount);
+      //Debug.Assert(ShapeType.Invalid < typeA && typeA < ShapeType.TypeCount);
+      //Debug.Assert(ShapeType.Invalid < typeB && typeB < ShapeType.TypeCount);
 
       ContactDestroyFcn destroyFcn = s_registers[(int) typeA][(int) typeB].DestroyFcn;
       destroyFcn(ref contact);
@@ -475,7 +475,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             break;
 
           default:
-            Debug.Assert(false);
+            //Debug.Assert(false);
             break;
         }
 

@@ -238,7 +238,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetLimits(float lower, float upper) {
-      Debug.Assert(lower <= upper);
+      //Debug.Assert(lower <= upper);
       _bodyA.SetAwake(true);
       _bodyB.SetAwake(true);
       _lowerTranslation = lower;

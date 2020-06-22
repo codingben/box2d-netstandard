@@ -87,7 +87,7 @@ namespace Box2D.NetStandard.Collision
 			Vector2[] vertices2 = poly2.m_vertices;
 			Vector2[] normals2  = poly2.m_normals;
 
-			Debug.Assert(0 <= edge1 && edge1 < poly1.m_count);
+			//Debug.Assert(0 <= edge1 && edge1 < poly1.m_count);
 
 			// Get the normal of the reference edge in poly2's frame.
 			Vector2 normal1 = Math.MulT(xf2.q, Math.Mul(xf1.q, normals1[edge1]));

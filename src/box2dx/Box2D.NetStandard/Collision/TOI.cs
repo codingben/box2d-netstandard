@@ -54,7 +54,7 @@ namespace Box2D.NetStandard.Collision {
       float totalRadius = proxyA._radius + proxyB._radius;
       float target      = MathF.Max(Settings.LinearSlop, totalRadius - 3.0f * Settings.LinearSlop);
       float tolerance   = 0.25f * Settings.LinearSlop;
-      Debug.Assert(target > tolerance);
+      //Debug.Assert(target > tolerance);
 
       float     t1              = 0.0f;
       const int k_maxIterations = 20; // TODO_ERIN b2Settings

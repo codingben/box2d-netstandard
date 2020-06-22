@@ -167,7 +167,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 					break;
 
 				default:
-					Debug.Assert(false);
+					//Debug.Assert(false);
 					break;
 			}
 

@@ -55,7 +55,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     /// <param name="def">the fixture definition.</param>
     /// <warning>This function is locked during callbacks.</warning>
     public Fixture CreateFixture(in FixtureDef def) {
-      Debug.Assert(_world.IsLocked() == false);
+      //Debug.Assert(_world.IsLocked() == false);
       if (_world.IsLocked() == true) {
         return null;
       }
@@ -108,15 +108,15 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
         return;
       }
 
-      Debug.Assert(_world.IsLocked() == false);
+      //Debug.Assert(_world.IsLocked() == false);
       if (_world.IsLocked() == true) {
         return;
       }
 
-      Debug.Assert(fixture.m_body == this);
+      //Debug.Assert(fixture.m_body == this);
 
       // Remove the fixture from this body's singly linked list.
-      Debug.Assert(_fixtureCount > 0);
+      //Debug.Assert(_fixtureCount > 0);
       Fixture node  = _fixtureList;
       bool    found = false;
       while (node != null) {
@@ -130,7 +130,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       }
 
       // You tried to remove a shape that is not attached to this body.
-      Debug.Assert(found);
+      //Debug.Assert(found);
 
       // Destroy any contacts associated with the fixture.
       ContactEdge edge = _contactList;
@@ -163,7 +163,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     }
 
     public void SetTransform(in Vector2 position, float angle) {
-      Debug.Assert(_world.IsLocked() == false);
+      //Debug.Assert(_world.IsLocked() == false);
       if (_world.IsLocked() == true) {
         return;
       }
@@ -287,7 +287,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     }
 
     public void SetMassData(in MassData massData) {
-      Debug.Assert(_world.IsLocked() == false);
+      //Debug.Assert(_world.IsLocked() == false);
       if (_world.IsLocked() == true) {
         return;
       }
@@ -309,7 +309,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
 
       if (massData.I > 0.0f && !HasFlag(BodyFlags.FixedRotation)) {
         _I = massData.I - _mass * Vector2.Dot(massData.center, massData.center);
-        Debug.Assert(_I > 0.0f);
+        //Debug.Assert(_I > 0.0f);
         _invI = 1.0f / _I;
       }
 
@@ -338,7 +338,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
         return;
       }
 
-      Debug.Assert(_type == BodyType.Dynamic);
+      //Debug.Assert(_type == BodyType.Dynamic);
 
       // Accumulate mass over all fixtures.
       Vector2 localCenter = Vector2.Zero;
@@ -362,7 +362,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       if (_I > 0.0f && !HasFlag(BodyFlags.FixedRotation)) {
         // Center the inertia about the center of mass.
         _I -= _mass * Vector2.Dot(localCenter, localCenter);
-        Debug.Assert(_I > 0.0f);
+        //Debug.Assert(_I > 0.0f);
         _invI = 1.0f / _I;
       }
       else {
@@ -418,7 +418,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public void SetGravityScale(float scale) => _gravityScale = scale;
 
     public void SetType(BodyType type) {
-      Debug.Assert(_world.IsLocked() == false);
+      //Debug.Assert(_world.IsLocked() == false);
       if (_world.IsLocked() == true) {
         return;
       }
@@ -519,7 +519,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public bool IsAwake() => HasFlag(BodyFlags.Awake);
 
     public void SetEnabled(bool flag) {
-      Debug.Assert(_world.IsLocked() == false);
+      //Debug.Assert(_world.IsLocked() == false);
 
       if (flag == IsEnabled()) {
         return;
@@ -704,8 +704,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
 
 
     internal Body(BodyDef bd, World.World world) {
-      Debug.Assert(bd.position.IsValid());
-      Debug.Assert(bd.linearVelocity.IsValid());
+      //Debug.Assert(bd.position.IsValid());
+      //Debug.Assert(bd.linearVelocity.IsValid());
 
       _flags = 0;
 

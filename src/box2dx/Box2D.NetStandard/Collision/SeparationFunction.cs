@@ -55,7 +55,7 @@ namespace Box2D.NetStandard.Collision {
         m_proxyA = proxyA;
         m_proxyB = proxyB;
         Int32 count = cache.count;
-        Debug.Assert(0 < count && count < 3);
+        //Debug.Assert(0 < count && count < 3);
 
         m_sweepA = sweepA;
         m_sweepB = sweepB;
@@ -164,7 +164,7 @@ namespace Box2D.NetStandard.Collision {
         }
 
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return 0.0f;
       }
     }
@@ -224,7 +224,7 @@ namespace Box2D.NetStandard.Collision {
         }
 
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           indexA = -1;
           indexB = -1;
           return 0.0f;

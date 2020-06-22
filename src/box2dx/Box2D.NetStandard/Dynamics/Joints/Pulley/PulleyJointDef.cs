@@ -38,7 +38,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Pulley {
       Vector2 dB = anchor2 - groundAnchor2;
       LengthB = dB.Length();
       Ratio   = ratio;
-      Debug.Assert(ratio > Settings.FLT_EPSILON);
+      //Debug.Assert(ratio > Settings.FLT_EPSILON);
     }
 
     /// <summary>

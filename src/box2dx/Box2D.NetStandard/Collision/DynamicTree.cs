@@ -73,7 +73,7 @@ namespace Box2D.NetStandard.Collision {
     public int AllocateNode() {
       // Expand the node pool as needed.
       if (m_freeList == -1) {
-        Debug.Assert(m_nodeCount == m_nodeCapacity);
+        //Debug.Assert(m_nodeCount == m_nodeCapacity);
 
         // The free list is empty. Rebuild a bigger pool.
         TreeNode[] oldNodes = m_nodes;
@@ -108,8 +108,8 @@ namespace Box2D.NetStandard.Collision {
     }
 
     public void FreeNode(int nodeId) {
-      Debug.Assert(0 <= nodeId && nodeId < m_nodeCapacity);
-      Debug.Assert(0 < m_nodeCount);
+      //Debug.Assert(0 <= nodeId && nodeId < m_nodeCapacity);
+      //Debug.Assert(0 < m_nodeCount);
       m_nodes[nodeId].pn.next   = m_freeList;
       m_nodes[nodeId].height = -1;
       m_freeList             = nodeId;
@@ -134,17 +134,17 @@ namespace Box2D.NetStandard.Collision {
     }
 
     public void DestroyProxy(int proxyId) {
-      Debug.Assert(0 <= proxyId && proxyId < m_nodeCapacity);
-      Debug.Assert(m_nodes[proxyId].IsLeaf());
+      //Debug.Assert(0 <= proxyId && proxyId < m_nodeCapacity);
+      //Debug.Assert(m_nodes[proxyId].IsLeaf());
 
       RemoveLeaf(proxyId);
       FreeNode(proxyId);
     }
 
     public bool MoveProxy(Int32 proxyId, in AABB aabb, in Vector2 displacement) {
-      Debug.Assert(0 <= proxyId && proxyId < m_nodeCapacity);
+      //Debug.Assert(0 <= proxyId && proxyId < m_nodeCapacity);
 
-      Debug.Assert(m_nodes[proxyId].IsLeaf());
+      //Debug.Assert(m_nodes[proxyId].IsLeaf());
 
       // Extend AABB
       AABB fatAABB;
@@ -311,8 +311,8 @@ namespace Box2D.NetStandard.Collision {
         Int32 child1 = m_nodes[index].child1;
         Int32 child2 = m_nodes[index].child2;
 
-        Debug.Assert(child1 != -1);
-        Debug.Assert(child2 != -1);
+        //Debug.Assert(child1 != -1);
+        //Debug.Assert(child2 != -1);
 
         m_nodes[index].height = 1 + System.Math.Max(m_nodes[child1].height, m_nodes[child2].height);
         m_nodes[index].aabb.Combine(m_nodes[child1].aabb, m_nodes[child2].aabb);
@@ -396,7 +396,7 @@ namespace Box2D.NetStandard.Collision {
 
     public Int32 Balance(Int32 iA)
     {
-      Debug.Assert(iA != -1);
+      //Debug.Assert(iA != -1);
 
       TreeNode A = m_nodes[iA];
       if (A.IsLeaf() || A.height < 2)
@@ -406,8 +406,8 @@ namespace Box2D.NetStandard.Collision {
 
       Int32 iB = A.child1;
       Int32 iC = A.child2;
-      Debug.Assert(0 <= iB && iB < m_nodeCapacity);
-      Debug.Assert(0 <= iC && iC < m_nodeCapacity);
+      //Debug.Assert(0 <= iB && iB < m_nodeCapacity);
+      //Debug.Assert(0 <= iC && iC < m_nodeCapacity);
 
       TreeNode B = m_nodes [iB];
       TreeNode C = m_nodes [iC];
@@ -421,8 +421,8 @@ namespace Box2D.NetStandard.Collision {
         Int32    iG = C.child2;
         TreeNode F  = m_nodes [iF];
         TreeNode G  = m_nodes [iG];
-        Debug.Assert(0 <= iF && iF < m_nodeCapacity);
-        Debug.Assert(0 <= iG && iG < m_nodeCapacity);
+        //Debug.Assert(0 <= iF && iF < m_nodeCapacity);
+        //Debug.Assert(0 <= iG && iG < m_nodeCapacity);
 
         // Swap A and C
         C.child1 = iA;
@@ -438,7 +438,7 @@ namespace Box2D.NetStandard.Collision {
           }
           else
           {
-            Debug.Assert(m_nodes[C.pn.parent].child2 == iA);
+            //Debug.Assert(m_nodes[C.pn.parent].child2 == iA);
             m_nodes[C.pn.parent].child2 = iC;
           }
         }
@@ -481,8 +481,8 @@ namespace Box2D.NetStandard.Collision {
         Int32    iE = B.child2;
         TreeNode D  = m_nodes [iD];
         TreeNode E  = m_nodes [iE];
-        Debug.Assert(0 <= iD && iD < m_nodeCapacity);
-        Debug.Assert(0 <= iE && iE < m_nodeCapacity);
+        //Debug.Assert(0 <= iD && iD < m_nodeCapacity);
+        //Debug.Assert(0 <= iE && iE < m_nodeCapacity);
            
         // Swap A and B
         B.child1 = iA;
@@ -498,7 +498,7 @@ namespace Box2D.NetStandard.Collision {
           }
           else
           {
-            Debug.Assert(m_nodes[B.pn.parent].child2 == iA);
+            //Debug.Assert(m_nodes[B.pn.parent].child2 == iA);
             m_nodes[B.pn.parent].child2 = iB;
           }
         }
@@ -575,7 +575,7 @@ namespace Box2D.NetStandard.Collision {
     
     public int ComputeHeight(Int32 nodeId)
     {
-      Debug.Assert(0 <= nodeId && nodeId < m_nodeCapacity);
+      //Debug.Assert(0 <= nodeId && nodeId < m_nodeCapacity);
       TreeNode node = m_nodes[nodeId];
 
       if (node.IsLeaf())
@@ -600,7 +600,7 @@ namespace Box2D.NetStandard.Collision {
 
       if (index == m_root)
       {
-        Debug.Assert(m_nodes[index].pn.parent == -1);
+        //Debug.Assert(m_nodes[index].pn.parent == -1);
       }
 
       TreeNode node = m_nodes[index];
@@ -610,16 +610,16 @@ namespace Box2D.NetStandard.Collision {
 
       if (node.IsLeaf())
       {
-        Debug.Assert(child1      == -1);
-        Debug.Assert(child2      == -1);
-        Debug.Assert(node.height == 0);
+        //Debug.Assert(child1      == -1);
+        //Debug.Assert(child2      == -1);
+        //Debug.Assert(node.height == 0);
         return;
       }
 
-      Debug.Assert(0 <= child1 && child1 < m_nodeCapacity);
-      Debug.Assert(0 <= child2 && child2 < m_nodeCapacity);
-      Debug.Assert(m_nodes[child1].pn.parent == index);
-      Debug.Assert(m_nodes[child2].pn.parent == index);
+      //Debug.Assert(0 <= child1 && child1 < m_nodeCapacity);
+      //Debug.Assert(0 <= child2 && child2 < m_nodeCapacity);
+      //Debug.Assert(m_nodes[child1].pn.parent == index);
+      //Debug.Assert(m_nodes[child2].pn.parent == index);
 
       ValidateStructure(child1);
       ValidateStructure(child2);
@@ -639,26 +639,26 @@ namespace Box2D.NetStandard.Collision {
 
       if (node.IsLeaf())
       {
-        Debug.Assert(child1      == -1);
-        Debug.Assert(child2      == -1);
-        Debug.Assert(node.height == 0);
+        //Debug.Assert(child1      == -1);
+        //Debug.Assert(child2      == -1);
+        //Debug.Assert(node.height == 0);
         return;
       }
 
-      Debug.Assert(0 <= child1 && child1 < m_nodeCapacity);
-      Debug.Assert(0 <= child2 && child2 < m_nodeCapacity);
+      //Debug.Assert(0 <= child1 && child1 < m_nodeCapacity);
+      //Debug.Assert(0 <= child2 && child2 < m_nodeCapacity);
 
       Int32 height1 = m_nodes[child1].height;
       Int32 height2 = m_nodes[child2].height;
       Int32 height;
       height = 1 + System.Math.Max(height1, height2);
-      Debug.Assert(node.height == height);
+      //Debug.Assert(node.height == height);
 
       AABB aabb = new AABB();
       aabb.Combine(m_nodes[child1].aabb, m_nodes[child2].aabb);
 
-      Debug.Assert(aabb.lowerBound == node.aabb.lowerBound);
-      Debug.Assert(aabb.upperBound == node.aabb.upperBound);
+      //Debug.Assert(aabb.lowerBound == node.aabb.lowerBound);
+      //Debug.Assert(aabb.upperBound == node.aabb.upperBound);
              
       ValidateMetrics(child1);
       ValidateMetrics(child2);
@@ -675,7 +675,7 @@ namespace Box2D.NetStandard.Collision {
           continue;
         }
 
-        Debug.Assert(node.IsLeaf() == false);
+        //Debug.Assert(node.IsLeaf() == false);
 
         Int32 child1  = node.child1;
         Int32 child2  = node.child2;
@@ -805,7 +805,7 @@ namespace Box2D.NetStandard.Collision {
       Vector2 p1 = input.p1;
       Vector2 p2 = input.p2;
       Vector2 r  = p2 - p1;
-      Debug.Assert(r.LengthSquared() > 0.0f);
+      //Debug.Assert(r.LengthSquared() > 0.0f);
       r = Vector2.Normalize(r);
 
       // v is perpendicular to the segment.

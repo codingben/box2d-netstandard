@@ -204,7 +204,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
     [MethodImpl(MethodImplOptions.AggressiveInlining)] 
     void SetLimits(float lower, float upper)
     {
-      Debug.Assert(lower <= upper);
+      //Debug.Assert(lower <= upper);
       if (lower != _lowerTranslation || upper != _upperTranslation)
       {
         _bodyA.SetAwake(true);

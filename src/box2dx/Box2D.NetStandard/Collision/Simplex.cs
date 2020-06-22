@@ -64,7 +64,7 @@ namespace Box2D.NetStandard.Collision {
     internal void ReadCache(in SimplexCache  cache,
       in  DistanceProxy proxyA, in Transform transformA,
       in  DistanceProxy proxyB, in Transform transformB) {
-      Debug.Assert(cache.count <= 3);
+      //Debug.Assert(cache.count <= 3);
 
       // Copy data from cache.
       m_count = cache.count;
@@ -145,7 +145,7 @@ namespace Box2D.NetStandard.Collision {
         }
 
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return Vector2.Zero;
       }
     }
@@ -153,7 +153,7 @@ namespace Box2D.NetStandard.Collision {
     internal Vector2 GetClosestPoint() {
       switch (m_count) {
         case 0:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return Vector2.Zero;
         case 1:
           return m_v1.w;
@@ -162,7 +162,7 @@ namespace Box2D.NetStandard.Collision {
         case 3:
           return Vector2.Zero;
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return Vector2.Zero;
       }
     }
@@ -187,7 +187,7 @@ namespace Box2D.NetStandard.Collision {
         default:
           pA = default;
           pB = default;
-          Debug.Assert(false);
+          //Debug.Assert(false);
           break;
       }
     }
@@ -195,7 +195,7 @@ namespace Box2D.NetStandard.Collision {
     internal float GetMetric() {
       switch (m_count) {
         case 0:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return 0.0f;
 
         case 1:
@@ -208,7 +208,7 @@ namespace Box2D.NetStandard.Collision {
           return Vectex.Cross(m_v2.w - m_v1.w, m_v3.w - m_v1.w);
 
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return 0.0f;
       }
     }

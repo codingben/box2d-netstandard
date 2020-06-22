@@ -34,7 +34,8 @@ namespace Box2D.Window
         }
 
         private int mouseLast = 0;
-        
+        public static bool stepNext;
+
         protected override void OnMouseWheel(MouseWheelEventArgs eventArgs)
         {
             base.OnMouseWheel(eventArgs);
@@ -56,6 +57,10 @@ namespace Box2D.Window
                 {
                     view.Position = Vector2.Zero;
                 }
+            }
+
+            if (eventArgs.Key == Key.Space) {
+                stepNext = true;
             }
         }
 

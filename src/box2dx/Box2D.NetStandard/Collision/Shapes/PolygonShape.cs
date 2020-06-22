@@ -25,7 +25,7 @@
 // SOFTWARE.
 */
 
-#define DEBUG
+//#define DEBUG
 
 using System.Diagnostics;
 using System.Numerics;
@@ -86,7 +86,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
     public override int GetChildCount() => 1;
 
     static Vector2 ComputeCentroid(in Vector2[] vs, int count) {
-      Debug.Assert(count >= 3);
+      //Debug.Assert(count >= 3);
 
       Vector2 c    = Vector2.Zero;
       float   area = 0.0f;
@@ -116,7 +116,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
       }
 
       // Centroid
-      Debug.Assert(area > Settings.FLT_EPSILON);
+      //Debug.Assert(area > Settings.FLT_EPSILON);
       c *= 1.0f / area;
       return c;
     }
@@ -124,7 +124,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
     public void Set(in Vector2[] vertices) {
       int count = vertices.Length;
-      Debug.Assert(3 <= count && count <= Settings.MaxPolygonVertices);
+      //Debug.Assert(3 <= count && count <= Settings.MaxPolygonVertices);
       if (count < 3) {
         SetAsBox(1f, 1f);
         return;
@@ -153,7 +153,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
       n = tempCount;
       if (n < 3) {
         // Polygon is degenerate.
-        Debug.Assert(false);
+        //Debug.Assert(false);
         SetAsBox(1.0f, 1.0f);
         return;
       }
@@ -177,7 +177,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
       int   ih   = i0;
 
       for (;;) {
-        Debug.Assert(m < Settings.MaxPolygonVertices);
+        //Debug.Assert(m < Settings.MaxPolygonVertices);
         hull[m] = ih;
 
         int ie = 0;
@@ -210,7 +210,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       if (m < 3) {
         // Polygon is degenerate.
-        Debug.Assert(false);
+        //Debug.Assert(false);
         SetAsBox(1.0f, 1.0f);
         return;
       }
@@ -227,7 +227,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
         int  i1   = i;
         int  i2   = i + 1 < m ? i + 1 : 0;
         Vector2 edge = m_vertices[i2] - m_vertices[i1];
-        Debug.Assert(edge.LengthSquared() > Settings.FLT_EPSILON_SQUARED);
+        //Debug.Assert(edge.LengthSquared() > Settings.FLT_EPSILON_SQUARED);
         m_normals[i] = Vector2.Normalize(Vectex.Cross(edge, 1.0f));
       }
 
@@ -299,7 +299,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
         }
       }
 
-      Debug.Assert(0.0f <= lower && lower <= input.maxFraction);
+      //Debug.Assert(0.0f <= lower && lower <= input.maxFraction);
 
       if (index >= 0) {
         output.fraction = lower;
@@ -350,7 +350,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
       //
       // The rest of the derivation is handled by computer algebra.
 
-      Debug.Assert(m_count >= 3);
+      //Debug.Assert(m_count >= 3);
 
       var   center = Vector2.Zero;
       float area   = 0.0f;
@@ -395,7 +395,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
       massData.mass = density * area;
 
       // Center of mass
-      Debug.Assert(area > Settings.FLT_EPSILON);
+      //Debug.Assert(area > Settings.FLT_EPSILON);
       center          *= 1.0f / area;
       massData.center =  center + s;
 

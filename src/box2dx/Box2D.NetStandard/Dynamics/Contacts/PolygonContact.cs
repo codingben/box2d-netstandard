@@ -38,8 +38,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 		public PolygonContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.Type == ShapeType.Polygon);
-			Debug.Assert(fixtureB.Type == ShapeType.Polygon);
+			//Debug.Assert(fixtureA.Type == ShapeType.Polygon);
+			//Debug.Assert(fixtureB.Type == ShapeType.Polygon);
 		}
 
 		

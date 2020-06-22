@@ -134,8 +134,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
       _typeA = _joint1.Type;
       _typeB = _joint2.Type;
 
-      Debug.Assert(_typeA == JointType.RevoluteJoint || _typeA == JointType.PrismaticJoint);
-      Debug.Assert(_typeB == JointType.RevoluteJoint || _typeB == JointType.PrismaticJoint);
+      //Debug.Assert(_typeA == JointType.RevoluteJoint || _typeA == JointType.PrismaticJoint);
+      //Debug.Assert(_typeB == JointType.RevoluteJoint || _typeB == JointType.PrismaticJoint);
 
       float coordinateA, coordinateB;
 

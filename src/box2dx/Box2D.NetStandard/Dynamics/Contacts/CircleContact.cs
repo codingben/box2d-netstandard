@@ -38,8 +38,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 		public CircleContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.Type == ShapeType.Circle);
-			Debug.Assert(fixtureB.Type == ShapeType.Circle);
+			//Debug.Assert(fixtureA.Type == ShapeType.Circle);
+			//Debug.Assert(fixtureB.Type == ShapeType.Circle);
 		}
 
 		public static Contact Create(Fixture fixtureA, Fixture fixtureB)

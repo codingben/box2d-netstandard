@@ -388,8 +388,8 @@ namespace Box2D.NetStandard.Dynamics.World {
     }
 
     internal void SolveTOI(in TimeStep subStep, int toiIndexA, int toiIndexB) {
-      Debug.Assert(toiIndexA < _bodyCount);
-      Debug.Assert(toiIndexB < _bodyCount);
+      //Debug.Assert(toiIndexA < _bodyCount);
+      //Debug.Assert(toiIndexB < _bodyCount);
 
       for (int i = 0; i < _bodyCount; i++) {
         Body b = _bodies[i];
@@ -477,20 +477,20 @@ namespace Box2D.NetStandard.Dynamics.World {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Add(Body body) {
-      Debug.Assert(_bodyCount < _bodyCapacity);
+      //Debug.Assert(_bodyCount < _bodyCapacity);
       body._islandIndex     = _bodyCount;
       _bodies[_bodyCount++] = body;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Add(Contact contact) {
-      Debug.Assert(_contactCount < _contactCapacity);
+      //Debug.Assert(_contactCount < _contactCapacity);
       _contacts[_contactCount++] = contact;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Add(Joint joint) {
-      Debug.Assert(_jointCount < _jointCapacity);
+      //Debug.Assert(_jointCount < _jointCapacity);
       _joints[_jointCount++] = joint;
     }
 

@@ -38,8 +38,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 		public EdgeAndCircleContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.Type == ShapeType.Edge);
-			Debug.Assert(fixtureB.Type == ShapeType.Circle);
+			//Debug.Assert(fixtureA.Type == ShapeType.Edge);
+			//Debug.Assert(fixtureB.Type == ShapeType.Circle);
 			m_manifold.pointCount = 0;
 			m_manifold.points[0]=new ManifoldPoint();
 			m_manifold.points[0].normalImpulse = 0.0f;

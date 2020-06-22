@@ -26,7 +26,7 @@
 */
 
 
-#define DEBUG
+//#define DEBUG
 
 namespace Box2D.NetStandard.Collision {
   /// <summary>

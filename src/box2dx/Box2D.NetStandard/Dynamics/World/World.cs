@@ -219,7 +219,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <param name="def"></param>
     /// <returns></returns>
     public Body CreateBody(BodyDef def) {
-      Debug.Assert(_locked == false);
+      //Debug.Assert(_locked == false);
       if (_locked == true) {
         return null;
       }
@@ -247,8 +247,8 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// </summary>
     /// <param name="b"></param>
     public void DestroyBody(Body b) {
-      Debug.Assert(_bodyCount > 0);
-      Debug.Assert(_locked    == false);
+      //Debug.Assert(_bodyCount > 0);
+      //Debug.Assert(_locked    == false);
       if (_locked == true) {
         return;
       }
@@ -320,7 +320,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <param name="def"></param>
     /// <returns></returns>
     public Joint CreateJoint(JointDef def) {
-      Debug.Assert(_locked == false);
+      //Debug.Assert(_locked == false);
 
       if (_locked) return null;
 
@@ -381,7 +381,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// </summary>
     /// <param name="j"></param>
     public void DestroyJoint(Joint j) {
-      Debug.Assert(_locked == false);
+      //Debug.Assert(_locked == false);
       if (_locked) return;
 
       bool collideConnected = j._collideConnected;
@@ -439,7 +439,7 @@ namespace Box2D.NetStandard.Dynamics.World {
       j._edgeB.Prev = null;
       j._edgeB.next = null;
 
-      Debug.Assert(_jointCount > 0);
+      //Debug.Assert(_jointCount > 0);
       --_jointCount;
 
       // If the joint prevents collisions, then flag any contacts for filtering.
@@ -523,7 +523,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         while (stackCount > 0) {
           // Grab the next body off the stack and add it to the island.
           Body b = stack[--stackCount];
-          //Debug.Assert(b.IsEnabled() == true);
+          ////Debug.Assert(b.IsEnabled() == true);
           island.Add(b);
 
           // Make sure the body is awake (without resetting sleep timer).
@@ -567,7 +567,7 @@ namespace Box2D.NetStandard.Dynamics.World {
               continue;
             }
 
-            Debug.Assert(stackCount < stackSize);
+            //Debug.Assert(stackCount < stackSize);
             stack[stackCount++] = other;
             other.SetFlag(BodyFlags.Island);
           }
@@ -592,7 +592,7 @@ namespace Box2D.NetStandard.Dynamics.World {
               continue;
             }
 
-            Debug.Assert(stackCount < stackSize);
+            //Debug.Assert(stackCount < stackSize);
             stack[stackCount++] = other;
             other.SetFlag(BodyFlags.Island);
           }
@@ -695,7 +695,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
             BodyType typeA = bA._type;
             BodyType typeB = bB._type;
-            Debug.Assert(typeA == BodyType.Dynamic || typeB == BodyType.Dynamic);
+            //Debug.Assert(typeA == BodyType.Dynamic || typeB == BodyType.Dynamic);
 
             bool activeA = bA.IsAwake() && typeA != BodyType.Static;
             bool activeB = bB.IsAwake() && typeB != BodyType.Static;
@@ -726,7 +726,7 @@ namespace Box2D.NetStandard.Dynamics.World {
               bB._sweep.Advance(alpha0);
             }
 
-            Debug.Assert(alpha0 < 1.0f);
+            //Debug.Assert(alpha0 < 1.0f);
 
             int indexA = c.ChildIndexA;
             int indexB = c.ChildIndexB;
@@ -1116,7 +1116,7 @@ namespace Box2D.NetStandard.Dynamics.World {
           int          vertexCount   = poly.m_count;
           Vector2[]    localVertices = poly.m_vertices;
 
-          Debug.Assert(vertexCount <= Settings.MaxPolygonVertices);
+          //Debug.Assert(vertexCount <= Settings.MaxPolygonVertices);
           Vector2[] vertices = new Vector2[Settings.MaxPolygonVertices];
 
           for (int i = 0; i < vertexCount; ++i) {

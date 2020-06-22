@@ -129,7 +129,7 @@ namespace Box2D.NetStandard.Collision {
       {
         // Region AB
         float den = Vector2.Dot(e, e);
-        Debug.Assert(den > 0.0f);
+        //Debug.Assert(den > 0.0f);
         Vector2 P  = (1.0f / den) * (u * A + v * B);
         Vector2 d  = Q - P;
         float  dd = Vector2.Dot(d, d);
@@ -236,14 +236,13 @@ namespace Box2D.NetStandard.Collision {
     internal void Collide(out Manifold     manifold, in EdgeShape edgeA, in Transform xfA,
       in                      PolygonShape polygonB, in Transform xfB) {
       m_xf        = Math.MulT(xfA, xfB);
-      
       m_centroidB = Math.Mul(m_xf, polygonB.m_centroid);
       
       m_v0        = edgeA.m_vertex0;
       m_v1        = edgeA.m_vertex1;
       m_v2        = edgeA.m_vertex2;
       m_v3        = edgeA.m_vertex3;
-      
+
       Vector2 edge1      = Vector2.Normalize(m_v2 - m_v1);
       m_normal1 = new Vector2(edge1.Y, -edge1.X);
       float offset1 = Vector2.Dot(m_normal1, m_centroidB - m_v1);
@@ -266,7 +265,7 @@ namespace Box2D.NetStandard.Collision {
         convex2   = Vectex.Cross(edge1, edge2) > 0.0f;
         offset2   = Vector2.Dot(m_normal2, m_centroidB - m_v2);
       }
-
+      
       // Determine front or back collision. Determine collision normal limits.
       if (m_v0.HasValue && m_v3.HasValue) {
         if (convex1 && convex2) {
@@ -409,15 +408,12 @@ namespace Box2D.NetStandard.Collision {
       EPAxis edgeAxis = ComputeEdgeSeparation();
 
       // If no valid normal can be found than this edge should not collide.
-      if (edgeAxis.type == EPAxis.AxisType.Unknown) {
-        return;
-      }
-
-      if (edgeAxis.separation > m_radius) {
+      if (edgeAxis.type == EPAxis.AxisType.Unknown || edgeAxis.separation > m_radius) {
         return;
       }
 
       EPAxis polygonAxis = ComputePolygonSeparation();
+
       if (polygonAxis.type != EPAxis.AxisType.Unknown && polygonAxis.separation > m_radius) {
         return;
       }

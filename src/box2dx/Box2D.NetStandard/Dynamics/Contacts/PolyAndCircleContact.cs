@@ -38,8 +38,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 		public PolyAndCircleContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.Type == ShapeType.Polygon);
-			Debug.Assert(fixtureB.Type == ShapeType.Circle);
+			//Debug.Assert(fixtureA.Type == ShapeType.Polygon);
+			//Debug.Assert(fixtureB.Type == ShapeType.Circle);
 		}
 
 		
