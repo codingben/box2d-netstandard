@@ -21,14 +21,10 @@ namespace Box2D.NetStandard.UnitTests {
       ground.CreateFixture(new EdgeShape(new Vector2(-100,0), new Vector2(100,0)) );
 
       Body dynamic1 = world.CreateBody(new BodyDef {position = new Vector2(-10, 3), type = BodyType.Dynamic});
-      PolygonShape polygonShape1 = new PolygonShape();
-      polygonShape1.SetAsBox(2,2);
-      dynamic1.CreateFixture(polygonShape1, 1f);
+      dynamic1.CreateFixture(new PolygonShape(2, 2), 1f);
       
-      Body         dynamic2 = world.CreateBody(new BodyDef {position = new Vector2(10, 3), type = BodyType.Dynamic});
-      PolygonShape polygonShape2 = new PolygonShape();
-      polygonShape2.SetAsBox(2, 2);
-      dynamic2.CreateFixture(polygonShape1, 1f);
+      Body dynamic2 = world.CreateBody(new BodyDef {position = new Vector2(10, 3), type = BodyType.Dynamic});
+      dynamic2.CreateFixture(new PolygonShape(2, 2), 1f);
 
       // Let them fall to the floor
       world.Step(1000,10,10);

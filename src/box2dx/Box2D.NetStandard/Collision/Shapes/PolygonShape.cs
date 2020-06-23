@@ -50,6 +50,14 @@ namespace Box2D.NetStandard.Collision.Shapes {
       m_centroid = Vector2.Zero;
     }
 
+    public PolygonShape(params Vector2[] vectors) : this() {
+      Set(vectors);
+    }
+
+    public PolygonShape(float hX, float hY) : this() {
+      SetAsBox(hX,hY);
+    }
+
     public override Shape Clone() => (Shape) MemberwiseClone();
 
 
