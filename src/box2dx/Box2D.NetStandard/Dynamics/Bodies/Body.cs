@@ -200,7 +200,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetLinearVelocity(in Vector2 v) {
-      if (_type             == BodyType.Static) return;
+      if (_type == BodyType.Static) return;
       if (Vector2.Dot(v, v) > 0f) SetAwake(true);
       _linearVelocity = v;
     }

@@ -97,8 +97,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
     private float _gamma;
 
     public WheelJoint(WheelJointDef def) : base(def) {
-      _localAnchorA = def.LocalAnchor1;
-      _localAnchorB  = def.LocalAnchor2;
+      _localAnchorA = def.LocalAnchorA;
+      _localAnchorB  = def.LocalAnchorB;
       _localXAxisA   = def.LocalAxisA;
       _localYAxisA   = Vectex.Cross(1f, _localXAxisA);
 
