@@ -1,4 +1,3 @@
-using System;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
@@ -21,6 +20,8 @@ namespace Box2D.NetStandard.UnitTests {
       World world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
       for (int i = 0; i < 2100; i++)
         world.Step(0.016f, 8, 3);
+      
+      
       Assert.Equal(18.578978f,   bodies[1].GetPosition().X);
       Assert.Equal(-7.1131325f,  bodies[1].GetPosition().Y);
       Assert.Equal(18.188766f,   bodies[2].GetPosition().X);

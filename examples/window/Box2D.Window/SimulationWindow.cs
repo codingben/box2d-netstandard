@@ -191,7 +191,7 @@ namespace Box2D.Window
                 const float kSegments = 16.0f;
                 const int VertexCount = 16;
 
-                var kIncrement = 2.0f * MathF.PI / kSegments;
+                var kIncrement = Settings.Tau / kSegments;
                 var theta = 0.0f;
 
                 GL.Color4(color.R, color.G, color.B, 0.5f);
@@ -220,7 +220,7 @@ namespace Box2D.Window
                 const float kSegments = 16.0f;
                 const int VertexCount = 16;
 
-                var kIncrement = 2.0f * MathF.PI / kSegments;
+                var kIncrement = Settings.Tau / kSegments;
                 var theta = 0.0f;
 
                 GL.Color4(color.R, color.G, color.B, 0.5f);

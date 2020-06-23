@@ -25,6 +25,7 @@
 // SOFTWARE.
 */
 
+using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Collision;
@@ -44,6 +45,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     private static ContactRegister[][] s_registers =
       new ContactRegister[(int) ShapeType.TypeCount][ /*(int)ShapeType.ShapeTypeCount*/];
 
+    
+    
     private static bool s_initialized;
 
     internal CollisionFlags m_flags;
@@ -53,14 +56,14 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     internal Contact m_next;
 
     // Nodes for connecting bodies.
-    internal ContactEdge m_nodeA;
-    internal ContactEdge m_nodeB;
+    internal readonly ContactEdge m_nodeA;
+    internal readonly ContactEdge m_nodeB;
 
-    internal Fixture m_fixtureA;
-    internal Fixture m_fixtureB;
+    internal readonly Fixture m_fixtureA;
+    internal readonly Fixture m_fixtureB;
 
-    internal int m_indexA;
-    internal int m_indexB;
+    private int m_indexA;
+    private int m_indexB;
 
     internal Manifold m_manifold = new Manifold();
 

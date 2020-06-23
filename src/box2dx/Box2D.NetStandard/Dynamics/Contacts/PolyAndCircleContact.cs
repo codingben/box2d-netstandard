@@ -32,27 +32,27 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
-	public class PolyAndCircleContact : Contact
+	internal class PolyAndCircleContact : Contact
 	{
-		public PolyAndCircleContact(Fixture fixtureA, Fixture fixtureB)
+		private static Collider<PolygonShape,CircleShape> collider = new PolygonAndCircleCollider();
+
+		private PolyAndCircleContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
-			//Debug.Assert(fixtureA.Type == ShapeType.Polygon);
-			//Debug.Assert(fixtureB.Type == ShapeType.Circle);
 		}
 
-		
-		public static Contact Create(Fixture fixtureA, Fixture fixtureB)
+
+		internal static Contact Create(Fixture fixtureA, Fixture fixtureB)
 		{
 			return new PolyAndCircleContact(fixtureA, fixtureB);
 		}
 
-		public  static void Destroy(ref Contact contact) {
+		internal static void Destroy(ref Contact contact) {
 			contact = null;
 		}
 
 		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
-			Collision.Collision.CollidePolygonAndCircle(out manifold,
+			collider.Collide(out manifold,
 			                                         (PolygonShape) m_fixtureA.Shape, xfA,
 			                                         (CircleShape) m_fixtureB.Shape,  xfB);
 		}

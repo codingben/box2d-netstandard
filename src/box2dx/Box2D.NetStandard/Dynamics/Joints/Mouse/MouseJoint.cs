@@ -126,7 +126,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 			float mass = _bodyB.GetMass();
 
 			// Frequency
-			float omega = 2.0f * MathF.PI * _frequencyHz;
+			float omega = Settings.Tau * _frequencyHz;
 
 			// Damping coefficient
 			float d = 2.0f * mass * _dampingRatio * omega;

@@ -34,6 +34,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class PolygonContact : Contact
 	{
+		private static readonly Collider<PolygonShape,PolygonShape> collider = new PolygonAndPolygonCollider();
+		
 		public PolygonContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
@@ -53,7 +55,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 		}
 
 		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
-			Collision.Collision.CollidePolygons(out manifold, (PolygonShape)m_fixtureA.Shape, in xfA, (PolygonShape)m_fixtureB.Shape, in xfB);
+			collider.Collide(out manifold, (PolygonShape)m_fixtureA.Shape, in xfA, (PolygonShape)m_fixtureB.Shape, in xfB);
 		}
 	}
 }

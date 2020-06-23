@@ -68,8 +68,7 @@ namespace Box2D.NetStandard.Common
 		}
 
 		public void Normalize() {
-			float twoPi = 2f * MathF.PI;
-			float d = twoPi * MathF.Floor(a0 / twoPi);
+			float d = Settings.Tau * MathF.Floor(a0 / Settings.Tau);
 			a0 -= d;
 			a -= d;
 		}
