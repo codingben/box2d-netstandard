@@ -95,7 +95,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     /// <param name="shape">the shape to be cloned.</param>
     /// <param name="density">the shape density (set to zero for static bodies).</param>
     /// <warning>This function is locked during callbacks.</warning>
-    public Fixture CreateFixture(in Shape shape, float density) {
+    public Fixture CreateFixture(in Shape shape, float density = 0f) {
       FixtureDef def = new FixtureDef();
       def.shape   = shape;
       def.density = density;

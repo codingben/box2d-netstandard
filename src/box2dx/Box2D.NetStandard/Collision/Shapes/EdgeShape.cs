@@ -45,6 +45,10 @@ namespace Box2D.NetStandard.Collision.Shapes
       m_radius = Settings.PolygonRadius;
     }
 
+    public EdgeShape(Vector2 v1, Vector2 v2):this() {
+      Set(v1, v2);
+    }
+
     public Vector2 Vertex1 {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get=>m_vertex1;

@@ -140,7 +140,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal ContactManager GetContactManager() => _contactManager;
 
-
+    public World() : this(new Vector2(0, -10)){}
     /// <summary>
     /// Construct a world object.
     /// </summary>
