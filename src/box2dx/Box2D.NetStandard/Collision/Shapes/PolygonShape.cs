@@ -82,7 +82,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       Transform xf = new Transform();
       xf.p = center;
-      xf.q = Matrix3x2.CreateRotation(angle);// .Set(angle);
+      xf.q = Matrex.CreateRotation(angle);// Actually about twice as fast to use our own function
 
       for (int i = 0; i < m_count; i++) {
         m_vertices[i] = Math.Mul(xf,   m_vertices[i]);
@@ -399,18 +399,16 @@ namespace Box2D.NetStandard.Collision.Shapes {
       }
 
       // Total mass
-      massData.mass = density * area;
+      float mass = density * area;
 
       // Center of mass
       //Debug.Assert(area > Settings.FLT_EPSILON);
-      center          *= 1.0f / area;
-      massData.center =  center + s;
+      Vector2 massDataCenter          = center * 1.0f / area;
+      center += s;
 
-      // Inertia tensor relative to the local origin (point s).
-      massData.I = density * I;
-
-      // Shift to center of mass then to original body origin.
-      massData.I += massData.mass * (Vector2.Dot(massData.center, massData.center) - Vector2.Dot(center, center));
+      // Inertia tensor relative to the local origin (point s). // Shift to center of mass then to original body origin.
+      float inertia = density * I + mass * (Vector2.Dot(massDataCenter, massDataCenter) - Vector2.Dot(center, center));
+      massData=new MassData(mass, massDataCenter, inertia);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

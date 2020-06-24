@@ -28,9 +28,14 @@
 using System.Numerics;
 
 namespace Box2D.NetStandard.Collision.Shapes {
-  public struct MassData {
-    public float   mass;
-    public Vector2 center;
-    public float   I;
+  public readonly struct MassData {
+    public readonly float   mass;
+    public  readonly Vector2 center;
+    public readonly float   I;
+    public MassData(float mass, Vector2 center, float i) {
+      this.mass = mass;
+      this.center = center;
+      I = i;
+    }
   }
 }

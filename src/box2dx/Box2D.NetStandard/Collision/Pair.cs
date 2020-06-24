@@ -26,7 +26,11 @@
 */
 
 namespace Box2D.NetStandard.Collision {
-  internal struct Pair {
-    internal int proxyIdA, proxyIdB;
+  internal readonly struct Pair {
+    internal readonly int proxyIdA, proxyIdB;
+    public Pair(int proxyIdA, int proxyIdB) {
+      this.proxyIdA = proxyIdA;
+      this.proxyIdB = proxyIdB;
+    }
   }
 }
