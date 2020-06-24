@@ -37,7 +37,7 @@ namespace Box2D.NetStandard.Collision.Shapes
 	/// A circle shape.
 	/// </summary>
 	public class CircleShape : Shape {
-		internal Vector2 m_p;
+		public Vector2 m_p;
 
 		public CircleShape() {
 			m_type = ShapeType.Circle;

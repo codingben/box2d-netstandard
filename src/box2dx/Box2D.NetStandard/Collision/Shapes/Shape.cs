@@ -53,7 +53,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
       get => m_type;
     }
 
-    protected internal float m_radius;
+    public float m_radius;
     
   }
 }
