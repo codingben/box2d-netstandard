@@ -77,7 +77,7 @@ namespace Box2D.NetStandard.Common
 		public void Set(Vector2 p, float angle)
 		{
 			this.p = p;
-			q = Matrix3x2.CreateRotation(angle); //=.Set(angle);
+			q = Matrex.CreateRotation(angle); // Actually about twice as fast to use our own function
 		}
 
 		/// Calculate the angle that the rotation matrix represents.

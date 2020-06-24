@@ -19,6 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -38,6 +39,20 @@ namespace Box2D.NetStandard.Common
 			return new Vector2(
 			                   det * (m.M22 * b.X - m.M12 * b.Y),
 			                   det * (m.M11 * b.Y - m.M21 * b.X));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Matrix3x2 CreateRotation(float angle) {
+
+			float cos = MathF.Cos(angle);
+			float sin = MathF.Sin(angle);
+
+			Matrix3x2 result = Matrix3x2.Identity;
+			result.M11 = cos;
+			result.M12 = sin;
+			result.M21 = -sin;
+			result.M22 = cos;
+			return result;
 		}
 	}
 }

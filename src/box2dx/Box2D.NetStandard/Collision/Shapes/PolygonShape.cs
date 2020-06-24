@@ -82,7 +82,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       Transform xf = new Transform();
       xf.p = center;
-      xf.q = Matrix3x2.CreateRotation(angle);// .Set(angle);
+      xf.q = Matrex.CreateRotation(angle);// Actually about twice as fast to use our own function
 
       for (int i = 0; i < m_count; i++) {
         m_vertices[i] = Math.Mul(xf,   m_vertices[i]);

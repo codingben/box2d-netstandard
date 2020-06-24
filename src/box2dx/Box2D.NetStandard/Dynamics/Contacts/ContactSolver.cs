@@ -166,8 +166,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         Transform xfA = new Transform();
         Transform xfB = new Transform();
 
-        xfA.q = Matrix3x2.CreateRotation(aA);// .Set(aA);
-        xfB.q = Matrix3x2.CreateRotation(aB);// .Set(aB);
+        xfA.q = Matrex.CreateRotation(aA);// Actually about twice as fast to use our own function
+        xfB.q = Matrex.CreateRotation(aB);// Actually about twice as fast to use our own function
         xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
         xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
 
@@ -663,8 +663,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         for (int j = 0; j < pointCount; ++j) {
           Transform xfA = new Transform();
           Transform xfB = new Transform();
-          xfA.q = Matrix3x2.CreateRotation(aA);//  .Set(aA);
-          xfB.q = Matrix3x2.CreateRotation(aB);//  .Set(aB);
+          xfA.q = Matrex.CreateRotation(aA);// Actually about twice as fast to use our own function
+          xfB.q = Matrex.CreateRotation(aB);// Actually about twice as fast to use our own function
           xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
           xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
 
@@ -751,8 +751,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         for (int j = 0; j < pointCount; ++j) {
           Transform xfA = new Transform();
           Transform xfB = new Transform();
-          xfA.q = Matrix3x2.CreateRotation(aA); // .Set(aA);
-          xfB.q = Matrix3x2.CreateRotation(aB); // .Set(aB);
+          xfA.q = Matrex.CreateRotation(aA); // Actually about twice as fast to use our own function
+          xfB.q = Matrex.CreateRotation(aB); // Actually about twice as fast to use our own function
           xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
           xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
 

@@ -168,7 +168,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
         return;
       }
 
-      _xf.q = Matrix3x2.CreateRotation(angle);//  .Set(angle);
+      _xf.q = Matrex.CreateRotation(angle);//  Actually about twice as fast to use our own function
       _xf.p = position;
 
       _sweep.c = Math.Mul(_xf, _sweep.localCenter);
@@ -594,7 +594,12 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public Body GetNext() => _next;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public object GetUserData() => _userData;
+    public T GetUserData<T>() => (T) _userData;
+    
+    public object UserData {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => _userData;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetUserData(object data) => _userData = data;
@@ -616,7 +621,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
 
       if (IsAwake()) {
         Transform xf1 = new Transform();
-        xf1.q = Matrix3x2.CreateRotation(_sweep.a0);//  .Set(_sweep.a0);
+        xf1.q = Matrex.CreateRotation(_sweep.a0); // Actually about twice as fast to use our own function
         xf1.p = _sweep.c0 - Math.Mul(xf1.q, _sweep.localCenter);
 
         for (Fixture f = _fixtureList; f != null; f = f.m_next) {
@@ -632,7 +637,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void SynchronizeTransform() {
-      _xf.q = Matrix3x2.CreateRotation(_sweep.a);// .Set(_sweep.a);
+      _xf.q = Matrex.CreateRotation(_sweep.a); // Actually about twice as fast to use our own function
       _xf.p = _sweep.c - Math.Mul(_xf.q, _sweep.localCenter);
     }
 
@@ -657,7 +662,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       _sweep.Advance(alpha);
       _sweep.c = _sweep.c0;
       _sweep.a = _sweep.a0;
-      _xf.q = Matrix3x2.CreateRotation(_sweep.a); // Set(_sweep.a);
+      _xf.q = Matrex.CreateRotation(_sweep.a); // Actually about twice as fast to use our own function
       _xf.p = _sweep.c - Math.Mul(_xf.q, _sweep.localCenter);
     }
 
@@ -718,7 +723,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       _world = world;
 
       _xf.p = bd.position;
-      _xf.q = Matrix3x2.CreateRotation(bd.angle); // .Set(bd.angle);
+      _xf.q = Matrex.CreateRotation(bd.angle); // Actually about twice as fast to use our own function
 
       _sweep.localCenter = Vector2.Zero;
       _sweep.c0          = _xf.p;

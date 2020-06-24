@@ -170,7 +170,7 @@ namespace Box2D.NetStandard.Collision {
     }
 
 
-    public void BufferMove(int proxyId) {
+    private void BufferMove(int proxyId) {
       if (_moveCount == _moveCapacity) {
         int[] oldBuffer = _moveBuffer;
         _moveCapacity *= 2;
@@ -182,7 +182,7 @@ namespace Box2D.NetStandard.Collision {
       ++_moveCount;
     }
 
-    public void UnBufferMove(int proxyId) {
+    private void UnBufferMove(int proxyId) {
       for (int i = 0; i < _moveCount; ++i) {
         if (_moveBuffer[i] == proxyId) {
           _moveBuffer[i] = -1;
@@ -190,7 +190,7 @@ namespace Box2D.NetStandard.Collision {
       }
     }
 
-    public bool QueryCallback(int proxyId) {
+    private bool QueryCallback(int proxyId) {
       // A proxy cannot form a pair with itself.
       if (proxyId == _queryProxyId) {
         return true;
