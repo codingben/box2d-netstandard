@@ -53,6 +53,8 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Collision {
+#warning "CAS"
+
 
   internal class BroadPhase {
     private DynamicTree _tree;
@@ -208,7 +210,8 @@ namespace Box2D.NetStandard.Collision {
         Array.Copy(oldBuffer, _pairBuffer, _pairCount);
       }
 
-      _pairBuffer[_pairCount]= new Pair(Math.Min(proxyId, _queryProxyId), Math.Max(proxyId, _queryProxyId));
+      _pairBuffer[_pairCount].proxyIdA = Math.Min(proxyId, _queryProxyId);
+      _pairBuffer[_pairCount].proxyIdB = Math.Max(proxyId, _queryProxyId);
       ++_pairCount;
 
       return true;

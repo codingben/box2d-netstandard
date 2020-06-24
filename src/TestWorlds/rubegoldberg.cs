@@ -1951,7 +1951,7 @@ namespace TestWorlds {
         {
           FixtureDef fd = new FixtureDef();
           fd.friction            = 0.5f;
-          fd.restitution         = 0.7f;
+          fd.restitution         = 0.4f;
           fd.density = 0.05f;
           fd.isSensor            = false;
           fd.filter.categoryBits = (ushort) (1);
@@ -2394,7 +2394,7 @@ namespace TestWorlds {
           FixtureDef fd = new FixtureDef();
           fd.friction            = 2.000000029802322e-01f;
           fd.restitution         = 2.000000029802322e-01f;
-          fd.density             = 5.000000000000000e-01f;
+          fd.density             = 1f;
           fd.isSensor            = false;
           fd.filter.categoryBits = (ushort) (1);
           fd.filter.maskBits     = (ushort) (65535);

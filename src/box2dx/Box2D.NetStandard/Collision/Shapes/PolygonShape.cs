@@ -399,16 +399,18 @@ namespace Box2D.NetStandard.Collision.Shapes {
       }
 
       // Total mass
-      float mass = density * area;
+      massData.mass = density * area;
 
       // Center of mass
       //Debug.Assert(area > Settings.FLT_EPSILON);
-      Vector2 massDataCenter          = center * 1.0f / area;
-      center += s;
+      center          *= 1.0f / area;
+      massData.center =  center + s;
 
-      // Inertia tensor relative to the local origin (point s). // Shift to center of mass then to original body origin.
-      float inertia = density * I + mass * (Vector2.Dot(massDataCenter, massDataCenter) - Vector2.Dot(center, center));
-      massData=new MassData(mass, massDataCenter, inertia);
+      // Inertia tensor relative to the local origin (point s).
+      massData.I = density * I;
+
+      // Shift to center of mass then to original body origin.
+      massData.I += massData.mass * (Vector2.Dot(massData.center, massData.center) - Vector2.Dot(center, center));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

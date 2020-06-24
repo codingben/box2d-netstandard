@@ -144,7 +144,9 @@ namespace Box2D.NetStandard.Collision.Shapes
     }
 
     public override void ComputeMass(out MassData massData, float density) {
-      massData = new MassData(0f, 0.5f * (m_vertex1 + m_vertex2),0f);
+      massData.mass   = 0.0f;
+      massData.center = 0.5f * (m_vertex1 + m_vertex2);
+      massData.I      = 0.0f;
     }
 
     public void Set(Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3) {

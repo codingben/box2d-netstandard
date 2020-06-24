@@ -41,7 +41,9 @@ namespace Box2D.NetStandard.Common
 			                   det * (m.M11 * b.Y - m.M21 * b.X));
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Matrix3x2 CreateRotation(float angle) {
+
 			float cos = MathF.Cos(angle);
 			float sin = MathF.Sin(angle);
 
