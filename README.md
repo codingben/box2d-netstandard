@@ -22,7 +22,6 @@ In 1.0.3:
 
 In 2.0.x:
 - Code Optimisation must be enabled for things to work properly, and you **must not** have a debugger attached.
-- When WindowTests executes the RubeGoldberg world, the Wrecking Ball at the end sinks lower as time passes.
 
 ## Source
 
