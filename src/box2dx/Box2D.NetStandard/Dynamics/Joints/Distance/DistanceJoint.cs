@@ -56,16 +56,16 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
   /// this as a massless, rigid rod.
   /// </summary>
   public class DistanceJoint : Joint {
-    private Vector2 _localAnchorA;
-    private Vector2 _localAnchorB;
+    private readonly Vector2 _localAnchorA;
+    private readonly Vector2 _localAnchorB;
     private Vector2 _u;
-    private float   _frequencyHz;
-    private float   _dampingRatio;
+    private readonly float   _frequencyHz;
+    private readonly float   _dampingRatio;
     private float   _gamma;
     private float   _bias;
     private float   _impulse;
     private float   _mass; // effective mass for the constraint.
-    private float   _length;
+    private readonly float   _length;
     private int _indexA;
     private int _indexB;
     private Vector2 _localCenterA;
@@ -195,31 +195,35 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
         return true;
       }
 
-      Body b1 = _bodyA;
-      Body b2 = _bodyB;
+      Vector2 cA = data.positions[_indexA].c;
+      float  aA = data.positions[_indexA].a;
+      Vector2 cB = data.positions[_indexB].c;
+      float  aB = data.positions[_indexB].a;
 
-      Vector2 r1 = Math.Mul(b1.GetTransform().q, _localAnchorA - b1.GetLocalCenter());
-      Vector2 r2 = Math.Mul(b2.GetTransform().q, _localAnchorB - b2.GetLocalCenter());
+      Rot qA = new Rot(aA), qB = new Rot(aB);
 
-      Vector2 d = b2._sweep.c + r2 - b1._sweep.c - r1;
+      Vector2 rA = Math.Mul(qA, _localAnchorA - _localCenterA);
+      Vector2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
+      Vector2 u  = cB + rB - cA - rA;
 
-      float length = d.Length();
-      d = Vector2.Normalize(d);
-      float C = length - _length;
+      float length = u.Length();
+      u = Vector2.Normalize(u);
+      float C      = length - _length;
       C = System.Math.Clamp(C, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
 
-      float impulse = -_mass * C;
-      _u = d;
-      Vector2 P = impulse * _u;
+      float  impulse = -_mass * C;
+      Vector2 P       = impulse * u;
 
-      b1._sweep.c -= b1._invMass * P;
-      b1._sweep.a -= b1._invI    * Vectex.Cross(r1, P);
-      b2._sweep.c += b2._invMass * P;
-      b2._sweep.a += b2._invI    * Vectex.Cross(r2, P);
+      cA -= _invMassA * P;
+      aA -= _invIA    * Vectex.Cross(rA, P);
+      cB += _invMassB * P;
+      aB += _invIB    * Vectex.Cross(rB, P);
 
-      b1.SynchronizeTransform();
-      b2.SynchronizeTransform();
-
+      data.positions[_indexA].c = cA;
+      data.positions[_indexA].a = aA;
+      data.positions[_indexB].c = cB;
+      data.positions[_indexB].a = aB;
+      
       return System.Math.Abs(C) < Settings.LinearSlop;
     }
 

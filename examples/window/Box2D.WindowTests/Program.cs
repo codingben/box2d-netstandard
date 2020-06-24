@@ -27,6 +27,7 @@ namespace Box2D.WindowTests
             world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
             //world = CollisionTest.CreateWorld();
             //world = PolyEdgeTest.CreateWorld();
+            //world = DistanceJointProblem.CreateWorld();
         }
 
         private static void Main()
