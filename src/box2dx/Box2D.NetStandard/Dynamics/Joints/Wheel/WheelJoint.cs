@@ -42,7 +42,6 @@
 // J = [0 0 -1 0 0 1]
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
@@ -98,8 +97,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
     private float _gamma;
 
     public WheelJoint(WheelJointDef def) : base(def) {
-      _localAnchorA = def.LocalAnchor1;
-      _localAnchorB  = def.LocalAnchor2;
+      _localAnchorA = def.LocalAnchorA;
+      _localAnchorB  = def.LocalAnchorB;
       _localXAxisA   = def.LocalAxisA;
       _localYAxisA   = Vectex.Cross(1f, _localXAxisA);
 
@@ -204,7 +203,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
     [MethodImpl(MethodImplOptions.AggressiveInlining)] 
     void SetLimits(float lower, float upper)
     {
-      Debug.Assert(lower <= upper);
+      //Debug.Assert(lower <= upper);
       if (lower != _lowerTranslation || upper != _upperTranslation)
       {
         _bodyA.SetAwake(true);

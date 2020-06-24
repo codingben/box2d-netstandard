@@ -46,7 +46,6 @@
 // 0 <= impulse
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
@@ -149,7 +148,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Pulley {
       _lengthA = def.LengthA;
       _lengthB = def.LengthB;
 
-      Debug.Assert(def.Ratio != 0.0f);
+      //Debug.Assert(def.Ratio != 0.0f);
       _ratio = def.Ratio;
 
       _constant = def.LengthA + _ratio * def.LengthB;

@@ -28,5 +28,7 @@ namespace Box2D.NetStandard.Common {
 
     [Obsolete("This is now a System.Numerics.Vector2, and cannot be mutated this way. Please create a new Vector2 and assign it to the property or field you're trying to modify.", true)]
     public static void SetZero(this Vector2 v) { }
+
+
   }
 }

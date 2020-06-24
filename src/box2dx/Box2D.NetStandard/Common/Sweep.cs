@@ -26,8 +26,8 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Common
 {
@@ -43,15 +43,15 @@ namespace Box2D.NetStandard.Common
 		/// Get the interpolated transform at a specific time.
 		/// </summary>
 		/// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void GetTransform(out Transform xf, float alpha)
 		{
-			xf = new Transform();
-			xf.p = (1.0f - alpha) * c0 + alpha * c;
-			float angle = (1.0f - alpha) * a0 + alpha * a;
+			//xf = new Transform();
+			float f = (1.0f - alpha);
+			float angle = f * a0 + alpha * a;
 			xf.q = Matrix3x2.CreateRotation(angle);// .Set(angle);
-
 			// Shift to origin
-			xf.p -= Math.Mul(xf.q, localCenter);
+			xf.p = f * c0 + alpha * c - Math.Mul(xf.q, localCenter);
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace Box2D.NetStandard.Common
 		/// <param name="t">The new initial time.</param>
 		public void Advance(float alpha)
 		{
-			Debug.Assert(alpha0 < 1.0f);
+			//Debug.Assert(alpha0 < 1.0f);
 			float beta = (alpha - alpha0) / (1.0f - alpha0);
 			c0     += beta * (c - c0);
 			a0     += beta * (a - a0);
@@ -68,8 +68,7 @@ namespace Box2D.NetStandard.Common
 		}
 
 		public void Normalize() {
-			float twoPi = 2f * MathF.PI;
-			float d = twoPi * MathF.Floor(a0 / twoPi);
+			float d = Settings.Tau * MathF.Floor(a0 / Settings.Tau);
 			a0 -= d;
 			a -= d;
 		}

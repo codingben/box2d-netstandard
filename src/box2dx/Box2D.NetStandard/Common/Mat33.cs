@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using System.Diagnostics;
 using System.Numerics;
 
 namespace Box2D.NetStandard.Common
@@ -63,7 +62,7 @@ namespace Box2D.NetStandard.Common
 		internal Vector3 Solve33(Vector3 b)
 		{
 			float det = Vector3.Dot(ex, Vector3.Cross(ey, ez));
-			Debug.Assert(det != 0.0f);
+			//Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
 			Vector3 x = new Vector3();
 			x.X = det * Vector3.Dot(b,  Vector3.Cross(ey, ez));
@@ -81,7 +80,7 @@ namespace Box2D.NetStandard.Common
 		{
 			float a11 = ex.X, a12 = ey.X, a21 = ex.Y, a22 = ey.Y;
 			float det = a11 * a22 - a12 * a21;
-			Debug.Assert(det != 0.0f);
+			//Debug.Assert(det != 0.0f);
 			det = 1.0f / det;
 			Vector2 x = new Vector2();
 			x.X = det * (a22 * b.X - a12 * b.Y);

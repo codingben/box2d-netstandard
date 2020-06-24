@@ -25,62 +25,53 @@
 // SOFTWARE.
 */
 
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision {
   internal class Simplex {
-    internal SimplexVertex[] m_v;
+    internal readonly SimplexVertex[] m_v;
 
     public Simplex() {
-      m_v = new [] {new SimplexVertex(), new SimplexVertex(), new SimplexVertex()};
+      m_v = new[] {new SimplexVertex(), new SimplexVertex(), new SimplexVertex()};
     }
 
-    internal SimplexVertex m_v1 {
+    private SimplexVertex m_v1 {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_v[0];
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      set => m_v[0] = value;
     }
 
-    internal SimplexVertex m_v2 {
+    private SimplexVertex m_v2 {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_v[1];
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      set => m_v[1] = value;
     }
 
-    internal SimplexVertex m_v3 {
+    private SimplexVertex m_v3 {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_v[2];
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      set => m_v[2] = value;
     }
 
-    internal int           m_count;
+    internal int m_count;
 
     internal void ReadCache(in SimplexCache  cache,
-      in  DistanceProxy proxyA, in Transform transformA,
-      in  DistanceProxy proxyB, in Transform transformB) {
-      Debug.Assert(cache.count <= 3);
+      in                       DistanceProxy proxyA, in Transform transformA,
+      in                       DistanceProxy proxyB, in Transform transformB) {
+      //Debug.Assert(cache.count <= 3);
 
       // Copy data from cache.
       m_count = cache.count;
       SimplexVertex[] vertices = m_v;
       for (int i = 0; i < m_count; ++i) {
-        unsafe {
-          SimplexVertex v = vertices[i];
-          v.indexA = cache.indexA[i];
-          v.indexB = cache.indexB[i];
-          Vector2 wALocal = proxyA.GetVertex(v.indexA);
-          Vector2 wBLocal = proxyB.GetVertex(v.indexB);
-          v.wA = Math.Mul(transformA, wALocal);
-          v.wB = Math.Mul(transformB, wBLocal);
-          v.w  = v.wB - v.wA;
-          v.a  = 0.0f;
-        }
+        SimplexVertex v = vertices[i];
+        v.indexA = cache.indexA[i];
+        v.indexB = cache.indexB[i];
+        Vector2 wALocal = proxyA.GetVertex(v.indexA);
+        Vector2 wBLocal = proxyB.GetVertex(v.indexB);
+        v.wA = Math.Mul(transformA, wALocal);
+        v.wB = Math.Mul(transformB, wBLocal);
+        v.w  = v.wB - v.wA;
+        v.a  = 0.0f;
       }
 
       // Compute the new simplex metric, if it is substantially different than
@@ -101,10 +92,10 @@ namespace Box2D.NetStandard.Collision {
         v.indexB = 0;
         Vector2 wALocal = proxyA.GetVertex(0);
         Vector2 wBLocal = proxyB.GetVertex(0);
-        v.wA   = Math.Mul(transformA, wALocal);
-        v.wB   = Math.Mul(transformB, wBLocal);
-        v.w    = v.wB - v.wA;
-        v.a    = 1.0f;
+        v.wA    = Math.Mul(transformA, wALocal);
+        v.wB    = Math.Mul(transformB, wBLocal);
+        v.w     = v.wB - v.wA;
+        v.a     = 1.0f;
         m_count = 1;
       }
     }
@@ -113,47 +104,34 @@ namespace Box2D.NetStandard.Collision {
       cache.metric = GetMetric();
       cache.count  = (ushort) m_count;
       SimplexVertex[] vertices = m_v;
-        for (int i = 0; i < m_count; ++i) {
-          unsafe {
-            cache.indexA[i] = (byte) (vertices[i].indexA);
-            cache.indexB[i] = (byte) (vertices[i].indexB);
-          }
-        }
+      for (int i = 0; i < m_count; ++i) {
+        cache.indexA[i] = (byte) (vertices[i].indexA);
+        cache.indexB[i] = (byte) (vertices[i].indexB);
+      }
     }
 
-    internal Vector2 GetSearchDirection()
-    {
-      switch (m_count)
-      {
+    internal Vector2 GetSearchDirection() {
+      switch (m_count) {
         case 1:
           return -m_v1.w;
 
-        case 2:
-        {
+        case 2: {
           Vector2 e12 = m_v2.w - m_v1.w;
-          float  sgn = Vectex.Cross(e12, -m_v1.w);
-          if (sgn > 0.0f)
-          {
-            // Origin is left of e12.
-            return Vectex.Cross(1.0f, e12);
-          }
-          else
-          {
-            // Origin is right of e12.
-            return Vectex.Cross(e12, 1.0f);
-          }
+          float   sgn = Vectex.Cross(e12, -m_v1.w);
+          
+          return sgn > 0.0f ? Vectex.Cross(1.0f, e12) : Vectex.Cross(e12, 1.0f);
         }
 
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return Vector2.Zero;
       }
     }
-    
+
     internal Vector2 GetClosestPoint() {
       switch (m_count) {
         case 0:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return Vector2.Zero;
         case 1:
           return m_v1.w;
@@ -162,7 +140,7 @@ namespace Box2D.NetStandard.Collision {
         case 3:
           return Vector2.Zero;
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return Vector2.Zero;
       }
     }
@@ -187,17 +165,13 @@ namespace Box2D.NetStandard.Collision {
         default:
           pA = default;
           pB = default;
-          Debug.Assert(false);
+          //Debug.Assert(false);
           break;
       }
     }
 
-    internal float GetMetric() {
+    private float GetMetric() {
       switch (m_count) {
-        case 0:
-          Debug.Assert(false);
-          return 0.0f;
-
         case 1:
           return 0.0f;
 
@@ -206,9 +180,9 @@ namespace Box2D.NetStandard.Collision {
 
         case 3:
           return Vectex.Cross(m_v2.w - m_v1.w, m_v3.w - m_v1.w);
-
+        case 0:
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return 0.0f;
       }
     }
@@ -245,8 +219,8 @@ namespace Box2D.NetStandard.Collision {
       float d12_2 = -Vector2.Dot(w1, e12);
       if (d12_2 <= 0.0f) {
         // a2 <= 0, so we clamp it to 0
-        m_v[0].a  = 1.0f;
-        m_count = 1;
+        m_v[0].a = 1.0f;
+        m_count  = 1;
         return;
       }
 
@@ -254,17 +228,17 @@ namespace Box2D.NetStandard.Collision {
       float d12_1 = Vector2.Dot(w2, e12);
       if (d12_1 <= 0.0f) {
         // a1 <= 0, so we clamp it to 0
-        m_v[1].a  = 1.0f;
-        m_count = 1;
-        m_v[0]    = m_v[1];
+        m_v[1].a = 1.0f;
+        m_count  = 1;
+        m_v[0]   = m_v[1];
         return;
       }
 
       // Must be in e12 region.
       float inv_d12 = 1.0f / (d12_1 + d12_2);
-      m_v[0].a  = d12_1 * inv_d12;
-      m_v[1].a  = d12_2 * inv_d12;
-      m_count = 2;
+      m_v[0].a = d12_1 * inv_d12;
+      m_v[1].a = d12_2 * inv_d12;
+      m_count  = 2;
     }
 
     // Possible regions:
@@ -316,62 +290,62 @@ namespace Box2D.NetStandard.Collision {
 
       // w1 region
       if (d12_2 <= 0.0f && d13_2 <= 0.0f) {
-        m_v[0].a  = 1.0f;
-        m_count = 1;
+        m_v[0].a = 1.0f;
+        m_count  = 1;
         return;
       }
 
       // e12
       if (d12_1 > 0.0f && d12_2 > 0.0f && d123_3 <= 0.0f) {
         float inv_d12 = 1.0f / (d12_1 + d12_2);
-        m_v[0].a  = d12_1 * inv_d12;
-        m_v[1].a  = d12_1 * inv_d12;
-        m_count = 2;
+        m_v[0].a = d12_1 * inv_d12;
+        m_v[1].a = d12_1 * inv_d12;
+        m_count  = 2;
         return;
       }
 
       // e13
       if (d13_1 > 0.0f && d13_2 > 0.0f && d123_2 <= 0.0f) {
         float inv_d13 = 1.0f / (d13_1 + d13_2);
-        m_v[0].a  = d13_1 * inv_d13;
-        m_v[2].a  = d13_2 * inv_d13;
-        m_count = 2;
-        m_v[1]    = m_v[2];
+        m_v[0].a = d13_1 * inv_d13;
+        m_v[2].a = d13_2 * inv_d13;
+        m_count  = 2;
+        m_v[1]   = m_v[2];
         return;
       }
 
       // w2 region
       if (d12_1 <= 0.0f && d23_2 <= 0.0f) {
-        m_v[1].a  = 1.0f;
-        m_count = 1;
-        m_v[0]    = m_v[1];
+        m_v[1].a = 1.0f;
+        m_count  = 1;
+        m_v[0]   = m_v[1];
         return;
       }
 
       // w3 region
       if (d13_1 <= 0.0f && d23_1 <= 0.0f) {
-        m_v[2].a  = 1.0f;
-        m_count = 1;
-        m_v[0]    = m_v[2];
+        m_v[2].a = 1.0f;
+        m_count  = 1;
+        m_v[0]   = m_v[2];
         return;
       }
 
       // e23
       if (d23_1 > 0.0f && d23_2 > 0.0f && d123_1 <= 0.0f) {
         float inv_d23 = 1.0f / (d23_1 + d23_2);
-        m_v[1].a  = d23_1 * inv_d23;
-        m_v[2].a  = d23_2 * inv_d23;
-        m_count = 2;
-        m_v[0]    = m_v[2];
+        m_v[1].a = d23_1 * inv_d23;
+        m_v[2].a = d23_2 * inv_d23;
+        m_count  = 2;
+        m_v[0]   = m_v[2];
         return;
       }
 
       // Must be in triangle123
       float inv_d123 = 1.0f / (d123_1 + d123_2 + d123_3);
-      m_v[0].a  = d123_1 * inv_d123;
-      m_v[1].a  = d123_2 * inv_d123;
-      m_v[2].a  = d123_3 * inv_d123;
-      m_count = 3;
+      m_v[0].a = d123_1 * inv_d123;
+      m_v[1].a = d123_2 * inv_d123;
+      m_v[2].a = d123_3 * inv_d123;
+      m_count  = 3;
     }
   }
 }

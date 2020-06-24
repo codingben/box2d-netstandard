@@ -7,9 +7,11 @@ using System.Threading;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 using Box2D.Window;
+using OpenTK;
 using TestWorlds;
 
 namespace Box2D.WindowTests
@@ -17,12 +19,14 @@ namespace Box2D.WindowTests
     public static class Program
     {
         private static readonly World world;
+        private const bool stepByStep = false;
 
         static Program()
         {
             //world = CreateWorld();
-            world = RubeGoldberg.CreateWorld();
+            world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
             //world = CollisionTest.CreateWorld();
+            //world = PolyEdgeTest.CreateWorld();
         }
 
         private static void Main()
@@ -35,8 +39,10 @@ namespace Box2D.WindowTests
                 game.SetView(new CameraView());
 
                 var physicsDrawer = new DrawPhysics(game);
-                physicsDrawer.AppendFlags(DrawFlags.Aabb);
+                //physicsDrawer.AppendFlags(DrawFlags.Aabb);
                 physicsDrawer.AppendFlags(DrawFlags.Shape);
+                //physicsDrawer.AppendFlags(DrawFlags.Pair);
+                physicsDrawer.AppendFlags(DrawFlags.Joint);
 
                 world.SetDebugDraw(physicsDrawer);
 
@@ -48,7 +54,7 @@ namespace Box2D.WindowTests
 
             windowThread.Start();
         }
-
+        
         private static void OnUpdateFrame(object sender, EventArgs eventArgs)
         {
             // Prepare for simulation. Typically we use a time step of 1/60 of a
@@ -60,7 +66,11 @@ namespace Box2D.WindowTests
 
             // Instruct the world to perform a single step of simulation. It is
             // generally best to keep the time step and iterations fixed.
-            world?.Step(TimeStep, VelocityIterations, PositionIterations);
+            if (SimulationWindow.stepNext || !stepByStep) {
+                world?.Step(TimeStep, VelocityIterations, PositionIterations);
+                SimulationWindow.stepNext = false;
+            }
+
             world?.DrawDebugData();
         }
 

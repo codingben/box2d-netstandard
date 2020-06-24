@@ -26,7 +26,6 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Collision;
@@ -72,9 +71,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     private bool _continuousPhysics;
     private bool _subStepping;
 
-
     private bool    _stepComplete;
-    private Profile _profile;
 
     private Action DrawDebugDataStub = () => { };
 
@@ -143,9 +140,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal ContactManager GetContactManager() => _contactManager;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal Profile GetProfile() => _profile;
-
+    public World() : this(new Vector2(0, -10)){}
     /// <summary>
     /// Construct a world object.
     /// </summary>
@@ -219,7 +214,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <param name="def"></param>
     /// <returns></returns>
     public Body CreateBody(BodyDef def) {
-      Debug.Assert(_locked == false);
+      //Debug.Assert(_locked == false);
       if (_locked == true) {
         return null;
       }
@@ -247,8 +242,8 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// </summary>
     /// <param name="b"></param>
     public void DestroyBody(Body b) {
-      Debug.Assert(_bodyCount > 0);
-      Debug.Assert(_locked    == false);
+      //Debug.Assert(_bodyCount > 0);
+      //Debug.Assert(_locked    == false);
       if (_locked == true) {
         return;
       }
@@ -320,7 +315,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <param name="def"></param>
     /// <returns></returns>
     public Joint CreateJoint(JointDef def) {
-      Debug.Assert(_locked == false);
+      //Debug.Assert(_locked == false);
 
       if (_locked) return null;
 
@@ -381,7 +376,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// </summary>
     /// <param name="j"></param>
     public void DestroyJoint(Joint j) {
-      Debug.Assert(_locked == false);
+      //Debug.Assert(_locked == false);
       if (_locked) return;
 
       bool collideConnected = j._collideConnected;
@@ -439,7 +434,7 @@ namespace Box2D.NetStandard.Dynamics.World {
       j._edgeB.Prev = null;
       j._edgeB.next = null;
 
-      Debug.Assert(_jointCount > 0);
+      //Debug.Assert(_jointCount > 0);
       --_jointCount;
 
       // If the joint prevents collisions, then flag any contacts for filtering.
@@ -471,9 +466,6 @@ namespace Box2D.NetStandard.Dynamics.World {
 
     // Find islands, integrate and solve constraints, solve position constraints
     private void Solve(TimeStep step) {
-      _profile.solveInit     = 0.0f;
-      _profile.solveVelocity = 0.0f;
-      _profile.solvePosition = 0.0f;
 
       // Size the island for the worst case.
       Island island = new Island(_bodyCount,
@@ -523,7 +515,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         while (stackCount > 0) {
           // Grab the next body off the stack and add it to the island.
           Body b = stack[--stackCount];
-          //Debug.Assert(b.IsEnabled() == true);
+          ////Debug.Assert(b.IsEnabled() == true);
           island.Add(b);
 
           // Make sure the body is awake (without resetting sleep timer).
@@ -567,7 +559,7 @@ namespace Box2D.NetStandard.Dynamics.World {
               continue;
             }
 
-            Debug.Assert(stackCount < stackSize);
+            //Debug.Assert(stackCount < stackSize);
             stack[stackCount++] = other;
             other.SetFlag(BodyFlags.Island);
           }
@@ -592,18 +584,14 @@ namespace Box2D.NetStandard.Dynamics.World {
               continue;
             }
 
-            Debug.Assert(stackCount < stackSize);
+            //Debug.Assert(stackCount < stackSize);
             stack[stackCount++] = other;
             other.SetFlag(BodyFlags.Island);
           }
         }
 
-        Profile profile = new Profile();
-        island.Solve(profile, step, _gravity, _allowSleep);
-        _profile.solveInit     += profile.solveInit;
-        _profile.solveVelocity += profile.solveVelocity;
-        _profile.solvePosition += profile.solvePosition;
-
+        island.Solve(step, _gravity, _allowSleep);
+        
         // Post solve cleanup.
         for (int i = 0; i < island._bodyCount; ++i) {
           // Allow static bodies to participate in other islands.
@@ -617,7 +605,6 @@ namespace Box2D.NetStandard.Dynamics.World {
       stack = null;
 
       {
-        Stopwatch timer = Stopwatch.StartNew();
         // Synchronize fixtures, check for out of range bodies.
         for (Body b = _bodyList; b != null; b = b.GetNext()) {
           // If a body was not in an island then it did not move.
@@ -635,7 +622,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
         // Look for new contacts.
         _contactManager.FindNewContacts();
-        _profile.broadphase = timer.ElapsedMilliseconds;
+        
       }
     }
 
@@ -695,7 +682,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
             BodyType typeA = bA._type;
             BodyType typeB = bB._type;
-            Debug.Assert(typeA == BodyType.Dynamic || typeB == BodyType.Dynamic);
+            //Debug.Assert(typeA == BodyType.Dynamic || typeB == BodyType.Dynamic);
 
             bool activeA = bA.IsAwake() && typeA != BodyType.Static;
             bool activeB = bB.IsAwake() && typeB != BodyType.Static;
@@ -726,7 +713,7 @@ namespace Box2D.NetStandard.Dynamics.World {
               bB._sweep.Advance(alpha0);
             }
 
-            Debug.Assert(alpha0 < 1.0f);
+            //Debug.Assert(alpha0 < 1.0f);
 
             int indexA = c.ChildIndexA;
             int indexB = c.ChildIndexB;
@@ -741,7 +728,7 @@ namespace Box2D.NetStandard.Dynamics.World {
             input.sweepB = bB._sweep;
             input.tMax   = 1.0f;
 
-            TOI.TimeOfImpact(out TOIOutput output, in input);
+            TOIOutput output = TOI.TimeOfImpact(in input);
 
             // Beta is the fraction of the remaining portion of the .
             float beta = output.t;
@@ -937,8 +924,6 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <param name="iterations">For the velocity constraint solver.</param>
     /// <param name="iterations">For the positionconstraint solver.</param>
     public void Step(float dt, int velocityIterations, int positionIterations) {
-      Stopwatch stepTimer = Stopwatch.StartNew();
-
       if (_newContacts) {
         _contactManager.FindNewContacts();
         _newContacts = false;
@@ -963,23 +948,17 @@ namespace Box2D.NetStandard.Dynamics.World {
 
       // Update contacts. This is where some contacts are destroyed.
       {
-        Stopwatch timer = Stopwatch.StartNew();
         _contactManager.Collide();
-        _profile.collide = timer.ElapsedMilliseconds;
       }
 
       // Integrate velocities, solve velocity constraints, and integrate positions.
       if (_stepComplete && step.dt > 0.0f) {
-        Stopwatch timer = Stopwatch.StartNew();
         Solve(step);
-        _profile.solve = timer.ElapsedMilliseconds;
       }
 
       // Handle TOI events.
       if (_continuousPhysics && step.dt > 0.0f) {
-        Stopwatch timer = Stopwatch.StartNew();
         SolveTOI(step);
-        _profile.solveTOI = timer.ElapsedMilliseconds;
       }
 
       if (step.dt > 0.0f) {
@@ -992,7 +971,6 @@ namespace Box2D.NetStandard.Dynamics.World {
 
       _locked = false;
 
-      _profile.step = stepTimer.ElapsedMilliseconds;
     }
 
     public void ClearForces() {
@@ -1116,7 +1094,7 @@ namespace Box2D.NetStandard.Dynamics.World {
           int          vertexCount   = poly.m_count;
           Vector2[]    localVertices = poly.m_vertices;
 
-          Debug.Assert(vertexCount <= Settings.MaxPolygonVertices);
+          //Debug.Assert(vertexCount <= Settings.MaxPolygonVertices);
           Vector2[] vertices = new Vector2[Settings.MaxPolygonVertices];
 
           for (int i = 0; i < vertexCount; ++i) {

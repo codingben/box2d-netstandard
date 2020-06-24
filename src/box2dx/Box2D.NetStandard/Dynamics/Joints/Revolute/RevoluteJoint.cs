@@ -40,7 +40,6 @@
 // K = invI1 + invI2
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
@@ -158,7 +157,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute {
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetLimits(float lower, float upper) {
-      Debug.Assert(lower <= upper);
+      //Debug.Assert(lower <= upper);
       _bodyA.SetAwake(true);
       _bodyB.SetAwake(true);
       _lowerAngle = lower;

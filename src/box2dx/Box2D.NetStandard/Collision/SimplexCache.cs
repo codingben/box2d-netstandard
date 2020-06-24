@@ -26,7 +26,7 @@
 */
 
 
-#define DEBUG
+//#define DEBUG
 
 namespace Box2D.NetStandard.Collision {
   /// <summary>
@@ -41,5 +41,4 @@ namespace Box2D.NetStandard.Collision {
     internal  byte[] indexB = new byte[3]; ///< vertices on shape B
   }
 
-  // GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
 }

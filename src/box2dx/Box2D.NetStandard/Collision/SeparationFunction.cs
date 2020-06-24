@@ -25,8 +25,6 @@
 // SOFTWARE.
 */
 
-using System;
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NetStandard.Common;
 using Math = Box2D.NetStandard.Common.Math;
@@ -41,87 +39,85 @@ namespace Box2D.NetStandard.Collision {
     private Vector2                m_axis;
     private Vector2                m_localPoint;
 
-    internal enum SeparationFunctionType {
+    private enum SeparationFunctionType {
       Points,
       FaceA,
       FaceB
     };
-
+    
     internal float Initialize(SimplexCache cache,
       in DistanceProxy                     proxyA, in Sweep sweepA,
       in DistanceProxy                     proxyB, in Sweep sweepB,
       float                                t1) {
-      unsafe {
-        m_proxyA = proxyA;
-        m_proxyB = proxyB;
-        Int32 count = cache.count;
-        Debug.Assert(0 < count && count < 3);
+      m_proxyA = proxyA;
+      m_proxyB = proxyB;
+      int count = cache.count;
+      //Debug.Assert(0 < count && count < 3);
 
-        m_sweepA = sweepA;
-        m_sweepB = sweepB;
+      m_sweepA = sweepA;
+      m_sweepB = sweepB;
 
-        m_sweepA.GetTransform(out Transform xfA, t1);
-        m_sweepB.GetTransform(out Transform xfB, t1);
+      m_sweepA.GetTransform(out Transform xfA, t1);
+      m_sweepB.GetTransform(out Transform xfB, t1);
 
-        if (count == 1) {
-          unsafe {
-            m_type = SeparationFunctionType.Points;
-            Vector2 localPointA = m_proxyA._vertices[cache.indexA[0]];
-            Vector2 localPointB = m_proxyB._vertices[cache.indexB[0]];
-            Vector2 pointA      = Math.Mul(xfA, localPointA);
-            Vector2 pointB      = Math.Mul(xfB, localPointB);
-            m_axis = pointB - pointA;
-            float s = m_axis.Length();
-            m_axis = Vector2.Normalize(m_axis);
-            return s;
-          }
+      if (count == 1) {
+        m_type = SeparationFunctionType.Points;
+        Vector2 localPointA = m_proxyA._vertices[cache.indexA[0]];
+        Vector2 localPointB = m_proxyB._vertices[cache.indexB[0]];
+        Vector2 pointA      = Math.Mul(xfA, localPointA);
+        Vector2 pointB      = Math.Mul(xfB, localPointB);
+        m_axis = pointB - pointA;
+        float s = m_axis.Length();
+        m_axis = Vector2.Normalize(m_axis);
+        return s;
+      }
+
+      if (cache.indexA[0] == cache.indexA[1]) {
+        // Two points on B and one on A.
+        m_type = SeparationFunctionType.FaceB;
+        Vector2 localPointB1 = proxyB._vertices[cache.indexB[0]];
+        Vector2 localPointB2 = proxyB._vertices[cache.indexB[1]];
+
+        m_axis = Vector2.Normalize(Vectex.Cross(localPointB2 - localPointB1, 1.0f));
+        Vector2 normal = Math.Mul(xfB.q, m_axis);
+
+        m_localPoint = 0.5f * (localPointB1 + localPointB2);
+        Vector2 pointB = Math.Mul(xfB, m_localPoint);
+
+        Vector2 localPointA = proxyA._vertices[cache.indexA[0]];
+        Vector2 pointA      = Math.Mul(xfA, localPointA);
+
+        float s = Vector2.Dot(pointA - pointB, normal);
+        if (s < 0.0f) {
+          m_axis = -m_axis;
+          s      = -s;
         }
-        else if (cache.indexA[0] == cache.indexA[1]) {
-          // Two points on B and one on A.
-          m_type = SeparationFunctionType.FaceB;
-          Vector2 localPointB1 = proxyB._vertices[cache.indexB[0]];
-          Vector2 localPointB2 = proxyB._vertices[cache.indexB[1]];
 
-          m_axis = Vector2.Normalize(Vectex.Cross(localPointB2 - localPointB1, 1.0f));
-          Vector2 normal = Math.Mul(xfB.q, m_axis);
+        return s;
+      }
+        
+      {
+        // Two points on A and one or two points on B.
+        m_type = SeparationFunctionType.FaceA;
+        Vector2 localPointA1 = m_proxyA._vertices[cache.indexA[0]];
+        Vector2 localPointA2 = m_proxyA._vertices[cache.indexA[1]];
 
-          m_localPoint = 0.5f * (localPointB1 + localPointB2);
-          Vector2 pointB = Math.Mul(xfB, m_localPoint);
+        m_axis = Vector2.Normalize(Vectex.Cross(localPointA2 - localPointA1, 1.0f));
+        Vector2 normal = Math.Mul(xfA.q, m_axis);
 
-          Vector2 localPointA = proxyA._vertices[cache.indexA[0]];
-          Vector2 pointA      = Math.Mul(xfA, localPointA);
+        m_localPoint = 0.5f * (localPointA1 + localPointA2);
+        Vector2 pointA = Math.Mul(xfA, m_localPoint);
 
-          float s = Vector2.Dot(pointA - pointB, normal);
-          if (s < 0.0f) {
-            m_axis = -m_axis;
-            s      = -s;
-          }
+        Vector2 localPointB = m_proxyB._vertices[cache.indexB[0]];
+        Vector2 pointB      = Math.Mul(xfB, localPointB);
 
-          return s;
+        float s = Vector2.Dot(pointB - pointA, normal);
+        if (s < 0.0f) {
+          m_axis = -m_axis;
+          s      = -s;
         }
-        else {
-          // Two points on A and one or two points on B.
-          m_type = SeparationFunctionType.FaceA;
-          Vector2 localPointA1 = m_proxyA._vertices[cache.indexA[0]];
-          Vector2 localPointA2 = m_proxyA._vertices[cache.indexA[1]];
 
-          m_axis = Vector2.Normalize(Vectex.Cross(localPointA2 - localPointA1, 1.0f));
-          Vector2 normal = Math.Mul(xfA.q, m_axis);
-
-          m_localPoint = 0.5f * (localPointA1 + localPointA2);
-          Vector2 pointA = Math.Mul(xfA, m_localPoint);
-
-          Vector2 localPointB = m_proxyB._vertices[cache.indexB[0]];
-          Vector2 pointB      = Math.Mul(xfB, localPointB);
-
-          float s = Vector2.Dot(pointB - pointA, normal);
-          if (s < 0.0f) {
-            m_axis = -m_axis;
-            s      = -s;
-          }
-
-          return s;
-        }
+        return s;
       }
     }
 
@@ -136,11 +132,10 @@ namespace Box2D.NetStandard.Collision {
 
           Vector2 pointA     = Math.Mul(xfA, localPointA);
           Vector2 pointB     = Math.Mul(xfB, localPointB);
-          float  separation = Vector2.Dot(pointB - pointA, m_axis);
+          float   separation = Vector2.Dot(pointB - pointA, m_axis);
 
           return separation;
         }
-
         case SeparationFunctionType.FaceA: {
           Vector2 normal = Math.Mul(xfA.q, m_axis);
           Vector2 pointA = Math.Mul(xfA,   m_localPoint);
@@ -151,7 +146,6 @@ namespace Box2D.NetStandard.Collision {
           float separation = Vector2.Dot(pointB - pointA, normal);
           return separation;
         }
-
         case SeparationFunctionType.FaceB: {
           Vector2 normal = Math.Mul(xfB.q, m_axis);
           Vector2 pointB = Math.Mul(xfB,   m_localPoint);
@@ -162,9 +156,8 @@ namespace Box2D.NetStandard.Collision {
           float separation = Vector2.Dot(pointA - pointB, normal);
           return separation;
         }
-
         default:
-          Debug.Assert(false);
+          //Debug.Assert(false);
           return 0.0f;
       }
     }
@@ -190,7 +183,6 @@ namespace Box2D.NetStandard.Collision {
           float separation = Vector2.Dot(pointB - pointA, m_axis);
           return separation;
         }
-
         case SeparationFunctionType.FaceA: {
           Vector2 normal = Math.Mul(xfA.q, m_axis);
           Vector2 pointA = Math.Mul(xfA,   m_localPoint);
@@ -206,7 +198,6 @@ namespace Box2D.NetStandard.Collision {
           float separation = Vector2.Dot(pointB - pointA, normal);
           return separation;
         }
-
         case SeparationFunctionType.FaceB: {
           Vector2 normal = Math.Mul(xfB.q, m_axis);
           Vector2 pointB = Math.Mul(xfB,   m_localPoint);
@@ -222,13 +213,12 @@ namespace Box2D.NetStandard.Collision {
           float separation = Vector2.Dot(pointA - pointB, normal);
           return separation;
         }
-
-        default:
-          Debug.Assert(false);
-          indexA = -1;
-          indexB = -1;
-          return 0.0f;
       }
+
+      //Debug.Assert(false);
+      indexA = -1;
+      indexB = -1;
+      return 0.0f;
     }
   }
 }

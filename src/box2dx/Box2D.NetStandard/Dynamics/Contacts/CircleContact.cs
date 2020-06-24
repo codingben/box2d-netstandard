@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using System.Diagnostics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
@@ -35,11 +34,13 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class CircleContact : Contact
 	{
+		private static Collider<CircleShape,CircleShape> collider = new CircleAndCircleCollider();
+		
 		public CircleContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.Type == ShapeType.Circle);
-			Debug.Assert(fixtureB.Type == ShapeType.Circle);
+			//Debug.Assert(fixtureA.Type == ShapeType.Circle);
+			//Debug.Assert(fixtureB.Type == ShapeType.Circle);
 		}
 
 		public static Contact Create(Fixture fixtureA, Fixture fixtureB)
@@ -53,7 +54,9 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 		}
 
 		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
-			Collision.Collision.CollideCircles(out manifold,(CircleShape)m_fixtureA.Shape,xfA,(CircleShape)m_fixtureB.Shape,xfB);
+			
+			
+			collider.Collide(out manifold,(CircleShape)m_fixtureA.Shape,xfA,(CircleShape)m_fixtureB.Shape,xfB);
 		}
 	}
 }

@@ -28,7 +28,6 @@
 //#define B2_DEBUG_SOLVER
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
@@ -72,7 +71,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         Manifold manifold = contact.Manifold;
 
         int pointCount = manifold.pointCount;
-        Debug.Assert(pointCount > 0);
+        //Debug.Assert(pointCount > 0);
 
         _velocityConstraints[i] = new ContactVelocityConstraint();
         ContactVelocityConstraint vc = _velocityConstraints[i];
@@ -162,7 +161,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         Vector2 vB = _velocities[indexB].v;
         float   wB = _velocities[indexB].w;
 
-        Debug.Assert(manifold.pointCount > 0);
+        //Debug.Assert(manifold.pointCount > 0);
 
         Transform xfA = new Transform();
         Transform xfB = new Transform();
@@ -300,7 +299,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         Vector2 tangent  = Vectex.Cross(normal, 1.0f);
         float   friction = vc.friction;
 
-        Debug.Assert(pointCount == 1 || pointCount == 2);
+        //Debug.Assert(pointCount == 1 || pointCount == 2);
 
         // Solve tangent constraints first because non-penetration is more important
         // than friction.
@@ -394,7 +393,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           VelocityConstraintPoint cp2 = vc.points[1];
 
           Vector2 a = new Vector2(cp1.normalImpulse, cp2.normalImpulse);
-          Debug.Assert(a.X >= 0.0f && a.Y >= 0.0f);
+          //Debug.Assert(a.X >= 0.0f && a.Y >= 0.0f);
 
           // Relative velocity at contact
           Vector2 dv1 = vB + Vectex.Cross(wB, cp1.rB) - vA - Vectex.Cross(wA, cp1.rA);
@@ -452,8 +451,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               vn1 = Vector2.Dot(dv1, normal);
               vn2 = Vector2.Dot(dv2, normal);
 
-              Debug.Assert(MathF.Abs(vn1 - cp1.velocityBias) < k_errorTol);
-              Debug.Assert(MathF.Abs(vn2 - cp2.velocityBias) < k_errorTol);
+              //Debug.Assert(MathF.Abs(vn1 - cp1.velocityBias) < k_errorTol);
+              //Debug.Assert(MathF.Abs(vn2 - cp2.velocityBias) < k_errorTol);
 #endif
               break;
             }
@@ -492,7 +491,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               // Compute normal velocity
               vn1 = Vector2.Dot(dv1, normal);
 
-              Debug.Assert(MathF.Abs(vn1 - cp1.velocityBias) < k_errorTol);
+              //Debug.Assert(MathF.Abs(vn1 - cp1.velocityBias) < k_errorTol);
 #endif
               break;
             }
@@ -533,7 +532,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               // Compute normal velocity
               vn2 = Vector.Dot(dv2, normal);
 
-              Debug.Assert(MathF.Abs(vn2 - cp2.velocityBias) < k_errorTol);
+              //Debug.Assert(MathF.Abs(vn2 - cp2.velocityBias) < k_errorTol);
 #endif
               break;
             }
@@ -586,7 +585,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       internal float   separation;
 
       internal void Initialize(ContactPositionConstraint pc, Transform xfA, Transform xfB, int index) {
-        Debug.Assert(pc.pointCount > 0);
+        //Debug.Assert(pc.pointCount > 0);
 
         switch (pc.type) {
           case ManifoldType.Circles: {

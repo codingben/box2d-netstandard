@@ -10,15 +10,15 @@ using b2Vec3 = System.Numerics.Vector3;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Weld {
   public class WeldJoint : Joint {
-    internal float _frequencyHz;
-    internal float _dampingRatio;
+    private float _frequencyHz;
+    private float _dampingRatio;
     internal float _biios;
 
-    internal Vector2 _localAnchorA;
-    internal Vector2 _localAnchorB;
-    internal float   _referenceAngle;
-    internal float   _gamma;
-    internal Vector3 _impulse;
+    private Vector2 _localAnchorA;
+    private Vector2 _localAnchorB;
+    private float   _referenceAngle;
+    private float   _gamma;
+    private Vector3 _impulse;
 
     private int     _indexA;
     private int     _indexB;
@@ -112,7 +112,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
         float C = aB - aA - _referenceAngle;
 
         // Frequency
-        float omega = 2.0f * MathF.PI * _frequencyHz;
+        float omega = Settings.Tau * _frequencyHz;
 
         // Damping coefficient
         float d = 2.0f * m * _dampingRatio * omega;

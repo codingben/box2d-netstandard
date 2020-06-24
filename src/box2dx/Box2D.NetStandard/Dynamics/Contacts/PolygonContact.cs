@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using System.Diagnostics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
@@ -35,11 +34,13 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 {
 	public class PolygonContact : Contact
 	{
+		private static readonly Collider<PolygonShape,PolygonShape> collider = new PolygonAndPolygonCollider();
+		
 		public PolygonContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.Type == ShapeType.Polygon);
-			Debug.Assert(fixtureB.Type == ShapeType.Polygon);
+			//Debug.Assert(fixtureA.Type == ShapeType.Polygon);
+			//Debug.Assert(fixtureB.Type == ShapeType.Polygon);
 		}
 
 		
@@ -54,7 +55,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 		}
 
 		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
-			Collision.Collision.CollidePolygons(out manifold, (PolygonShape)m_fixtureA.Shape, in xfA, (PolygonShape)m_fixtureB.Shape, in xfB);
+			collider.Collide(out manifold, (PolygonShape)m_fixtureA.Shape, in xfA, (PolygonShape)m_fixtureB.Shape, in xfB);
 		}
 	}
 }

@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\src\box2dx\Box2D.NetStandard\Box2D.NetStandard.csproj" />
+      <ProjectReference Include="..\..\..\src\TestWorlds\TestWorlds.csproj" />
     </ItemGroup>
 
 </Project>

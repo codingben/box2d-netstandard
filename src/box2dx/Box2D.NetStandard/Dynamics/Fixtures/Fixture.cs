@@ -109,7 +109,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 		public void Destroy()
 		{
 // The proxies must be destroyed before calling this.
-			Debug.Assert(m_proxyCount == 0);
+			//Debug.Assert(m_proxyCount == 0);
 
 			// Free the proxy array.
 			int childCount = m_shape.GetChildCount();
@@ -120,7 +120,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 		internal void CreateProxies(BroadPhase broadPhase, in Transform xf)
 		{
-			Debug.Assert(m_proxyCount == 0);
+			//Debug.Assert(m_proxyCount == 0);
 
 			// Create proxies in the broad-phase.
 			m_proxyCount = m_shape.GetChildCount();

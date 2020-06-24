@@ -46,7 +46,6 @@
 // J = [ug cross(r, ug)]
 // K = J * invM * JT = invMass + invI * cross(r, ug)^2
 
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
@@ -134,8 +133,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
       _typeA = _joint1.Type;
       _typeB = _joint2.Type;
 
-      Debug.Assert(_typeA == JointType.RevoluteJoint || _typeA == JointType.PrismaticJoint);
-      Debug.Assert(_typeB == JointType.RevoluteJoint || _typeB == JointType.PrismaticJoint);
+      //Debug.Assert(_typeA == JointType.RevoluteJoint || _typeA == JointType.PrismaticJoint);
+      //Debug.Assert(_typeB == JointType.RevoluteJoint || _typeB == JointType.PrismaticJoint);
 
       float coordinateA, coordinateB;
 

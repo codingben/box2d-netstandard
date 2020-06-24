@@ -13,6 +13,7 @@
     <FileVersion>2.0.0.0</FileVersion>
     <Version>2.0-alpha</Version>
     <PackageVersion>2.0-alpha</PackageVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,6 +23,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Dynamics\World\Profile.cs" />
+  </ItemGroup>
   
 
 </Project>

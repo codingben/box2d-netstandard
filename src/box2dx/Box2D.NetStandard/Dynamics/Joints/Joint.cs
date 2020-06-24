@@ -26,7 +26,6 @@
 */
 
 
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
@@ -167,7 +166,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 					break;
 
 				default:
-					Debug.Assert(false);
+					//Debug.Assert(false);
 					break;
 			}
 

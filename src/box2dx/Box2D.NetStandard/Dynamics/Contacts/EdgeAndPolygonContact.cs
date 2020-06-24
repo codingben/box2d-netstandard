@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using System.Diagnostics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
@@ -33,27 +32,29 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
-	public class EdgeAndPolygonContact : Contact
+	internal class EdgeAndPolygonContact : Contact
 	{
-		public EdgeAndPolygonContact(Fixture fixtureA, Fixture fixtureB)
+		private static readonly Collider<EdgeShape,PolygonShape> collider = new EdgeAndPolygonCollider();
+
+		private EdgeAndPolygonContact(Fixture fixtureA, Fixture fixtureB)
 			: base(fixtureA,0, fixtureB,0)
 		{
-			Debug.Assert(fixtureA.Type == ShapeType.Edge);
-			Debug.Assert(fixtureB.Type == ShapeType.Polygon); 
+			//Debug.Assert(fixtureA.Type == ShapeType.Edge);
+			//Debug.Assert(fixtureB.Type == ShapeType.Polygon); 
 		}
 
-		new public static Contact Create(Fixture fixtureA, Fixture fixtureB)
+		internal static Contact Create(Fixture fixtureA, Fixture fixtureB)
 		{
 			return new EdgeAndPolygonContact(fixtureA, fixtureB);
 		}
 
-		new public static void Destroy(ref Contact contact)
+		internal static void Destroy(ref Contact contact)
 		{
 			contact = null;
 		}
 
 		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
-			Collision.Collision.CollideEdgeAndPolygon(out manifold, (EdgeShape) m_fixtureA.Shape, in xfA,
+			collider.Collide(out manifold, (EdgeShape) m_fixtureA.Shape, in xfA,
 			                                          (PolygonShape) m_fixtureB.Shape, in xfB);
 		}
 	}

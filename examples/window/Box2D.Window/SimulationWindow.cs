@@ -34,7 +34,8 @@ namespace Box2D.Window
         }
 
         private int mouseLast = 0;
-        
+        public static bool stepNext;
+
         protected override void OnMouseWheel(MouseWheelEventArgs eventArgs)
         {
             base.OnMouseWheel(eventArgs);
@@ -56,6 +57,10 @@ namespace Box2D.Window
                 {
                     view.Position = Vector2.Zero;
                 }
+            }
+
+            if (eventArgs.Key == Key.Space) {
+                stepNext = true;
             }
         }
 
@@ -97,7 +102,7 @@ namespace Box2D.Window
             base.OnRenderFrame(eventArgs);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(OpenTK.Color.CornflowerBlue);
+            GL.ClearColor(OpenTK.Color.Black);
 
             view?.Update();
 
@@ -186,7 +191,7 @@ namespace Box2D.Window
                 const float kSegments = 16.0f;
                 const int VertexCount = 16;
 
-                var kIncrement = 2.0f * MathF.PI / kSegments;
+                var kIncrement = Settings.Tau / kSegments;
                 var theta = 0.0f;
 
                 GL.Color4(color.R, color.G, color.B, 0.5f);
@@ -215,7 +220,7 @@ namespace Box2D.Window
                 const float kSegments = 16.0f;
                 const int VertexCount = 16;
 
-                var kIncrement = 2.0f * MathF.PI / kSegments;
+                var kIncrement = Settings.Tau / kSegments;
                 var theta = 0.0f;
 
                 GL.Color4(color.R, color.G, color.B, 0.5f);
