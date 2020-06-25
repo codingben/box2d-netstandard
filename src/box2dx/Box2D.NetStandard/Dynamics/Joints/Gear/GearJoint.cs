@@ -166,7 +166,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
         _localAxisC      = prismatic._localXAxisA;
 
         Vector2 pC = _localAnchorC;
-        Vector2 pA = Math.MulT(xfC.q, Math.Mul(xfA.q, _localAnchorA) + (xfA.p - xfC.p));
+        Vector2 pA = Math.MulT(xfC.q, Vector2.Transform(_localAnchorA, xfA.q) + (xfA.p - xfC.p));
         coordinateA = Vector2.Dot(pA - pC, _localAxisC);
       }
 
@@ -196,7 +196,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
         _localAxisD      = prismatic._localXAxisA;
 
         Vector2 pD = _localAnchorD;
-        Vector2 pB = Math.MulT(xfD.q, Math.Mul(xfB.q, _localAnchorB) + (xfB.p - xfD.p));
+        Vector2 pB = Math.MulT(xfD.q, Vector2.Transform(_localAnchorB, xfB.q) + (xfB.p - xfD.p));
         coordinateB = Vector2.Dot(pB - pD, _localAxisD);
       }
 

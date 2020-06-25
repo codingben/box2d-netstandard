@@ -103,7 +103,7 @@ namespace Box2D.NetStandard.Collision {
           }
         }
         else {
-          float inv_d = 1.0f                                 / d.GetIdx(i);
+          float inv_d = 1.0f / d.GetIdx(i);
           float t1    = (lowerBound.GetIdx(i) - p.GetIdx(i)) * inv_d;
           float t2    = (upperBound.GetIdx(i) - p.GetIdx(i)) * inv_d;
 

@@ -383,7 +383,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public Vector2 GetWorldPoint(in Vector2 localPoint) => Math.Mul(_xf, localPoint);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Vector2 GetWorldVector(in Vector2 localVector) => Math.Mul(_xf.q, localVector);
+    public Vector2 GetWorldVector(in Vector2 localVector) => Vector2.Transform(localVector, _xf.q); //  Math.Mul(_xf.q, localVector);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Vector2 GetLocalPoint(in Vector2 worldPoint) => Math.MulT(_xf, worldPoint);
@@ -622,7 +622,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       if (IsAwake()) {
         Transform xf1 = new Transform();
         xf1.q = Matrex.CreateRotation(_sweep.a0); // Actually about twice as fast to use our own function
-        xf1.p = _sweep.c0 - Math.Mul(xf1.q, _sweep.localCenter);
+        xf1.p = _sweep.c0 - Vector2.Transform(_sweep.localCenter, xf1.q); //Math.Mul(xf1.q, _sweep.localCenter);
 
         for (Fixture f = _fixtureList; f != null; f = f.m_next) {
           f.Synchronize(broadPhase, xf1, _xf);
@@ -638,7 +638,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void SynchronizeTransform() {
       _xf.q = Matrex.CreateRotation(_sweep.a); // Actually about twice as fast to use our own function
-      _xf.p = _sweep.c - Math.Mul(_xf.q, _sweep.localCenter);
+      _xf.p = _sweep.c - Vector2.Transform(_sweep.localCenter, _xf.q); // Math.Mul(_xf.q, _sweep.localCenter);
     }
 
     internal bool ShouldCollide(in Body other) {
@@ -663,7 +663,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       _sweep.c = _sweep.c0;
       _sweep.a = _sweep.a0;
       _xf.q = Matrex.CreateRotation(_sweep.a); // Actually about twice as fast to use our own function
-      _xf.p = _sweep.c - Math.Mul(_xf.q, _sweep.localCenter);
+      _xf.p = _sweep.c - Vector2.Transform(_sweep.localCenter, _xf.q); //Math.Mul(_xf.q, _sweep.localCenter);
     }
 
     internal BodyType  _type;

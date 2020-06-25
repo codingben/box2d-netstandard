@@ -1,3 +1,6 @@
+using MathF = System.Math;
+using Float = System.Double;
+
 namespace Box2D.NetStandard.Dynamics.Joints.Gear {
   /// <summary>
   /// Gear joint definition. This definition requires two existing

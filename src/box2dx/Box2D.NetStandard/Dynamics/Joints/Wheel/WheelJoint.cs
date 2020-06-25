@@ -157,12 +157,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
       Body bA = _bodyA;
       Body bB = _bodyB;
 
-      Vector2 rA   = Math.Mul(bA._xf.q, _localAnchorA - bA._sweep.localCenter);
-      Vector2 rB   = Math.Mul(bB._xf.q, _localAnchorB - bB._sweep.localCenter);
+      Vector2 rA   = Vector2.Transform(_localAnchorA - bA._sweep.localCenter,bA._xf.q); // Math.Mul(bA._xf.q, _localAnchorA - bA._sweep.localCenter);
+      Vector2 rB   = Vector2.Transform(_localAnchorB - bB._sweep.localCenter,bB._xf.q); // Math.Mul(bB._xf.q, _localAnchorB - bB._sweep.localCenter);
       Vector2 p1   = bA._sweep.c + rA;
       Vector2 p2   = bB._sweep.c + rB;
       Vector2 d    = p2            - p1;
-      Vector2 axis = Math.Mul(bA._xf.q, _localXAxisA);
+      Vector2 axis = Vector2.Transform(_localXAxisA, bA._xf.q); //Math.Mul(bA._xf.q, _localXAxisA);
       
       Vector2 vA = bA._linearVelocity;
       Vector2 vB = bB._linearVelocity;

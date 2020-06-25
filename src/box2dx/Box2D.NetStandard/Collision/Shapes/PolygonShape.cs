@@ -86,7 +86,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       for (int i = 0; i < m_count; i++) {
         m_vertices[i] = Math.Mul(xf,   m_vertices[i]);
-        m_normals[i]  = Math.Mul(xf.q, m_normals[i]);
+        m_normals[i]  = Vector2.Transform(m_normals[i], xf.q);
       }
     }
 
@@ -310,7 +310,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       if (index >= 0) {
         output.fraction = lower;
-        output.normal   = Math.Mul(xf.q, m_normals[index]);
+        output.normal   = Vector2.Transform(m_normals[index], xf.q);
         return true;
       }
 

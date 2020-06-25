@@ -90,7 +90,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction {
       K.M12 = K.M21;
       K.M22 = mA + mB + iA * m_rA.X * m_rA.X + iB * m_rB.X * m_rB.X;
 
-      Matrix3x2.Invert(K, out m_linearMass);
+      /*Matrix3x2*/ Matrex.Invert(K, out m_linearMass);
 
       m_angularMass = iA + iB;
       if (m_angularMass > 0.0f) {
@@ -147,8 +147,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction {
       // Solve linear friction
       {
         Vector2 Cdot = vB + Vectex.Cross(wB, m_rB) - vA - Vectex.Cross(wA, m_rA);
-        
-        Vector2 impulse    = -Math.Mul(m_linearMass, Cdot);
+
+        Vector2 impulse = -Vector2.Transform(Cdot, m_linearMass);   //Math.Mul(m_linearMass, Cdot);
         Vector2 oldImpulse = m_linearImpulse;
         m_linearImpulse += impulse;
 

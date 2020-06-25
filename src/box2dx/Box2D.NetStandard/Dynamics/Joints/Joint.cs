@@ -183,7 +183,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		internal void ComputeXForm(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
 		{
 			xf.q = Matrex.CreateRotation(angle); // Actually about twice as fast to use our own function
-			xf.p = center - Math.Mul(xf.q, localCenter);
+			xf.p = center - Vector2.Transform(localCenter, xf.q);// Math.Mul(xf.q, localCenter);
 		}
 
 		public void Draw(DebugDraw draw) {

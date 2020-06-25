@@ -180,8 +180,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
         Body b1 = _bodyA;
         Body b2 = _bodyB;
 
-        Vector2 r1   = Math.Mul(b1.GetTransform().q, _localAnchorA - b1.GetLocalCenter());
-        Vector2 r2   = Math.Mul(b2.GetTransform().q, _localAnchorB - b2.GetLocalCenter());
+        Vector2 r1   = Vector2.Transform(_localAnchorA - b1.GetLocalCenter(),b1.GetTransform().q);
+        Vector2 r2   = Vector2.Transform(_localAnchorB - b2.GetLocalCenter(),b2.GetTransform().q);
         Vector2 p1   = b1._sweep.c + r1;
         Vector2 p2   = b2._sweep.c + r2;
         Vector2 d    = p2          - p1;
@@ -376,7 +376,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
           // For bodies with fixed rotation.
           k22 = 1.0f;
         }
-        _K = new Matrix3x2(k11,k12,k12,k22,0,0);
+        _K = new Matrix3x2((float)k11, (float)k12, (float)k12, (float)k22,0,0);
       }
 
       if (_enableLimit) {
@@ -592,7 +592,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
         Vector3 C = new Vector3();
         C.X = C1.X;
         C.Y = C1.Y;
-        C.Z = C2;
+        C.Z = (float)C2;
 
         impulse = K.Solve33(-C);
       }

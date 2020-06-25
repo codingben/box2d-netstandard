@@ -61,7 +61,7 @@ namespace Box2D.NetStandard.Collision {
       Vector2 localNormal = Vectex.Cross(localTangent, 1.0f);
       Vector2 planePoint  = 0.5f * (v11 + v12);
 
-      Vector2 tangent = Math.Mul(xf1.q, localTangent);
+      Vector2 tangent = Vector2.Transform(localTangent, xf1.q); //Math.Mul(xf1.q, localTangent);
       Vector2 normal  = Vectex.Cross(tangent, 1.0f);
 
       v11 = Math.Mul(xf1, v11);
@@ -134,7 +134,7 @@ namespace Box2D.NetStandard.Collision {
       for (int i = 0; i < count1; ++i)
       {
         // Get poly1 normal in frame2.
-        Vector2 n  = Math.Mul(xf.q, n1s[i]);
+        Vector2 n = Vector2.Transform(n1s[i], xf.q);// Math.Mul(xf.q, n1s[i]);
         Vector2 v1 = Math.Mul(xf,   v1s[i]);
 
         // Find deepest point for normal i.
@@ -171,7 +171,7 @@ namespace Box2D.NetStandard.Collision {
       //Debug.Assert(0 <= edge1 && edge1 < poly1.m_count);
 
       // Get the normal of the reference edge in poly2's frame.
-      Vector2 normal1 = Math.MulT(xf2.q, Math.Mul(xf1.q, normals1[edge1]));
+      Vector2 normal1 = Math.MulT(xf2.q, Vector2.Transform(normals1[edge1], xf1.q));// Math.Mul(xf1.q, normals1[edge1]));
 
       // Find the incident edge on poly2.
       int   index  = 0;

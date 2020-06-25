@@ -679,21 +679,17 @@ namespace Box2D.NetStandard.Dynamics.World {
 
             Body bA = fA.Body;
             Body bB = fB.Body;
-
-            BodyType typeA = bA._type;
-            BodyType typeB = bB._type;
-            //Debug.Assert(typeA == BodyType.Dynamic || typeB == BodyType.Dynamic);
-
-            bool activeA = bA.IsAwake() && typeA != BodyType.Static;
-            bool activeB = bB.IsAwake() && typeB != BodyType.Static;
+            
+            bool activeA = bA.IsAwake() && bA._type != BodyType.Static;
+            bool activeB = bB.IsAwake() && bB._type != BodyType.Static;
 
             // Is at least one body active (awake and dynamic or kinematic)?
             if (activeA == false && activeB == false) {
               continue;
             }
 
-            bool collideA = bA.IsBullet() || typeA != BodyType.Dynamic;
-            bool collideB = bB.IsBullet() || typeB != BodyType.Dynamic;
+            bool collideA = bA.IsBullet() || bA._type != BodyType.Dynamic;
+            bool collideB = bB.IsBullet() || bB._type != BodyType.Dynamic;
 
             // Are these two non-bullet dynamic bodies?
             if (collideA == false && collideB == false) {
@@ -705,35 +701,29 @@ namespace Box2D.NetStandard.Dynamics.World {
             float alpha0 = bA._sweep.alpha0;
 
             if (bA._sweep.alpha0 < bB._sweep.alpha0) {
-              alpha0 = bB._sweep.alpha0;
-              bA._sweep.Advance(alpha0);
+              bA._sweep.Advance(alpha0 = bB._sweep.alpha0);
             }
             else if (bB._sweep.alpha0 < bA._sweep.alpha0) {
-              alpha0 = bA._sweep.alpha0;
               bB._sweep.Advance(alpha0);
             }
 
             //Debug.Assert(alpha0 < 1.0f);
 
-            int indexA = c.ChildIndexA;
-            int indexB = c.ChildIndexB;
-
             // Compute the time of impact in interval [0, minTOI]
-            TOIInput input = new TOIInput();
+            TOIInput input;
             input.proxyA = new DistanceProxy();
-            input.proxyA.Set(fA.Shape, indexA);
+            input.proxyA.Set(fA.Shape, c.ChildIndexA);
             input.proxyB = new DistanceProxy();
-            input.proxyB.Set(fB.Shape, indexB);
+            input.proxyB.Set(fB.Shape, c.ChildIndexB);
             input.sweepA = bA._sweep;
             input.sweepB = bB._sweep;
             input.tMax   = 1.0f;
 
-            TOIOutput output = TOI.TimeOfImpact(in input);
+            TOI.TimeOfImpact(out TOIOutput output, in input);
 
             // Beta is the fraction of the remaining portion of the .
-            float beta = output.t;
             if (output.state == TOIOutputState.Touching) {
-              alpha = MathF.Min(alpha0 + (1.0f - alpha0) * beta, 1.0f);
+              alpha = MathF.Min(alpha0 + (1.0f - alpha0) * output.t, 1.0f);
             }
             else {
               alpha = 1.0f;
@@ -878,7 +868,7 @@ namespace Box2D.NetStandard.Dynamics.World {
             }
           }
 
-          TimeStep subStep = new TimeStep();
+          TimeStep subStep;
           subStep.dt                 = (1.0f - minAlpha) * step.dt;
           subStep.inv_dt             = 1.0f              / subStep.dt;
           subStep.dtRatio            = 1.0f;
@@ -931,7 +921,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
       _locked = true;
 
-      TimeStep step = new TimeStep();
+      TimeStep step;
       step.dt                 = dt;
       step.velocityIterations = velocityIterations;
       step.positionIterations = positionIterations;
@@ -1204,7 +1194,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
           Vec2  center = Math.Mul(xf, circle.m_p);
           float radius = circle.m_radius;
-          Vec2  axis   = Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
+          Vec2 axis = Vector2.Transform(new Vector2(1.0f, 0.0f), xf.q);// Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
 
           _debugDraw.DrawSolidCircle(center, radius, axis, color);
         }

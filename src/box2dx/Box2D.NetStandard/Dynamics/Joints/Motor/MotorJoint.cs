@@ -140,7 +140,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
       K.M12 = K.M21;
       K.M22 = mA + mB + iA * m_rA.X * m_rA.X + iB * m_rB.X * m_rB.X;
 
-      Matrix3x2.Invert(K, out m_linearMass);
+      /*Matrix3x2*/ Matrex.Invert(K, out m_linearMass);
 
       m_angularMass = iA + iB;
       if (m_angularMass > 0.0f) {
@@ -204,7 +204,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
         Vector2 Cdot = vB + Vectex.Cross(wB, m_rB) - vA - Vectex.Cross(wA, m_rA) +
                       inv_h * m_correctionFactor * m_linearError;
 
-        Vector2 impulse    = -Math.Mul(m_linearMass, Cdot);
+        Vector2 impulse = -Vector2.Transform(Cdot, m_linearMass);  // Math.Mul(m_linearMass, Cdot);
         Vector2 oldImpulse = m_linearImpulse;
         m_linearImpulse += impulse;
 
@@ -212,7 +212,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
 
         if (m_linearImpulse.LengthSquared() > maxImpulse * maxImpulse) {
           m_linearImpulse =  Vector2.Normalize(m_linearImpulse);
-          m_linearImpulse *= maxImpulse;
+          m_linearImpulse *= (float)maxImpulse;
         }
 
         impulse = m_linearImpulse - oldImpulse;

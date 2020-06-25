@@ -250,6 +250,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       m_tangentSpeed = 0f;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) =>
       ((fixtureA.Type, fixtureB.Type)
        switch {

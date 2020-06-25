@@ -157,7 +157,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 			K.M12 = K.M21;
 			K.M22 = _invMassB + _invIB * _rB.X * _rB.Y + _gamma;
 
-			Matrix3x2.Invert(K, out _mass);
+			/*Matrix3x2*/ Matrex.Invert(K, out _mass);
 			
 			//_mass = K.GetInverse();
 
@@ -189,7 +189,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 
 			// Cdot = v + cross(w, r)
 			Vector2 Cdot    = vB + Vectex.Cross(wB, _rB);
-			Vector2 impulse = Math.Mul(_mass, -(Cdot + _C + _gamma * _impulse));
+			Vector2 impulse = Vector2.Transform(-(Cdot + _C + (float)_gamma * _impulse),_mass); //Math.Mul(_mass, -(Cdot + _C + _gamma * _impulse));
 
 			Vector2 oldImpulse = _impulse;
 			_impulse += impulse;

@@ -70,7 +70,7 @@ namespace Box2D.NetStandard.Collision {
           break;
 
         case ManifoldType.FaceA: {
-          normal     = Math.Mul(xfA.q, manifold.localNormal);
+          normal = Vector2.Transform(manifold.localNormal, xfA.q); // Math.Mul(xfA.q, manifold.localNormal);
           Vector2 planePoint = Math.Mul(xfA,   manifold.localPoint);
 
           for (int i = 0; i < manifold.pointCount; ++i) {
@@ -84,7 +84,7 @@ namespace Box2D.NetStandard.Collision {
           break;
 
         case ManifoldType.FaceB: {
-          normal     = Math.Mul(xfB.q, manifold.localNormal);
+          normal = Vector2.Transform(manifold.localNormal, xfB.q); // Math.Mul(xfB.q, manifold.localNormal);
           Vector2 planePoint = Math.Mul(xfB,   manifold.localPoint);
           
           for (int i = 0; i < manifold.pointCount; ++i) {
