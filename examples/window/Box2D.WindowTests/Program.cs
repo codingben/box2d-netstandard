@@ -18,13 +18,17 @@ namespace Box2D.WindowTests
 {
     public static class Program
     {
-        private static readonly World world;
+        private static World world;
         private const bool stepByStep = false;
 
-        static Program()
-        {
+        static Program() {
+            CreateWorld();
+        }
+
+        static void CreateWorld(){
             //world = CreateWorld();
             world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
+            //world = AddPair.CreateWorld();
             //world = CollisionTest.CreateWorld();
             //world = PolyEdgeTest.CreateWorld();
             //world = DistanceJointProblem.CreateWorld();
