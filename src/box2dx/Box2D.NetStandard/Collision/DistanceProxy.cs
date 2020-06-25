@@ -59,6 +59,7 @@ namespace Box2D.NetStandard.Collision {
           break;
 				case ShapeType.Chain:
 					ChainShape chain = (ChainShape) shape;
+          _buffer = new Vector2[2];
 					_buffer[0] = chain.m_vertices[index];
 					if (index + 1 < chain.m_count) {
 						_buffer[1] = chain.m_vertices[index + 1];

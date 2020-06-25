@@ -216,9 +216,11 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <returns></returns>
     public Body CreateBody(BodyDef def) {
       //Debug.Assert(_locked == false);
-      if (_locked == true) {
-        return null;
-      }
+
+      if (_locked)
+        throw new
+          Box2DException("Cannot create bodies in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
+
 
       Body b = new Body(def, this);
 
@@ -246,7 +248,9 @@ namespace Box2D.NetStandard.Dynamics.World {
       //Debug.Assert(_bodyCount > 0);
       //Debug.Assert(_locked    == false);
       if (_locked == true) {
-        return;
+        if (_locked)
+          throw new
+            Box2DException("Cannot destroy bodies in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
       }
 
       // Delete the attached joints.
@@ -318,7 +322,9 @@ namespace Box2D.NetStandard.Dynamics.World {
     public Joint CreateJoint(JointDef def) {
       //Debug.Assert(_locked == false);
 
-      if (_locked) return null;
+      if (_locked)
+        throw new
+          Box2DException("Cannot create joints in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
 
       Joint j = Joint.Create(def);
 
@@ -378,7 +384,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// <param name="j"></param>
     public void DestroyJoint(Joint j) {
       //Debug.Assert(_locked == false);
-      if (_locked) return;
+      if (_locked) throw new Box2DException("Cannot destroy joints in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
 
       bool collideConnected = j._collideConnected;
 

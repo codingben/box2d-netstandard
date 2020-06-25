@@ -49,7 +49,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 	{
 		internal float m_density;
 
-		internal Fixture m_next;
+		internal Fixture? m_next;
 		internal Body m_body;
 
 		private Shape m_shape;
@@ -64,18 +64,14 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 		private bool m_isSensor;
 
-		private object m_userData;
+		private object? m_userData;
 
 
 		// non-public default constructor
 		internal Fixture()
 		{
 			m_userData = null;
-			m_body = null;
-			m_next = null;
-			m_proxies = null;
 			m_proxyCount = 0;
-			m_shape = null;
 			m_density = 0f;
 		}
 
@@ -105,19 +101,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 			m_density = def.density;
 		}
-
-		public void Destroy()
-		{
-// The proxies must be destroyed before calling this.
-			//Debug.Assert(m_proxyCount == 0);
-
-			// Free the proxy array.
-			int childCount = m_shape.GetChildCount();
-			m_proxies = null;
-			
-			m_shape = null;
-		}
-
+		
 		internal void CreateProxies(BroadPhase broadPhase, in Transform xf)
 		{
 			//Debug.Assert(m_proxyCount == 0);

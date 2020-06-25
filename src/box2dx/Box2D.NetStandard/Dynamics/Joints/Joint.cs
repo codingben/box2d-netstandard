@@ -164,10 +164,6 @@ namespace Box2D.NetStandard.Dynamics.Joints
 				case JointType.WheelJoint:
 					joint = new WheelJoint((WheelJointDef) def);
 					break;
-
-				default:
-					//Debug.Assert(false);
-					break;
 			}
 
 			return joint;

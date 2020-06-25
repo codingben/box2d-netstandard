@@ -56,8 +56,9 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     /// <warning>This function is locked during callbacks.</warning>
     public Fixture CreateFixture(in FixtureDef def) {
       //Debug.Assert(_world.IsLocked() == false);
-      if (_world.IsLocked() == true) {
-        return null;
+      if (_world.IsLocked()) {
+        throw new
+          Box2DException("Cannot create fixtures in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
       }
 
       Fixture fixture = new Fixture();
@@ -110,7 +111,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
 
       //Debug.Assert(_world.IsLocked() == false);
       if (_world.IsLocked() == true) {
-        return;
+        throw new Box2DException("Cannot destroy fixtures in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
       }
 
       //Debug.Assert(fixture.m_body == this);
