@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Dynamics.Bodies;
@@ -7,7 +8,8 @@ using Box2D.NetStandard.Dynamics.Joints.Distance;
 using Box2D.NetStandard.Dynamics.World;
 
 namespace TestWorlds {
-  public class DistanceJointProblem {
+    [ExcludeFromCodeCoverage]
+    public class DistanceJointProblem {
       
       public static World CreateWorld(){
     //b2Vec2 g(0.000000000000000e+00f, -1.000000000000000e+01f);

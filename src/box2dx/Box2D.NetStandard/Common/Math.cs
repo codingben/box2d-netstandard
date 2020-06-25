@@ -30,7 +30,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Common {
-  internal class Math {
+  internal static class Math {
     internal const ushort USHRT_MAX  = ushort.MaxValue;
     internal const byte   UCHAR_MAX  = byte.MaxValue;
     internal const int    RAND_LIMIT = 32767;
@@ -205,11 +205,7 @@ namespace Box2D.NetStandard.Common {
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector3 Mul(Mat33 A, Vector3 v) => v.X * A.ex + v.Y * A.ey + v.Z * A.ez;
-
-    [Obsolete("Use MathF.Atan2", true)]
-    internal static float Atan2(float y, float x) {
-      return (float) System.Math.Atan2(y, x);
-    }
+    
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 Mul(Rot q, Vector2 v) =>

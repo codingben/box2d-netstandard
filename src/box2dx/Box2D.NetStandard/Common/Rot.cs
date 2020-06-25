@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Common {
   public struct Rot {
@@ -10,12 +11,14 @@ namespace Box2D.NetStandard.Common {
     internal float c;
 
     /// Initialize from an angle in radians
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Rot(float angle) {
       s = MathF.Sin(angle);
       c = MathF.Cos(angle);
     }
 
     /// Set using an angle in radians.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Set(float angle) {
       s = MathF.Sin(angle);
       c = MathF.Cos(angle);
