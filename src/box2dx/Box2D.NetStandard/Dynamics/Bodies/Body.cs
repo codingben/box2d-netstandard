@@ -281,7 +281,9 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public float GetInertia() => _I + _mass * Vector2.Dot(_sweep.localCenter, _sweep.localCenter);
 
     public void GetMassData(out MassData data) {
-      data = new MassData(_mass,  _sweep.localCenter, _I + _mass * Vector2.Dot(_sweep.localCenter, _sweep.localCenter));
+      data.mass   = _mass;
+      data.I      = _I + _mass * Vector2.Dot(_sweep.localCenter, _sweep.localCenter);
+      data.center = _sweep.localCenter;
     }
 
     public void SetMassData(in MassData massData) {

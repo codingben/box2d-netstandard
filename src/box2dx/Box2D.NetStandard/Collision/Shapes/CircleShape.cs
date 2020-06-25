@@ -110,8 +110,11 @@ namespace Box2D.NetStandard.Collision.Shapes
 		}
 
 		public override void ComputeMass(out MassData massData, float density) {
-			float mass   = density * Settings.Pi * m_radius * m_radius;
-			massData = new MassData(mass, m_p, mass * (0.5f * m_radius * m_radius + Vector2.Dot(m_p, m_p)));
+			massData.mass   = density * Settings.Pi * m_radius * m_radius;
+			massData.center = m_p;
+
+			// inertia about the local origin
+			massData.I = massData.mass * (0.5f * m_radius * m_radius + Vector2.Dot(m_p, m_p));
 		}
 
 		public void Set(in Vector2 center, in float radius) {
