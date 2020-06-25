@@ -29,14 +29,11 @@ namespace Box2D.NetStandard.Collision.Shapes {
   /// <summary>
   /// The various collision shape types supported by Box2D.
   /// </summary>
-  public enum ShapeType
-  {
-    Invalid = -1,
-    Circle,
-    Edge,
-    Polygon,
-    Chain,
-    TypeCount,
+  public enum ShapeType : byte {
+    Circle = 0,
+    Edge = 1,
+    Polygon = 2,
+    Chain = 3,
 
   }
 }

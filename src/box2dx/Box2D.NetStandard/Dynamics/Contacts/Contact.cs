@@ -207,7 +207,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetChildIndexA();
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetChildIndexB() => m_indexB;
 
@@ -215,7 +215,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetChildIndexB();
     }
-    
+
     public   float _friction;
     public   float _restitution;
     public   float _tangentSpeed;
@@ -251,28 +251,44 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) =>
-      ((fixtureA.Type, fixtureB.Type)
-       switch {
-                (ShapeType.Chain, ShapeType.Chain) => null,
-                (ShapeType.Chain, ShapeType.Circle) => new ChainAndCircleContact(fixtureA, indexA, fixtureB, indexB),
-                (ShapeType.Chain, ShapeType.Edge) => null,
-                (ShapeType.Chain, ShapeType.Polygon) => new ChainAndPolygonContact(fixtureA, indexA, fixtureB, indexB),
-                (ShapeType.Circle, ShapeType.Chain) => new ChainAndCircleContact(fixtureB, indexB, fixtureA, indexA),
-                (ShapeType.Circle, ShapeType.Circle) => new CircleContact(fixtureA, indexA, fixtureB, indexB),
-                (ShapeType.Circle, ShapeType.Edge) => new EdgeAndCircleContact(fixtureB, indexB, fixtureA, indexA),
-                (ShapeType.Circle, ShapeType.Polygon) => new PolyAndCircleContact(fixtureB, indexB, fixtureA, indexA),
-                (ShapeType.Edge, ShapeType.Chain) => null,
-                (ShapeType.Edge, ShapeType.Circle) => new EdgeAndCircleContact(fixtureA, indexA, fixtureB, indexB),
-                (ShapeType.Edge, ShapeType.Edge) => null,
-                (ShapeType.Edge, ShapeType.Polygon) => new EdgeAndPolygonContact(fixtureA, indexA, fixtureB, indexB),
-                (ShapeType.Polygon, ShapeType.Chain) => new ChainAndPolygonContact(fixtureB, indexB, fixtureA, indexA),
-                (ShapeType.Polygon, ShapeType.Circle) => new PolyAndCircleContact(fixtureA, indexA, fixtureB, indexB),
-                (ShapeType.Polygon, ShapeType.Edge) => new EdgeAndPolygonContact(fixtureB, indexB, fixtureA, indexA),
-                (ShapeType.Polygon, ShapeType.Polygon) => new PolygonContact(fixtureA, indexA, fixtureB, indexB),
-                _ => null
-              })!;
+    public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
+      const byte CircleCircle   = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Circle;
+      const byte CircleEdge     = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Edge;
+      const byte CirclePolygon  = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Polygon;
+      const byte CircleChain    = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Chain;
+      const byte EdgeCircle     = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Circle;
+      const byte EdgeEdge       = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Edge;
+      const byte EdgePolygon    = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Polygon;
+      const byte EdgeChain      = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Chain;
+      const byte PolygonCircle  = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Circle;
+      const byte PolygonEdge    = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Edge;
+      const byte PolygonPolygon = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Polygon;
+      const byte PolygonChain   = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Chain;
+      const byte ChainCircle    = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Circle;
+      const byte ChainEdge      = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Edge;
+      const byte ChainPolygon   = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Polygon;
+      const byte ChainChain     = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Chain;
 
+      int match = ((byte) fixtureA.Type << 2) + (byte) fixtureB.Type;
+      return (match switch {
+                             CircleCircle   => new CircleContact(fixtureA, indexA, fixtureB, indexB),
+                             CircleEdge     => new EdgeAndCircleContact(fixtureB, indexB, fixtureA, indexA),
+                             CirclePolygon  => new PolyAndCircleContact(fixtureB, indexB, fixtureA, indexA),
+                             CircleChain    => new ChainAndCircleContact(fixtureB, indexB, fixtureA, indexA),
+                             EdgeCircle     => new EdgeAndCircleContact(fixtureA, indexA, fixtureB, indexB),
+                             EdgeEdge       => null,
+                             EdgePolygon    => new EdgeAndPolygonContact(fixtureA, indexA, fixtureB, indexB),
+                             EdgeChain      => null,
+                             PolygonCircle  => new PolyAndCircleContact(fixtureA, indexA, fixtureB, indexB),
+                             PolygonEdge    => new EdgeAndPolygonContact(fixtureB, indexB, fixtureA, indexA),
+                             PolygonPolygon => new PolygonContact(fixtureA, indexA, fixtureB, indexB),
+                             PolygonChain   => new ChainAndPolygonContact(fixtureB, indexB, fixtureA, indexA),
+                             ChainCircle    => new ChainAndCircleContact(fixtureA, indexA, fixtureB, indexB),
+                             ChainEdge      => null,
+                             ChainPolygon   => new ChainAndPolygonContact(fixtureA, indexA, fixtureB, indexB),
+                             ChainChain     => null,
+                           })!;
+    }
 
     public void Update(ContactListener listener) {
       Manifold oldManifold = m_manifold;
@@ -280,8 +296,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       // Re-enable this contact.
       m_flags |= CollisionFlags.Enabled;
 
-      bool touching    = false;
-      bool wasTouching = m_flags.HasFlag(CollisionFlags.Touching);
+      bool touching;
+      bool wasTouching = (m_flags & CollisionFlags.Touching) != 0;
 
       bool sensorA = m_fixtureA.IsSensor();
       bool sensorB = m_fixtureB.IsSensor();

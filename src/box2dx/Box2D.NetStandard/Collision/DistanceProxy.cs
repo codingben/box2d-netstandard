@@ -78,8 +78,7 @@ namespace Box2D.NetStandard.Collision {
           _count    = 2;
           _radius   = edge.m_radius;
           break;
-        case ShapeType.TypeCount:
-        case ShapeType.Invalid:
+
         default:
           throw new ArgumentOutOfRangeException();
       }

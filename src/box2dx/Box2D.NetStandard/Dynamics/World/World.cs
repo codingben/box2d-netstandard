@@ -71,7 +71,7 @@ namespace Box2D.NetStandard.Dynamics.World {
     private bool _continuousPhysics;
     private bool _subStepping;
 
-    private bool    _stepComplete;
+    private bool _stepComplete;
 
     private Action DrawDebugDataStub = () => { };
 
@@ -140,7 +140,8 @@ namespace Box2D.NetStandard.Dynamics.World {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal ContactManager GetContactManager() => _contactManager;
 
-    public World() : this(new Vector2(0, -10)){}
+    public World() : this(new Vector2(0, -10)) { }
+
     /// <summary>
     /// Construct a world object.
     /// </summary>
@@ -466,7 +467,6 @@ namespace Box2D.NetStandard.Dynamics.World {
 
     // Find islands, integrate and solve constraints, solve position constraints
     private void Solve(TimeStep step) {
-
       // Size the island for the worst case.
       Island island = new Island(_bodyCount,
                                  _contactManager.m_contactCount,
@@ -532,7 +532,7 @@ namespace Box2D.NetStandard.Dynamics.World {
             Contact contact = ce.contact;
 
             // Has this contact already been added to an island?
-            if (contact.m_flags.HasFlag(CollisionFlags.Island)) {
+            if ((contact.m_flags & CollisionFlags.Island) == CollisionFlags.Island) {
               continue;
             }
 
@@ -591,7 +591,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
 
         island.Solve(step, _gravity, _allowSleep);
-        
+
         // Post solve cleanup.
         for (int i = 0; i < island._bodyCount; ++i) {
           // Allow static bodies to participate in other islands.
@@ -622,7 +622,6 @@ namespace Box2D.NetStandard.Dynamics.World {
 
         // Look for new contacts.
         _contactManager.FindNewContacts();
-        
       }
     }
 
@@ -664,7 +663,7 @@ namespace Box2D.NetStandard.Dynamics.World {
           }
 
           float alpha = 1.0f;
-          if (c.m_flags.HasFlag(CollisionFlags.Toi)) {
+          if ((c.m_flags & CollisionFlags.Toi) == CollisionFlags.Toi) {
             // This contact has a valid cached TOI.
             alpha = c._toi;
           }
@@ -679,7 +678,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
             Body bA = fA.Body;
             Body bB = fB.Body;
-            
+
             bool activeA = bA.IsAwake() && bA._type != BodyType.Static;
             bool activeB = bB.IsAwake() && bB._type != BodyType.Static;
 
@@ -806,7 +805,7 @@ namespace Box2D.NetStandard.Dynamics.World {
                 Contact contact = ce.contact;
 
                 // Has this contact already been added to the island?
-                if (contact.m_flags.HasFlag(CollisionFlags.Island)) {
+                if ((contact.m_flags & CollisionFlags.Island) == CollisionFlags.Island) {
                   continue;
                 }
 
@@ -960,7 +959,6 @@ namespace Box2D.NetStandard.Dynamics.World {
       }
 
       _locked = false;
-
     }
 
     public void ClearForces() {
@@ -1106,7 +1104,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
     public void DrawDebugData() {
       var flags = _debugDraw.Flags;
-      if (flags.HasFlag(DrawFlags.Shape)) {
+      if ((flags & DrawFlags.Shape) == DrawFlags.Shape) {
         for (Body b = _bodyList; b != null; b = b.GetNext()) {
           Transform xf = b.GetTransform();
           for (Fixture f = b.GetFixtureList(); f != null; f = f.GetNext()) {
@@ -1133,13 +1131,13 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
       }
 
-      if (flags.HasFlag(DrawFlags.Joint)) {
+      if ((flags & DrawFlags.Joint) == DrawFlags.Joint) {
         for (Joint j = _jointList; j != null; j = j.GetNext()) {
           j.Draw(_debugDraw);
         }
       }
 
-      if (flags.HasFlag(DrawFlags.Pair)) {
+      if ((flags & DrawFlags.Pair) == DrawFlags.Pair) {
         Color color = new Color(0.3f, 0.9f, 0.9f);
         for (Contact c = _contactManager.m_contactList; c != null; c = c.GetNext()) {
           Fixture fixtureA = c.GetFixtureA();
@@ -1153,7 +1151,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
       }
 
-      if (flags.HasFlag(DrawFlags.Aabb)) {
+      if ((flags & DrawFlags.Aabb) == DrawFlags.Aabb) {
         Color      color = new Color(0.9f, 0.3f, 0.9f);
         BroadPhase bp    = _contactManager.m_broadPhase;
 
@@ -1178,7 +1176,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
       }
 
-      if (flags.HasFlag(DrawFlags.CenterOfMass)) {
+      if ((flags & DrawFlags.CenterOfMass) == DrawFlags.CenterOfMass) {
         for (Body b = _bodyList; b != null; b = b.GetNext()) {
           Transform xf = b.GetTransform();
           xf.p = b.GetWorldCenter();
@@ -1194,7 +1192,7 @@ namespace Box2D.NetStandard.Dynamics.World {
 
           Vec2  center = Math.Mul(xf, circle.m_p);
           float radius = circle.m_radius;
-          Vec2 axis = Vector2.Transform(new Vector2(1.0f, 0.0f), xf.q);// Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
+          Vec2  axis   = Vector2.Transform(new Vector2(1.0f, 0.0f), xf.q); // Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
 
           _debugDraw.DrawSolidCircle(center, radius, axis, color);
         }
