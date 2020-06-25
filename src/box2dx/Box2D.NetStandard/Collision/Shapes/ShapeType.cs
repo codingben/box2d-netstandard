@@ -37,6 +37,6 @@ namespace Box2D.NetStandard.Collision.Shapes {
     Polygon,
     Chain,
     TypeCount,
-		
+
   }
 }

@@ -25,8 +25,10 @@
 // SOFTWARE.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
@@ -34,19 +36,18 @@ using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
+using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Contacts {
+  
+  delegate T ObjectActivator<T>(params object[] args);
+  
   /// <summary>
   /// The class manages contact between two shapes. A contact exists for each overlapping
   /// AABB in the broad-phase (except if filtered). Therefore a contact object may exist
   /// that has no contact points.
   /// </summary>
   public abstract class Contact {
-    private static ContactRegister[][] s_registers =
-      new ContactRegister[(int) ShapeType.TypeCount][ /*(int)ShapeType.ShapeTypeCount*/];
-
-    
-    
     private static bool s_initialized;
 
     internal CollisionFlags m_flags;
@@ -252,88 +253,54 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
       m_tangentSpeed = 0f;
     }
-
-
-    public static void AddType(ContactCreateFcn createFcn, ContactDestroyFcn destoryFcn,
-      ShapeType                                 type1,     ShapeType         type2) {
-      //Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
-      //Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
-
-      if (s_registers[(int) type1] == null)
-        s_registers[(int) type1] = new ContactRegister[(int) ShapeType.TypeCount];
-
-      s_registers[(int) type1][(int) type2].CreateFcn  = createFcn;
-      s_registers[(int) type1][(int) type2].DestroyFcn = destoryFcn;
-      s_registers[(int) type1][(int) type2].Primary    = true;
-
-      if (type1 != type2) {
-        s_registers[(int) type2][(int) type1].CreateFcn  = createFcn;
-        s_registers[(int) type2][(int) type1].DestroyFcn = destoryFcn;
-        s_registers[(int) type2][(int) type1].Primary    = false;
-      }
-    }
-
-    public static void InitializeRegisters() {
-      AddType(CircleContact.Create, CircleContact.Destroy, ShapeType.Circle, ShapeType.Circle);
-      AddType(PolyAndCircleContact.Create, PolyAndCircleContact.Destroy, ShapeType.Polygon, ShapeType.Circle);
-      AddType(PolygonContact.Create, PolygonContact.Destroy, ShapeType.Polygon, ShapeType.Polygon);
-      AddType(EdgeAndCircleContact.Create, EdgeAndCircleContact.Destroy, ShapeType.Edge, ShapeType.Circle);
-      AddType(EdgeAndPolygonContact.Create, EdgeAndPolygonContact.Destroy, ShapeType.Edge, ShapeType.Polygon);
-#if CHAINSHAPE
-      AddType(ChainAndCircleContact.Create, ChainAndCircleContact.Destroy, ShapeType.Chain, ShapeType.Circle);
-      AddType(ChainAndPolygonContact.Create, ChainAndPolygonContact.Destroy, ShapeType.Chain,
-              ShapeType.Polygon);
-#endif
-    }
-
+    
     public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
-      if (s_initialized == false) {
-        InitializeRegisters();
-        s_initialized = true;
-      }
-
+      
       ShapeType type1 = fixtureA.Type;
       ShapeType type2 = fixtureB.Type;
 
-      //Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
-      //Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
-
-      ContactCreateFcn createFcn = s_registers[(int) type1][(int) type2].CreateFcn;
-      if (createFcn != null) {
-        if (s_registers[(int) type1][(int) type2].Primary) {
-          return createFcn(fixtureA, fixtureB);
-        }
-        else {
-          return createFcn(fixtureB, fixtureA);
-        }
-      }
-      else {
-        return null;
-      }
-    }
-
-    public static void Destroy(ref Contact contact) {
-      //Debug.Assert(s_initialized == true);
-
-      Fixture fixtureA = contact.m_fixtureA;
-      Fixture fixtureB = contact.m_fixtureB;
+      (ShapeType type1, ShapeType type2) tuple = (type1, type2);
       
-      if (contact.m_manifold.pointCount > 0 &&
-          fixtureA.IsSensor()==false &&
-          fixtureB.IsSensor()==false) {
-        fixtureA.Body.SetAwake(true);
-        fixtureB.Body.SetAwake(true);
+      switch (tuple) {
+        case (ShapeType.Chain, ShapeType.Chain):
+          return null;
+        case (ShapeType.Chain, ShapeType.Circle):
+          return new ChainAndCircleContact(fixtureA, indexA, fixtureB, indexB);
+        case (ShapeType.Chain, ShapeType.Edge):
+          return null;
+        case(ShapeType.Chain,ShapeType.Polygon):
+          return new ChainAndPolygonContact(fixtureA, indexA, fixtureB, indexB);
+        case (ShapeType.Circle, ShapeType.Chain):
+          return new ChainAndCircleContact(fixtureB, indexB, fixtureA, indexA);
+        case (ShapeType.Circle,ShapeType.Circle):
+          return new CircleContact(fixtureA, indexA, fixtureB, indexB);
+        case (ShapeType.Circle,ShapeType.Edge):
+          return new EdgeAndCircleContact(fixtureB, indexB, fixtureA, indexA);
+        case (ShapeType.Circle, ShapeType.Polygon):
+          return new PolyAndCircleContact(fixtureB, indexB, fixtureA, indexA);
+        case (ShapeType.Edge, ShapeType.Chain):
+          return null;
+        case (ShapeType.Edge, ShapeType.Circle):
+          return new EdgeAndCircleContact(fixtureA, indexA, fixtureB, indexB);
+        case (ShapeType.Edge, ShapeType.Edge):
+          return null;
+        case (ShapeType.Edge, ShapeType.Polygon):
+          return new EdgeAndPolygonContact(fixtureA, indexA, fixtureB, indexB);
+        case (ShapeType.Polygon,ShapeType.Chain):
+          return new ChainAndPolygonContact(fixtureB, indexB, fixtureA, indexA);
+        case (ShapeType.Polygon,ShapeType.Circle):
+          return new PolyAndCircleContact(fixtureA,indexA, fixtureB,indexB);
+        case (ShapeType.Polygon, ShapeType.Edge):        
+          return new EdgeAndPolygonContact(fixtureB, indexB, fixtureA, indexA);
+        case (ShapeType.Polygon, ShapeType.Polygon):
+          return new PolygonContact(fixtureA, indexA, fixtureB, indexB);
+        default:
+          return null;
       }
-
-      ShapeType typeA = fixtureA.Type;
-      ShapeType typeB = fixtureB.Type;
-
-      //Debug.Assert(ShapeType.Invalid < typeA && typeA < ShapeType.TypeCount);
-      //Debug.Assert(ShapeType.Invalid < typeB && typeB < ShapeType.TypeCount);
-
-      ContactDestroyFcn destroyFcn = s_registers[(int) typeA][(int) typeB].DestroyFcn;
-      destroyFcn(ref contact);
+      
+      
     }
+
 
     public void Update(ContactListener listener) {
       Manifold oldManifold = m_manifold;

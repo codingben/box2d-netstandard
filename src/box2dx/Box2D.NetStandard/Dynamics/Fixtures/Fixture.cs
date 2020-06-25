@@ -178,8 +178,8 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 			Refilter();
 		}
-		
-		void Refilter()
+
+		public void Refilter()
 		{
 			if (m_body == null)
 			{
@@ -238,10 +238,14 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 		Filter GetFilterData() => m_filter;
 
-		private Filter FilterData {
+		public Filter FilterData {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-
 			get => m_filter;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set {
+				m_filter = value;
+				Refilter();
+			}
 		}
 
 		public Body Body {
@@ -272,7 +276,12 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set => m_restitution = value;
 		}
-		
+
+		public object UserData {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => m_userData;
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TestPoint(in Vector2 p) => m_shape.TestPoint(m_body.GetTransform(), p);
 

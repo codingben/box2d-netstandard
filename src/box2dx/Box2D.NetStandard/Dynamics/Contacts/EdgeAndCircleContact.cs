@@ -36,7 +36,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 	{
 		private static Collider<EdgeShape,CircleShape> collider = new EdgeAndCircleCollider();
 
-		private EdgeAndCircleContact(Fixture fixtureA, Fixture fixtureB)
+		internal EdgeAndCircleContact(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB)
 			: base(fixtureA,0, fixtureB,0)
 		{
 			//Debug.Assert(fixtureA.Type == ShapeType.Edge);
@@ -45,16 +45,6 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 			m_manifold.points[0]=new ManifoldPoint();
 			m_manifold.points[0].normalImpulse = 0.0f;
 			m_manifold.points[0].tangentImpulse = 0.0f;
-		}
-
-		internal static Contact Create(Fixture fixtureA, Fixture fixtureB)
-		{
-			return new EdgeAndCircleContact(fixtureA, fixtureB);
-		}
-
-		internal static void Destroy(ref Contact contact)
-		{
-			contact = null;
 		}
 
 		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {

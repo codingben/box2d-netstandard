@@ -57,23 +57,21 @@ namespace Box2D.NetStandard.Collision {
           _count    = polygon.m_count;
           _radius   = polygon.m_radius;
           break;
-#if CHAINSHAPE
-				case ShapeType.ChainShape:
+				case ShapeType.Chain:
 					ChainShape chain = (ChainShape) shape;
-					_buffer[0] = chain._vertices[index];
-					if (index + 1 < chain._vertexCount) {
-						_buffer[1] = chain._vertices[index + 1];
+					_buffer[0] = chain.m_vertices[index];
+					if (index + 1 < chain.m_count) {
+						_buffer[1] = chain.m_vertices[index + 1];
 					}
 					else {
-						_buffer[1] = chain._vertices[0];
+						_buffer[1] = chain.m_vertices[0];
 					}
 
 					_vertices = _buffer;
 					_count = 2;
-					_radius = chain.Radius;
+					_radius = chain.m_radius;
 					
 					break;
-#endif
         case ShapeType.Edge:
           EdgeShape edge = (EdgeShape) shape;
           _vertices = new[] {edge.m_vertex1, edge.m_vertex2};

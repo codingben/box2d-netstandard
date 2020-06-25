@@ -99,9 +99,9 @@ namespace Box2D.NetStandard.Dynamics.World {
       if (c.m_nodeB == bodyB._contactList) {
         bodyB._contactList = c.m_nodeB.next;
       }
-
-      // Call the factory.
-      Contact.Destroy(ref c);
+      
+      // provided all the above removes all references, it'll be picked up by the GC
+      
       --m_contactCount;
     }
 
