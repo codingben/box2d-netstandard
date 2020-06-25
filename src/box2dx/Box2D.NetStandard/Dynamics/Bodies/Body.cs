@@ -266,7 +266,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ApplyAngularImpuse(float impulse, bool wake = true) {
+    public void ApplyAngularImpulse(float impulse, bool wake = true) {
       if (_type != BodyType.Dynamic) return;
       if (wake && !HasFlag(BodyFlags.Awake)) SetAwake(true);
       if (HasFlag(BodyFlags.Awake)) {

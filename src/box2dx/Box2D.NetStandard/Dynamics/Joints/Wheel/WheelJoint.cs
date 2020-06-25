@@ -97,9 +97,9 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
     private float _gamma;
 
     public WheelJoint(WheelJointDef def) : base(def) {
-      _localAnchorA = def.LocalAnchorA;
-      _localAnchorB  = def.LocalAnchorB;
-      _localXAxisA   = def.LocalAxisA;
+      _localAnchorA = def.localAnchorA;
+      _localAnchorB  = def.localAnchorB;
+      _localXAxisA   = def.localAxisA;
       _localYAxisA   = Vectex.Cross(1f, _localXAxisA);
 
       _mass          = 0f;
@@ -112,13 +112,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
       _axialMass        = 0f;
       _lowerImpulse     = 0f;
       _upperImpulse     = 0f;
-      _lowerTranslation = def.LowerTranslation;
-      _upperTranslation = def.UpperTranslation;
-      _enableLimit      = def.EnableLimit;
+      _lowerTranslation = def.lowerTranslation;
+      _upperTranslation = def.upperTranslation;
+      _enableLimit      = def.enableLimit;
 
-      _maxMotorTorque = def.MaxMotorTorque;
-      _motorSpeed     = def.MotorSpeed;
-      _enableMotor    = def.EnableMotor;
+      _maxMotorTorque = def.maxMotorTorque;
+      _motorSpeed     = def.motorSpeed;
+      _enableMotor    = def.enableMotor;
 
       _bias  = 0f;
       _gamma = 0f;
@@ -126,8 +126,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
       _ax = Vector2.Zero;
       _ay = Vector2.Zero;
 
-      _stiffness = def.Stiffness;
-      _damping   = def.Damping;
+      _stiffness = def.stiffness;
+      _damping   = def.damping;
     }
     
     public override Vector2 GetAnchorA => _bodyA.GetWorldPoint(_localAnchorA);
@@ -228,7 +228,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
       }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] void SetMotorSpeed(float speed)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetMotorSpeed(float speed)
     {
       if (speed != _motorSpeed)
       {

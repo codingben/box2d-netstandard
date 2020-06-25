@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Concurrent;
 using Box2D.NetStandard.Common;
+using Box2D.NetStandard.Dynamics.Bodies;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
@@ -17,14 +18,16 @@ namespace Box2D.Window
     public class SimulationWindow : GameWindow, IWindow
     {
         private readonly string windowTitle;
+        private readonly Body _focusBody;
         private readonly ConcurrentQueue<Action> drawActions;
 
         private IView view;
 
-        public SimulationWindow(string title, int width, int height)
+        public SimulationWindow(string title, int width, int height, Body focusBody = null)
             : base(width, height, GraphicsMode.Default, title, GameWindowFlags.FixedWindow)
         {
             windowTitle = title;
+            _focusBody = focusBody;
             drawActions = new ConcurrentQueue<Action>();
         }
 
@@ -64,11 +67,13 @@ namespace Box2D.Window
             }
         }
 
+        private int frames = 0;
+        
         protected override void OnUpdateFrame(FrameEventArgs eventArgs)
         {
             base.OnUpdateFrame(eventArgs);
 
-            Title = $"{windowTitle} - FPS: {RenderFrequency:0.0}";
+            Title = $"{windowTitle} - FPS: {RenderFrequency:0.0} - Frames: {frames}";
 
             if (Focused)
             {
@@ -99,11 +104,18 @@ namespace Box2D.Window
 
         protected override void OnRenderFrame(FrameEventArgs eventArgs)
         {
+            frames++;
+            
             base.OnRenderFrame(eventArgs);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(OpenTK.Color.Black);
 
+            if (_focusBody != null) {
+                var bodyPosition = _focusBody.GetPosition();
+                view.Position = new Vector2(bodyPosition.X, bodyPosition.Y);
+            }
+            
             view?.Update();
 
             while (drawActions.TryDequeue(out var action))

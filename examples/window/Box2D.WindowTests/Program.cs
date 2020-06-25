@@ -19,6 +19,7 @@ namespace Box2D.WindowTests
     public static class Program
     {
         private static World world;
+        private static Body focusBody;
         private const bool stepByStep = false;
 
         static Program() {
@@ -32,13 +33,18 @@ namespace Box2D.WindowTests
             //world = CollisionTest.CreateWorld();
             //world = PolyEdgeTest.CreateWorld();
             //world = DistanceJointProblem.CreateWorld();
+
+            // Car Test
+            // world     = Car.CreateWorld(out Body[] bodies, out Joint[] joints);
+            // focusBody = bodies[8];
+            //
         }
 
         private static void Main()
         {
             var windowThread = new Thread(new ThreadStart(() =>
             {
-                var game = new SimulationWindow("Physics Simulation", 800, 600);
+                var game = new SimulationWindow("Physics Simulation", 800, 600, focusBody);
                 game.UpdateFrame += OnUpdateFrame;
                 game.Disposed += OnDisposed;
                 game.SetView(new CameraView());
