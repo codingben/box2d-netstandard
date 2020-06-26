@@ -54,6 +54,10 @@ namespace Box2D.NetStandard.Collision.Shapes {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetNextVertex(in Vector2 nextVertex) => m_nextVertex = nextVertex;
 
+    public Vector2[] Vertices {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_vertices;
+    }
 
     public override Shape Clone() {
       return (ChainShape) MemberwiseClone();
@@ -62,14 +66,13 @@ namespace Box2D.NetStandard.Collision.Shapes {
     public override int GetChildCount() => m_count - 1;
 
     public void GetChildEdge(out EdgeShape edge, int index) {
-      edge=new EdgeShape();
-      edge.m_radius = m_radius;
-      edge.m_vertex1 = m_vertices[index + 0];
-      edge.m_vertex2 = m_vertices[index + 1];
-
-      edge.m_vertex0 = index > 0 ? m_vertices[index - 1] : m_prevVertex;
-
-      edge.m_vertex3 = index < m_count - 2 ? m_vertices[index + 2] : m_nextVertex;
+      edge = new EdgeShape {
+                             m_radius  = m_radius,
+                             m_vertex1 = m_vertices[index + 0],
+                             m_vertex2 = m_vertices[index + 1],
+                             m_vertex0 = index > 0 ? m_vertices[index           - 1] : m_prevVertex,
+                             m_vertex3 = index < m_count - 2 ? m_vertices[index + 2] : m_nextVertex
+                           };
     }
 
     public override bool TestPoint(in Transform xf, in Vector2 p) => false;
