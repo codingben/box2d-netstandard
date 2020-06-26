@@ -38,7 +38,9 @@ namespace Box2D.Window
 
         private int mouseLast = 0;
         public static bool stepNext;
-
+        private       int  frames = 0;
+        public static bool paused = false;
+        
         protected override void OnMouseWheel(MouseWheelEventArgs eventArgs)
         {
             base.OnMouseWheel(eventArgs);
@@ -65,10 +67,12 @@ namespace Box2D.Window
             if (eventArgs.Key == Key.Space) {
                 stepNext = true;
             }
+
+            if (eventArgs.Key == Key.P) {
+                paused = !paused;
+            }
         }
 
-        private int frames = 0;
-        
         protected override void OnUpdateFrame(FrameEventArgs eventArgs)
         {
             base.OnUpdateFrame(eventArgs);
@@ -104,7 +108,7 @@ namespace Box2D.Window
 
         protected override void OnRenderFrame(FrameEventArgs eventArgs)
         {
-            frames++;
+            if (!paused) frames++;
             
             base.OnRenderFrame(eventArgs);
 

@@ -38,6 +38,8 @@ namespace Box2D.WindowTests
             // world     = Car.CreateWorld(out Body[] bodies, out Joint[] joints);
             // focusBody = bodies[8];
             //
+
+            //world = box2dBug604.CreateWorld();
         }
 
         private static void Main()
@@ -73,11 +75,11 @@ namespace Box2D.WindowTests
             // in most game scenarios.
             const float TimeStep = 1.0f / 60.0f;
             const int VelocityIterations = 8;
-            const int PositionIterations = 3;
+            const int PositionIterations = 8;
 
             // Instruct the world to perform a single step of simulation. It is
             // generally best to keep the time step and iterations fixed.
-            if (SimulationWindow.stepNext || !stepByStep) {
+            if ((SimulationWindow.stepNext || !stepByStep) && !SimulationWindow.paused) {
                 world?.Step(TimeStep, VelocityIterations, PositionIterations);
                 SimulationWindow.stepNext = false;
             }
