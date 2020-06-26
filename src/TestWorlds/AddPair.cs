@@ -13,7 +13,7 @@ namespace TestWorlds {
       World world = new World(Vector2.Zero);
       
       CircleShape circle = new CircleShape();
-      circle.m_radius = 0.1f;
+      circle.Radius = 0.1f;
 
       float minX = -6f;
       float maxX = 0f;

@@ -43,8 +43,8 @@ namespace TestWorlds {
                 fd.filter.maskBits = (65535);
                 fd.filter.groupIndex = (0);
                 CircleShape shape = new CircleShape();
-                shape.m_radius = 5.000000000000000e-01f;
-                shape.m_p = new Vector2(0.000000000000000e+00f, 0.000000000000000e+00f);
+                shape.Radius = 5.000000000000000e-01f;
+                shape.Center = new Vector2(0.000000000000000e+00f, 0.000000000000000e+00f);
                     
                 fd.shape = shape;
 
