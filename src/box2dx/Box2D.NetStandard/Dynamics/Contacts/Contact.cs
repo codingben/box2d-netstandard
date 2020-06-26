@@ -60,18 +60,18 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     internal readonly Fixture m_fixtureA;
     internal readonly Fixture m_fixtureB;
 
-    private int m_indexA;
-    private int m_indexB;
+    private readonly int m_indexA;
+    private readonly int m_indexB;
 
     internal Manifold m_manifold = new Manifold();
 
-    private  int   m_toiCount;
-    internal float _toi;
+    internal int   m_toiCount;
+    internal float m_toi;
 
-    private float m_friction;
-    private float m_restitution;
+    internal float m_friction;
+    internal float m_restitution;
 
-    private float m_tangentSpeed;
+    internal float m_tangentSpeed;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Manifold GetManifold() => m_manifold;
@@ -215,14 +215,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetChildIndexB();
     }
-
-    public   float _friction;
-    public   float _restitution;
-    public   float _tangentSpeed;
-    private  int   _indexA;
-    private  int   _indexB;
-    internal int   _toiCount;
-
+    
     internal abstract void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB);
 
     public Contact(Fixture fA, int indexA, Fixture fB, int indexB) {
@@ -231,8 +224,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       m_fixtureA = fA;
       m_fixtureB = fB;
 
-      _indexA = indexA;
-      _indexB = indexB;
+      m_indexA = indexA;
+      m_indexB = indexB;
 
       m_manifold.pointCount = 0;
 
@@ -242,10 +235,10 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       m_nodeA = new ContactEdge();
       m_nodeB = new ContactEdge();
 
-      _toiCount = 0;
+      m_toiCount = 0;
 
-      _friction    = Settings.MixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
-      _restitution = Settings.MixRestitution(m_fixtureA.Restitution, m_fixtureB.Restitution);
+      m_friction    = Settings.MixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
+      m_restitution = Settings.MixRestitution(m_fixtureA.Restitution, m_fixtureB.Restitution);
 
       m_tangentSpeed = 0f;
     }
@@ -312,7 +305,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       if (sensor) {
         Shape shapeA = m_fixtureA.Shape;
         Shape shapeB = m_fixtureB.Shape;
-        touching = TestOverlap(shapeA, _indexA, shapeB, _indexB, xfA, xfB);
+        touching = TestOverlap(shapeA, m_indexA, shapeB, m_indexB, xfA, xfB);
 
         // Sensors don't generate manifolds.
         m_manifold.pointCount = 0;

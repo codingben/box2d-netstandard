@@ -70,8 +70,8 @@ namespace Box2D.NetStandard.Collision.Shapes {
                              m_radius  = m_radius,
                              m_vertex1 = m_vertices[index + 0],
                              m_vertex2 = m_vertices[index + 1],
-                             m_vertex0 = index > 0 ? m_vertices[index           - 1] : m_prevVertex,
-                             m_vertex3 = index < m_count - 2 ? m_vertices[index + 2] : m_nextVertex
+                             // m_vertex0 = index > 0 ? m_vertices[index           - 1] : m_prevVertex,
+                             // m_vertex3 = index < m_count - 2 ? m_vertices[index + 2] : m_nextVertex
                            };
     }
 

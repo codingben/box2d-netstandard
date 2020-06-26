@@ -75,9 +75,9 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
         _velocityConstraints[i] = new ContactVelocityConstraint();
         ContactVelocityConstraint vc = _velocityConstraints[i];
-        vc.friction     = contact._friction;
-        vc.restitution  = contact._restitution;
-        vc.tangentSpeed = contact._tangentSpeed;
+        vc.friction     = contact.m_friction;
+        vc.restitution  = contact.m_restitution;
+        vc.tangentSpeed = contact.m_tangentSpeed;
         vc.indexA       = bodyA._islandIndex;
         vc.indexB       = bodyB._islandIndex;
         vc.invMassA     = bodyA._invMass;

@@ -1,3 +1,4 @@
+using System;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
@@ -12,6 +13,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     public ChainAndPolygonContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB) {
       ChainShape chain = (ChainShape)FixtureA.Shape;
       chain.GetChildEdge(out edge, indexA);
+      Console.WriteLine("New Chain & Polygon Contact, index " + indexA + " edge = " + edge.Vertex1 + "--" + edge.Vertex2);
     }
 		
     internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {

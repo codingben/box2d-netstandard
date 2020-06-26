@@ -646,8 +646,8 @@ namespace Box2D.NetStandard.Dynamics.World {
         for (Contact c = _contactManager.m_contactList; c != null; c = c.m_next) {
           // Invalidate TOI
           c.m_flags   &= ~(CollisionFlags.Toi | CollisionFlags.Island);
-          c._toiCount =  0;
-          c._toi      =  1.0f;
+          c.m_toiCount =  0;
+          c.m_toi      =  1.0f;
         }
       }
 
@@ -664,14 +664,14 @@ namespace Box2D.NetStandard.Dynamics.World {
           }
 
           // Prevent excessive sub-stepping.
-          if (c._toiCount > Settings.MaxSubSteps) {
+          if (c.m_toiCount > Settings.MaxSubSteps) {
             continue;
           }
 
           float alpha = 1.0f;
           if ((c.m_flags & CollisionFlags.Toi) == CollisionFlags.Toi) {
             // This contact has a valid cached TOI.
-            alpha = c._toi;
+            alpha = c.m_toi;
           }
           else {
             Fixture fA = c.FixtureA;
@@ -734,7 +734,7 @@ namespace Box2D.NetStandard.Dynamics.World {
               alpha = 1.0f;
             }
 
-            c._toi    =  alpha;
+            c.m_toi    =  alpha;
             c.m_flags |= CollisionFlags.Toi;
           }
 
@@ -767,7 +767,7 @@ namespace Box2D.NetStandard.Dynamics.World {
           // The TOI contact likely has some new contact points.
           minContact.Update(_contactManager.m_contactListener);
           minContact.m_flags &= ~CollisionFlags.Toi;
-          ++minContact._toiCount;
+          ++minContact.m_toiCount;
 
           // Is the contact solid?
           if (minContact.IsEnabled() == false || minContact.IsTouching() == false) {
