@@ -182,7 +182,7 @@ namespace TestWorlds {
         chassis.Set(vertices);
 
         CircleShape circle = new CircleShape();
-        circle.m_radius = 0.4f;
+        circle.Radius = 0.4f;
 
         BodyDef bd = new BodyDef();
         bd.type     = BodyType.Dynamic;
