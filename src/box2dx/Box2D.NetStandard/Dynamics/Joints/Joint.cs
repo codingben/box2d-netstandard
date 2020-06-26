@@ -48,42 +48,42 @@ namespace Box2D.NetStandard.Dynamics.Joints
 	/// </summary>
 	public abstract class Joint
 	{
-		protected JointType _type;
-		internal Joint _prev;
-		internal Joint _next;
-		internal JointEdge _edgeA = new JointEdge();
-		internal JointEdge _edgeB = new JointEdge();
-		internal Body _bodyA;
-		internal Body _bodyB;
+		private readonly JointType m_type;
+		internal Joint m_prev;
+		internal Joint m_next;
+		internal readonly JointEdge m_edgeA = new JointEdge();
+		internal readonly JointEdge m_edgeB = new JointEdge();
+		internal Body m_bodyA;
+		internal Body m_bodyB;
 
-		internal bool _islandFlag;
-		internal bool _collideConnected;
+		internal bool m_islandFlag;
+		internal readonly bool m_collideConnected;
 
-		protected object _userData;
+		private object m_userData;
 
 		// Cache here per time step to reduce cache misses.
-		protected Vector2 _localCenter1, _localCenter2;
-		protected float _invMass1, _invI1;
-		protected float _invMass2, _invI2;
+		protected Vector2 m_localCenter1, m_localCenter2;
+		protected float m_invMass1, m_invI1;
+		protected float m_invMass2, m_invI2;
 
 		/// <summary>
 		/// Get the type of the concrete joint.
 		/// </summary>
-		public JointType Type => _type;
+		public JointType Type => m_type;
 		
 		/// <summary>
 		/// Get the first body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Body GetBodyA() => _bodyA;
+		public Body GetBodyA() => m_bodyA;
 
 		/// <summary>
 		/// Get the second body attached to this joint.
 		/// </summary>
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Body GetBodyB() => _bodyB;
+		public Body GetBodyB() => m_bodyB;
 
 		/// <summary>
 		/// Get the anchor point on body1 in world coordinates.
@@ -112,7 +112,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// </summary>
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)] 
-		public Joint GetNext() => _next;
+		public Joint GetNext() => m_next;
 
 		/// <summary>
 		/// Get/Set the user data pointer.
@@ -121,21 +121,21 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		public object UserData
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _userData;
+			get => m_userData;
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set => _userData = value;
+			set => m_userData = value;
 		}
 
 		protected Joint(JointDef def)
 		{
-			_type = def.Type;
-			_prev = null;
-			_next = null;
-			_bodyA = def.bodyA;
-			_bodyB = def.bodyB;
-			_collideConnected = def.collideConnected;
-			_islandFlag = false;
-			_userData = def.UserData;
+			m_type = def.Type;
+			m_prev = null;
+			m_next = null;
+			m_bodyA = def.bodyA;
+			m_bodyB = def.bodyB;
+			m_collideConnected = def.collideConnected;
+			m_islandFlag = false;
+			m_userData = def.UserData;
 		}
 
 		internal static Joint Create(JointDef def)
@@ -183,8 +183,8 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		}
 
 		public void Draw(DebugDraw draw) {
-			Transform  xf1 = _bodyA.GetTransform();
-			Transform  xf2 = _bodyB.GetTransform();
+			Transform  xf1 = m_bodyA.GetTransform();
+			Transform  xf2 = m_bodyB.GetTransform();
 			Vector2            x1 = xf1.p;
 			Vector2            x2 = xf2.p;
 			Vector2            p1 = GetAnchorA;
@@ -192,7 +192,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 
 			Color color = new Color(0.5f, 0.8f, 0.8f);
 
-			switch (_type)
+			switch (m_type)
 			{
 				case JointType.DistanceJoint:
 					draw.DrawSegment(p1, p2, color);

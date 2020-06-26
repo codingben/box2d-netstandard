@@ -56,201 +56,201 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
   /// this as a massless, rigid rod.
   /// </summary>
   public class DistanceJoint : Joint {
-    private readonly Vector2 _localAnchorA;
-    private readonly Vector2 _localAnchorB;
-    private Vector2 _u;
-    private readonly float   _frequencyHz;
-    private readonly float   _dampingRatio;
-    private float   _gamma;
-    private float   _bias;
-    private float   _impulse;
-    private float   _mass; // effective mass for the constraint.
-    private readonly float   _length;
-    private int _indexA;
-    private int _indexB;
-    private Vector2 _localCenterA;
-    private Vector2 _localCenterB;
-    private float _invMassA;
-    private float _invMassB;
-    private float _invIA;
-    private float _invIB;
-    private Vector2 _rA;
-    private Vector2 _rB;
+    private readonly Vector2 m_localAnchorA;
+    private readonly Vector2 m_localAnchorB;
+    private Vector2 m_u;
+    private readonly float   m_frequencyHz;
+    private readonly float   m_dampingRatio;
+    private float   m_gamma;
+    private float   m_bias;
+    private float   m_impulse;
+    private float   m_mass; // effective mass for the constraint.
+    private readonly float   m_length;
+    private int m_indexA;
+    private int m_indexB;
+    private Vector2 m_localCenterA;
+    private Vector2 m_localCenterB;
+    private float m_invMassA;
+    private float m_invMassB;
+    private float m_invIA;
+    private float m_invIB;
+    private Vector2 m_rA;
+    private Vector2 m_rB;
 
-    public override Vector2 GetAnchorA => _bodyA.GetWorldPoint(_localAnchorA);
+    public override Vector2 GetAnchorA => m_bodyA.GetWorldPoint(m_localAnchorA);
 
-    public override Vector2 GetAnchorB => _bodyB.GetWorldPoint(_localAnchorB);
+    public override Vector2 GetAnchorB => m_bodyB.GetWorldPoint(m_localAnchorB);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override Vector2 GetReactionForce(float inv_dt) => (inv_dt * _impulse) * _u;
+    public override Vector2 GetReactionForce(float inv_dt) => (inv_dt * m_impulse) * m_u;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override float GetReactionTorque(float inv_dt) => 0.0f;
 
     public DistanceJoint(DistanceJointDef def)
       : base(def) {
-      _localAnchorA = def.localAnchorA;
-      _localAnchorB = def.localAnchorB;
-      _length       = def.length;
-      _frequencyHz  = def.frequencyHz;
-      _dampingRatio = def.dampingRatio;
-      _impulse      = 0.0f;
-      _gamma        = 0.0f;
-      _bias         = 0.0f;
+      m_localAnchorA = def.localAnchorA;
+      m_localAnchorB = def.localAnchorB;
+      m_length       = def.length;
+      m_frequencyHz  = def.frequencyHz;
+      m_dampingRatio = def.dampingRatio;
+      m_impulse      = 0.0f;
+      m_gamma        = 0.0f;
+      m_bias         = 0.0f;
     }
 
     internal override void InitVelocityConstraints(in SolverData data) {
-      _indexA       = _bodyA._islandIndex;
-      _indexB       = _bodyB._islandIndex;
-      _localCenterA = _bodyA._sweep.localCenter;
-      _localCenterB = _bodyB._sweep.localCenter;
-      _invMassA     = _bodyA._invMass;
-      _invMassB     = _bodyB._invMass;
-      _invIA        = _bodyA._invI;
-      _invIB        = _bodyB._invI;
+      m_indexA       = m_bodyA.m_islandIndex;
+      m_indexB       = m_bodyB.m_islandIndex;
+      m_localCenterA = m_bodyA.m_sweep.localCenter;
+      m_localCenterB = m_bodyB.m_sweep.localCenter;
+      m_invMassA     = m_bodyA.m_invMass;
+      m_invMassB     = m_bodyB.m_invMass;
+      m_invIA        = m_bodyA.m_invI;
+      m_invIB        = m_bodyB.m_invI;
 
-      Vector2 cA = data.positions[ _indexA].c;
-      float  aA = data.positions[ _indexA].a;
-      Vector2 vA = data.velocities[_indexA].v;
-      float  wA = data.velocities[_indexA].w;
+      Vector2 cA = data.positions[ m_indexA].c;
+      float  aA = data.positions[ m_indexA].a;
+      Vector2 vA = data.velocities[m_indexA].v;
+      float  wA = data.velocities[m_indexA].w;
 
-      Vector2 cB = data.positions[ _indexB].c;
-      float  aB = data.positions[ _indexB].a;
-      Vector2 vB = data.velocities[_indexB].v;
-      float  wB = data.velocities[_indexB].w;
+      Vector2 cB = data.positions[ m_indexB].c;
+      float  aB = data.positions[ m_indexB].a;
+      Vector2 vB = data.velocities[m_indexB].v;
+      float  wB = data.velocities[m_indexB].w;
 
       Rot qA = new Rot(aA), qB = new Rot(aB);
 
-      _rA = Math.Mul(qA, _localAnchorA - _localCenterA);
-      _rB = Math.Mul(qB, _localAnchorB - _localCenterB);
-      _u  = cB + _rB - cA - _rA;
+      m_rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
+      m_rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
+      m_u  = cB + m_rB - cA - m_rA;
 
       // Handle singularity.
-      float length = _u.Length();
+      float length = m_u.Length();
       if (length > Settings.LinearSlop) {
-        _u *= 1.0f / length;
+        m_u *= 1.0f / length;
       }
       else {
-        _u=Vector2.Zero;
+        m_u=Vector2.Zero;
       }
 
-      float crAu    = Vectex.Cross(_rA, _u);
-      float crBu    = Vectex.Cross(_rB, _u);
-      float invMass = _invMassA + _invIA * crAu * crAu + _invMassB + _invIB * crBu * crBu;
+      float crAu    = Vectex.Cross(m_rA, m_u);
+      float crBu    = Vectex.Cross(m_rB, m_u);
+      float invMass = m_invMassA + m_invIA * crAu * crAu + m_invMassB + m_invIB * crBu * crBu;
 
       // Compute the effective mass matrix.
-      _mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
+      m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
 
-      if (_frequencyHz > 0.0f) {
-        float C = length - _length;
+      if (m_frequencyHz > 0.0f) {
+        float C = length - m_length;
 
         // Frequency
-        float omega = Settings.Tau * _frequencyHz;
+        float omega = Settings.Tau * m_frequencyHz;
 
         // Damping coefficient
-        float d = 2.0f * _mass * _dampingRatio * omega;
+        float d = 2.0f * m_mass * m_dampingRatio * omega;
 
         // Spring stiffness
-        float k = _mass * omega * omega;
+        float k = m_mass * omega * omega;
 
         // magic formulas
         float h = data.step.dt;
 
         // gamma = 1 / (h * (d + h * k)), the extra factor of h in the denominator is since the lambda is an impulse, not a force
-        _gamma = h * (d + h * k);
-        _gamma = _gamma != 0.0f ? 1.0f / _gamma : 0.0f;
-        _bias  = C * h * k * _gamma;
+        m_gamma = h * (d + h * k);
+        m_gamma = m_gamma != 0.0f ? 1.0f / m_gamma : 0.0f;
+        m_bias  = C * h * k * m_gamma;
 
-        invMass += _gamma;
-        _mass  =  invMass != 0.0f ? 1.0f / invMass : 0.0f;
+        invMass += m_gamma;
+        m_mass  =  invMass != 0.0f ? 1.0f / invMass : 0.0f;
       }
       else {
-        _gamma = 0.0f;
-        _bias  = 0.0f;
+        m_gamma = 0.0f;
+        m_bias  = 0.0f;
       }
 
       if (data.step.warmStarting) {
         // Scale the impulse to support a variable time step.
-        _impulse *= data.step.dtRatio;
+        m_impulse *= data.step.dtRatio;
 
-        Vector2 P = _impulse * _u;
-        vA -= _invMassA * P;
-        wA -= _invIA    * Vectex.Cross(_rA, P);
-        vB += _invMassB * P;
-        wB += _invIB    * Vectex.Cross(_rB, P);
+        Vector2 P = m_impulse * m_u;
+        vA -= m_invMassA * P;
+        wA -= m_invIA    * Vectex.Cross(m_rA, P);
+        vB += m_invMassB * P;
+        wB += m_invIB    * Vectex.Cross(m_rB, P);
       }
       else {
-        _impulse = 0.0f;
+        m_impulse = 0.0f;
       }
 
-      data.velocities[_indexA].v = vA;
-      data.velocities[_indexA].w = wA;
-      data.velocities[_indexB].v = vB;
-      data.velocities[_indexB].w = wB;
+      data.velocities[m_indexA].v = vA;
+      data.velocities[m_indexA].w = wA;
+      data.velocities[m_indexB].v = vB;
+      data.velocities[m_indexB].w = wB;
     }
 
     internal override bool SolvePositionConstraints(in SolverData data) {
-      if (_frequencyHz > 0.0f) {
+      if (m_frequencyHz > 0.0f) {
         //There is no position correction for soft distance constraints.
         return true;
       }
 
-      Vector2 cA = data.positions[_indexA].c;
-      float  aA = data.positions[_indexA].a;
-      Vector2 cB = data.positions[_indexB].c;
-      float  aB = data.positions[_indexB].a;
+      Vector2 cA = data.positions[m_indexA].c;
+      float  aA = data.positions[m_indexA].a;
+      Vector2 cB = data.positions[m_indexB].c;
+      float  aB = data.positions[m_indexB].a;
 
       Rot qA = new Rot(aA), qB = new Rot(aB);
 
-      Vector2 rA = Math.Mul(qA, _localAnchorA - _localCenterA);
-      Vector2 rB = Math.Mul(qB, _localAnchorB - _localCenterB);
+      Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
+      Vector2 rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
       Vector2 u  = cB + rB - cA - rA;
 
       float length = u.Length();
       u = Vector2.Normalize(u);
-      float C      = length - _length;
+      float C      = length - m_length;
       C = System.Math.Clamp(C, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
 
-      float  impulse = -_mass * C;
+      float  impulse = -m_mass * C;
       Vector2 P       = impulse * u;
 
-      cA -= _invMassA * P;
-      aA -= _invIA    * Vectex.Cross(rA, P);
-      cB += _invMassB * P;
-      aB += _invIB    * Vectex.Cross(rB, P);
+      cA -= m_invMassA * P;
+      aA -= m_invIA    * Vectex.Cross(rA, P);
+      cB += m_invMassB * P;
+      aB += m_invIB    * Vectex.Cross(rB, P);
 
-      data.positions[_indexA].c = cA;
-      data.positions[_indexA].a = aA;
-      data.positions[_indexB].c = cB;
-      data.positions[_indexB].a = aB;
+      data.positions[m_indexA].c = cA;
+      data.positions[m_indexA].a = aA;
+      data.positions[m_indexB].c = cB;
+      data.positions[m_indexB].a = aB;
       
       return System.Math.Abs(C) < Settings.LinearSlop;
     }
 
     internal override void SolveVelocityConstraints(in SolverData data) {
-      Vector2 vA = data.velocities[_indexA].v;
-      float  wA = data.velocities[_indexA].w;
-      Vector2 vB = data.velocities[_indexB].v;
-      float  wB = data.velocities[_indexB].w;
+      Vector2 vA = data.velocities[m_indexA].v;
+      float  wA = data.velocities[m_indexA].w;
+      Vector2 vB = data.velocities[m_indexB].v;
+      float  wB = data.velocities[m_indexB].w;
 
       // Cdot = dot(u, v + cross(w, r))
-      Vector2 vpA  = vA + Vectex.Cross(wA, _rA);
-      Vector2 vpB  = vB + Vectex.Cross(wB, _rB);
-      float  Cdot = Vector2.Dot(_u, vpB - vpA);
+      Vector2 vpA  = vA + Vectex.Cross(wA, m_rA);
+      Vector2 vpB  = vB + Vectex.Cross(wB, m_rB);
+      float  Cdot = Vector2.Dot(m_u, vpB - vpA);
 
-      float impulse = -_mass * (Cdot + _bias + _gamma * _impulse);
-      _impulse += impulse;
+      float impulse = -m_mass * (Cdot + m_bias + m_gamma * m_impulse);
+      m_impulse += impulse;
 
-      Vector2 P = impulse * _u;
-      vA -= _invMassA * P;
-      wA -= _invIA    * Vectex.Cross(_rA, P);
-      vB += _invMassB * P;
-      wB += _invIB    * Vectex.Cross(_rB, P);
+      Vector2 P = impulse * m_u;
+      vA -= m_invMassA * P;
+      wA -= m_invIA    * Vectex.Cross(m_rA, P);
+      vB += m_invMassB * P;
+      wB += m_invIB    * Vectex.Cross(m_rB, P);
 
-      data.velocities[_indexA].v = vA;
-      data.velocities[_indexA].w = wA;
-      data.velocities[_indexB].v = vB;
-      data.velocities[_indexB].w = wB;
+      data.velocities[m_indexA].v = vA;
+      data.velocities[m_indexA].w = wA;
+      data.velocities[m_indexB].v = vB;
+      data.velocities[m_indexB].w = wB;
     }
   }
 }

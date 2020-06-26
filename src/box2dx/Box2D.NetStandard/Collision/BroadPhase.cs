@@ -57,109 +57,109 @@ namespace Box2D.NetStandard.Collision {
 
 
   internal class BroadPhase {
-    private DynamicTree _tree;
+    private readonly DynamicTree m_tree;
 
-    internal int _proxyCount;
+    private int m_proxyCount;
 
-    private int[] _moveBuffer;
-    private int   _moveCapacity;
-    private int   _moveCount;
+    private int[] m_moveBuffer;
+    private int   m_moveCapacity;
+    private int   m_moveCount;
 
-    private Pair[] _pairBuffer;
-    private int    _pairCapacity;
-    private int    _pairCount;
+    private Pair[] m_pairBuffer;
+    private int    m_pairCapacity;
+    private int    m_pairCount;
 
-    private int _queryProxyId;
+    private int m_queryProxyId;
 
     public BroadPhase() {
-      _proxyCount = 0;
+      m_proxyCount = 0;
 
-      _pairCapacity = 16;
-      _pairCount    = 0;
-      _pairBuffer   = new Pair[_pairCapacity];
+      m_pairCapacity = 16;
+      m_pairCount    = 0;
+      m_pairBuffer   = new Pair[m_pairCapacity];
 
-      _moveCapacity = 16;
-      _moveCount    = 0;
-      _moveBuffer   = new int[_moveCapacity];
+      m_moveCapacity = 16;
+      m_moveCount    = 0;
+      m_moveBuffer   = new int[m_moveCapacity];
 
-      _tree = new DynamicTree();
+      m_tree = new DynamicTree();
     }
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal object GetUserData(int proxyId) => _tree.GetUserData(proxyId);
+    internal object GetUserData(int proxyId) => m_tree.GetUserData(proxyId);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TestOverlap(int proxyIdA, int proxyIdB) {
-      AABB aabbA = _tree.GetFatAABB(proxyIdA);
-      AABB aabbB = _tree.GetFatAABB(proxyIdB);
+      AABB aabbA = m_tree.GetFatAABB(proxyIdA);
+      AABB aabbB = m_tree.GetFatAABB(proxyIdB);
       return Collision.TestOverlap(aabbA, aabbB);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public AABB GetFatAABB(int proxyId) => _tree.GetFatAABB(proxyId);
+    public AABB GetFatAABB(int proxyId) => m_tree.GetFatAABB(proxyId);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetProxyCount() => _proxyCount;
+    public int GetProxyCount() => m_proxyCount;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetTreeHeight() => _tree.GetHeight();
+    public int GetTreeHeight() => m_tree.GetHeight();
 
     public void UpdatePairs(Action<object, object> AddPair) {
-      _pairCount = 0;
+      m_pairCount = 0;
 
-      for (int i = 0; i < _moveCount; ++i) {
-        _queryProxyId = _moveBuffer[i];
-        if (_queryProxyId == -1) continue;
+      for (int i = 0; i < m_moveCount; ++i) {
+        m_queryProxyId = m_moveBuffer[i];
+        if (m_queryProxyId == -1) continue;
 
-        AABB fatAABB = _tree.GetFatAABB(_queryProxyId);
+        AABB fatAABB = m_tree.GetFatAABB(m_queryProxyId);
 
-        _tree.Query(QueryCallback, fatAABB);
+        m_tree.Query(QueryCallback, fatAABB);
       }
 
-      for (int i = 0; i < _pairCount; ++i) {
-        Pair   primaryPair = _pairBuffer[i];
-        object userDataA   = _tree.GetUserData(primaryPair.proxyIdA);
-        object userDataB   = _tree.GetUserData(primaryPair.proxyIdB);
+      for (int i = 0; i < m_pairCount; ++i) {
+        Pair   primaryPair = m_pairBuffer[i];
+        object userDataA   = m_tree.GetUserData(primaryPair.proxyIdA);
+        object userDataB   = m_tree.GetUserData(primaryPair.proxyIdB);
         AddPair(userDataA, userDataB);
       }
 
-      for (int i = 0; i < _moveCount; ++i) {
-        int proxyId = _moveBuffer[i];
+      for (int i = 0; i < m_moveCount; ++i) {
+        int proxyId = m_moveBuffer[i];
         if (proxyId == -1) continue;
-        _tree.ClearMoved(proxyId);
+        m_tree.ClearMoved(proxyId);
       }
 
-      _moveCount = 0;
+      m_moveCount = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Query(Func<int, bool> queryCallback, in AABB aabb) => _tree.Query(queryCallback, in aabb);
+    public void Query(Func<int, bool> queryCallback, in AABB aabb) => m_tree.Query(queryCallback, in aabb);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RayCast(Func<RayCastInput, int, float> RayCastCallback, in RayCastInput input) =>
-      _tree.RayCast(RayCastCallback, in input);
+      m_tree.RayCast(RayCastCallback, in input);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ShiftOrigin(in Vector2 newOrigin) => _tree.ShiftOrigin(in newOrigin);
+    public void ShiftOrigin(in Vector2 newOrigin) => m_tree.ShiftOrigin(in newOrigin);
 
     public int CreateProxy(in AABB aabb, object userData) {
-      int proxyId = _tree.CreateProxy(aabb, userData);
-      ++_proxyCount;
+      int proxyId = m_tree.CreateProxy(aabb, userData);
+      ++m_proxyCount;
       BufferMove(proxyId);
       return proxyId;
     }
 
     public void DestroyProxy(int proxyId) {
       UnBufferMove(proxyId);
-      --_proxyCount;
-      _tree.DestroyProxy(proxyId);
+      --m_proxyCount;
+      m_tree.DestroyProxy(proxyId);
     }
 
     // Call MoveProxy as many times as you like, then when you are done
     // call Commit to finalized the proxy pairs (for your time step).
     public void MoveProxy(int proxyId, in AABB aabb, in Vector2 displacement) {
-      bool buffer = _tree.MoveProxy(proxyId, aabb, displacement);
+      bool buffer = m_tree.MoveProxy(proxyId, aabb, displacement);
       if (buffer) {
         BufferMove(proxyId);
       }
@@ -171,48 +171,48 @@ namespace Box2D.NetStandard.Collision {
 
 
     private void BufferMove(int proxyId) {
-      if (_moveCount == _moveCapacity) {
-        int[] oldBuffer = _moveBuffer;
-        _moveCapacity *= 2;
-        _moveBuffer   =  new int[_moveCapacity];
-        Array.Copy(oldBuffer, _moveBuffer, _moveCount);
+      if (m_moveCount == m_moveCapacity) {
+        int[] oldBuffer = m_moveBuffer;
+        m_moveCapacity *= 2;
+        m_moveBuffer   =  new int[m_moveCapacity];
+        Array.Copy(oldBuffer, m_moveBuffer, m_moveCount);
       }
 
-      _moveBuffer[_moveCount] = proxyId;
-      ++_moveCount;
+      m_moveBuffer[m_moveCount] = proxyId;
+      ++m_moveCount;
     }
 
     private void UnBufferMove(int proxyId) {
-      for (int i = 0; i < _moveCount; ++i) {
-        if (_moveBuffer[i] == proxyId) {
-          _moveBuffer[i] = -1;
+      for (int i = 0; i < m_moveCount; ++i) {
+        if (m_moveBuffer[i] == proxyId) {
+          m_moveBuffer[i] = -1;
         }
       }
     }
 
     private bool QueryCallback(int proxyId) {
       // A proxy cannot form a pair with itself.
-      if (proxyId == _queryProxyId) {
+      if (proxyId == m_queryProxyId) {
         return true;
       }
 
-      bool moved = _tree.WasMoved(proxyId);
-      if (moved && proxyId > _queryProxyId) {
+      bool moved = m_tree.WasMoved(proxyId);
+      if (moved && proxyId > m_queryProxyId) {
         // Both proxies are moving. Avoid duplicate pairs.
         return true;
       }
 
       // Grow the pair buffer as needed.
-      if (_pairCount == _pairCapacity) {
-        Pair[] oldBuffer = _pairBuffer;
-        _pairCapacity = _pairCapacity + (_pairCapacity >> 1);
-        _pairBuffer   = new Pair[_pairCapacity];
-        Array.Copy(oldBuffer, _pairBuffer, _pairCount);
+      if (m_pairCount == m_pairCapacity) {
+        Pair[] oldBuffer = m_pairBuffer;
+        m_pairCapacity = m_pairCapacity + (m_pairCapacity >> 1);
+        m_pairBuffer   = new Pair[m_pairCapacity];
+        Array.Copy(oldBuffer, m_pairBuffer, m_pairCount);
       }
 
-      _pairBuffer[_pairCount].proxyIdA = Math.Min(proxyId, _queryProxyId);
-      _pairBuffer[_pairCount].proxyIdB = Math.Max(proxyId, _queryProxyId);
-      ++_pairCount;
+      m_pairBuffer[m_pairCount].proxyIdA = Math.Min(proxyId, m_queryProxyId);
+      m_pairBuffer[m_pairCount].proxyIdB = Math.Max(proxyId, m_queryProxyId);
+      ++m_pairCount;
 
       return true;
     }

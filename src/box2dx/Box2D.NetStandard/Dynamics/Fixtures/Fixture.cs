@@ -193,7 +193,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 			}
 
 			// Touch each proxy so that new pairs may be created
-			BroadPhase broadPhase = world._contactManager.m_broadPhase;
+			BroadPhase broadPhase = world.m_contactManager.m_broadPhase;
 			for (int i = 0; i < m_proxyCount; ++i)
 			{
 				broadPhase.TouchProxy(m_proxies[i].proxyId);

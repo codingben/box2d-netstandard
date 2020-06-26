@@ -16,8 +16,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction {
       get => m_localAnchorB;
     }
 
-    public override Vector2 GetAnchorA                      => _bodyA.GetWorldPoint(m_localAnchorA);
-    public override Vector2 GetAnchorB                      => _bodyB.GetWorldPoint(m_localAnchorB);
+    public override Vector2 GetAnchorA                      => m_bodyA.GetWorldPoint(m_localAnchorA);
+    public override Vector2 GetAnchorB                      => m_bodyB.GetWorldPoint(m_localAnchorB);
     public override Vector2 GetReactionForce(float  inv_dt) => inv_dt * m_linearImpulse;
     public override float   GetReactionTorque(float inv_dt) => inv_dt * m_angularImpulse;
 
@@ -49,14 +49,14 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction {
     /// Dump joint to dmLog
     // public override void Dump();
     internal override void InitVelocityConstraints(in SolverData data) {
-      m_indexA       = _bodyA._islandIndex;
-      m_indexB       = _bodyB._islandIndex;
-      m_localCenterA = _bodyA._sweep.localCenter;
-      m_localCenterB = _bodyB._sweep.localCenter;
-      m_invMassA     = _bodyA._invMass;
-      m_invMassB     = _bodyB._invMass;
-      m_invIA        = _bodyA._invI;
-      m_invIB        = _bodyB._invI;
+      m_indexA       = m_bodyA.m_islandIndex;
+      m_indexB       = m_bodyB.m_islandIndex;
+      m_localCenterA = m_bodyA.m_sweep.localCenter;
+      m_localCenterB = m_bodyB.m_sweep.localCenter;
+      m_invMassA     = m_bodyA.m_invMass;
+      m_invMassB     = m_bodyB.m_invMass;
+      m_invIA        = m_bodyA.m_invI;
+      m_invIB        = m_bodyB.m_invI;
 
       float   aA = data.positions[m_indexA].a;
       Vector2 vA = data.velocities[m_indexA].v;
