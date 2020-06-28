@@ -83,8 +83,8 @@ namespace Box2D.NetStandard.Dynamics.World {
         c.m_nodeA.next.prev = c.m_nodeA.prev;
       }
 
-      if (c.m_nodeA == bodyA._contactList) {
-        bodyA._contactList = c.m_nodeA.next;
+      if (c.m_nodeA == bodyA.m_contactList) {
+        bodyA.m_contactList = c.m_nodeA.next;
       }
 
       // Remove from body 2
@@ -96,12 +96,12 @@ namespace Box2D.NetStandard.Dynamics.World {
         c.m_nodeB.next.prev = c.m_nodeB.prev;
       }
 
-      if (c.m_nodeB == bodyB._contactList) {
-        bodyB._contactList = c.m_nodeB.next;
+      if (c.m_nodeB == bodyB.m_contactList) {
+        bodyB.m_contactList = c.m_nodeB.next;
       }
-
-      // Call the factory.
-      Contact.Destroy(ref c);
+      
+      // provided all the above removes all references, it'll be picked up by the GC
+      
       --m_contactCount;
     }
 
@@ -138,8 +138,8 @@ namespace Box2D.NetStandard.Dynamics.World {
           c.m_flags &= ~CollisionFlags.Filter;
         }
 
-        bool activeA = bodyA.IsAwake() && bodyA._type != BodyType.Static;
-        bool activeB = bodyB.IsAwake() && bodyB._type != BodyType.Static;
+        bool activeA = bodyA.IsAwake() && bodyA.m_type != BodyType.Static;
+        bool activeB = bodyB.IsAwake() && bodyB.m_type != BodyType.Static;
 
         // At least one body must be awake and it must be dynamic or kinematic.
         if (activeA == false && activeB == false) {
@@ -252,24 +252,24 @@ namespace Box2D.NetStandard.Dynamics.World {
       c.m_nodeA.other   = bodyB;
 
       c.m_nodeA.prev = null;
-      c.m_nodeA.next = bodyA._contactList;
-      if (bodyA._contactList != null) {
-        bodyA._contactList.prev = c.m_nodeA;
+      c.m_nodeA.next = bodyA.m_contactList;
+      if (bodyA.m_contactList != null) {
+        bodyA.m_contactList.prev = c.m_nodeA;
       }
 
-      bodyA._contactList = c.m_nodeA;
+      bodyA.m_contactList = c.m_nodeA;
 
       // Connect to body B
       c.m_nodeB.contact = c;
       c.m_nodeB.other   = bodyA;
 
       c.m_nodeB.prev = null;
-      c.m_nodeB.next = bodyB._contactList;
-      if (bodyB._contactList != null) {
-        bodyB._contactList.prev = c.m_nodeB;
+      c.m_nodeB.next = bodyB.m_contactList;
+      if (bodyB.m_contactList != null) {
+        bodyB.m_contactList.prev = c.m_nodeB;
       }
 
-      bodyB._contactList = c.m_nodeB;
+      bodyB.m_contactList = c.m_nodeB;
 
       ++m_contactCount;
     }

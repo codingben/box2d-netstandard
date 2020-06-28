@@ -49,7 +49,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 	{
 		internal float m_density;
 
-		internal Fixture m_next;
+		internal Fixture? m_next;
 		internal Body m_body;
 
 		private Shape m_shape;
@@ -64,18 +64,14 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 		private bool m_isSensor;
 
-		private object m_userData;
+		private object? m_userData;
 
 
 		// non-public default constructor
 		internal Fixture()
 		{
 			m_userData = null;
-			m_body = null;
-			m_next = null;
-			m_proxies = null;
 			m_proxyCount = 0;
-			m_shape = null;
 			m_density = 0f;
 		}
 
@@ -105,19 +101,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 			m_density = def.density;
 		}
-
-		public void Destroy()
-		{
-// The proxies must be destroyed before calling this.
-			//Debug.Assert(m_proxyCount == 0);
-
-			// Free the proxy array.
-			int childCount = m_shape.GetChildCount();
-			m_proxies = null;
-			
-			m_shape = null;
-		}
-
+		
 		internal void CreateProxies(BroadPhase broadPhase, in Transform xf)
 		{
 			//Debug.Assert(m_proxyCount == 0);
@@ -178,8 +162,8 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 			Refilter();
 		}
-		
-		void Refilter()
+
+		public void Refilter()
 		{
 			if (m_body == null)
 			{
@@ -209,7 +193,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 			}
 
 			// Touch each proxy so that new pairs may be created
-			BroadPhase broadPhase = world._contactManager.m_broadPhase;
+			BroadPhase broadPhase = world.m_contactManager.m_broadPhase;
 			for (int i = 0; i < m_proxyCount; ++i)
 			{
 				broadPhase.TouchProxy(m_proxies[i].proxyId);
@@ -238,10 +222,14 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
 		Filter GetFilterData() => m_filter;
 
-		private Filter FilterData {
+		public Filter FilterData {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-
 			get => m_filter;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set {
+				m_filter = value;
+				Refilter();
+			}
 		}
 
 		public Body Body {
@@ -272,7 +260,12 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set => m_restitution = value;
 		}
-		
+
+		public object UserData {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => m_userData;
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TestPoint(in Vector2 p) => m_shape.TestPoint(m_body.GetTransform(), p);
 

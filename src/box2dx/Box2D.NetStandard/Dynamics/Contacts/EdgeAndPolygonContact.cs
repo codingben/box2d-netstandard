@@ -36,17 +36,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 	{
 		private static readonly Collider<EdgeShape,PolygonShape> collider = new EdgeAndPolygonCollider();
 
-		private EdgeAndPolygonContact(Fixture fixtureA, Fixture fixtureB)
-			: base(fixtureA,0, fixtureB,0)
-		{
-			//Debug.Assert(fixtureA.Type == ShapeType.Edge);
-			//Debug.Assert(fixtureB.Type == ShapeType.Polygon); 
-		}
 
-		internal static Contact Create(Fixture fixtureA, Fixture fixtureB)
-		{
-			return new EdgeAndPolygonContact(fixtureA, fixtureB);
-		}
 
 		internal static void Destroy(ref Contact contact)
 		{
@@ -57,5 +47,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 			collider.Collide(out manifold, (EdgeShape) m_fixtureA.Shape, in xfA,
 			                                          (PolygonShape) m_fixtureB.Shape, in xfB);
 		}
+
+		public EdgeAndPolygonContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB) { }
 	}
 }

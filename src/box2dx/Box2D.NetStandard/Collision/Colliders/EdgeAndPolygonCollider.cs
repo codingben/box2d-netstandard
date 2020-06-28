@@ -175,7 +175,7 @@ namespace Box2D.NetStandard.Collision {
       m_polygonB.count = polygonB.m_count;
       for (int i = 0; i < polygonB.m_count; ++i) {
         m_polygonB.vertices[i] = Math.Mul(xf,   polygonB.m_vertices[i]);
-        m_polygonB.normals[i]  = Math.Mul(xf.q, polygonB.m_normals[i]);
+        m_polygonB.normals[i]  = Vector2.Transform( polygonB.m_normals[i],xf.q);
       }
 
       float m_radius = polygonB.m_radius + edgeA.m_radius;

@@ -18,23 +18,35 @@ namespace Box2D.WindowTests
 {
     public static class Program
     {
-        private static readonly World world;
+        private static World world;
+        private static Body focusBody;
         private const bool stepByStep = false;
 
-        static Program()
-        {
+        static Program() {
+            CreateWorld();
+        }
+
+        static void CreateWorld(){
             //world = CreateWorld();
             world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
+            //world = AddPair.CreateWorld();
             //world = CollisionTest.CreateWorld();
             //world = PolyEdgeTest.CreateWorld();
             //world = DistanceJointProblem.CreateWorld();
+
+            // Car Test
+            // world     = Car.CreateWorld(out Body[] bodies, out Joint[] joints);
+            // focusBody = bodies[8];
+            //
+
+            //world = box2dBug604.CreateWorld();
         }
 
         private static void Main()
         {
             var windowThread = new Thread(new ThreadStart(() =>
             {
-                var game = new SimulationWindow("Physics Simulation", 800, 600);
+                var game = new SimulationWindow("Physics Simulation", 800, 600, focusBody);
                 game.UpdateFrame += OnUpdateFrame;
                 game.Disposed += OnDisposed;
                 game.SetView(new CameraView());
@@ -63,11 +75,11 @@ namespace Box2D.WindowTests
             // in most game scenarios.
             const float TimeStep = 1.0f / 60.0f;
             const int VelocityIterations = 8;
-            const int PositionIterations = 3;
+            const int PositionIterations = 8;
 
             // Instruct the world to perform a single step of simulation. It is
             // generally best to keep the time step and iterations fixed.
-            if (SimulationWindow.stepNext || !stepByStep) {
+            if ((SimulationWindow.stepNext || !stepByStep) && !SimulationWindow.paused) {
                 world?.Step(TimeStep, VelocityIterations, PositionIterations);
                 SimulationWindow.stepNext = false;
             }

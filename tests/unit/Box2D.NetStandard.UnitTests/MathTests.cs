@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Numerics;
 using System.Timers;
@@ -15,7 +16,35 @@ namespace Box2D.NetStandard.UnitTests {
     }
 
     [Fact]
-    public void Test1() {
+    public void CompareInvertSpeed() {
+      Matrix3x2 input = new Matrix3x2();
+      for (int i = 0; i < 10; i++) {
+        Stopwatch w = Stopwatch.StartNew();
+        for (int j = 0; j < 10000000; j++) {
+          Matrix3x2.Invert(input, out Matrix3x2 result);
+          input = result;
+        }
+
+        w.Stop();
+        output.WriteLine("builtin: " + w.ElapsedMilliseconds);
+
+        w.Restart();
+        for (int j = 0; j < 10000000; j++) {
+          Matrex.Invert(input, out Matrix3x2 result);
+          input = result;
+        }
+        w.Stop();
+        output.WriteLine("ours: " + w.ElapsedMilliseconds);
+
+        
+      }
+        
+      
+    }
+    
+    
+    [Fact]
+    public void CompareCreateRotationSpeed() {
       for (int i = 0; i < 100; i++) {
         Matrix3x2 ex1 = Matrix3x2.CreateRotation(i / Settings.Pi);
         Matrix3x2 ex2 = Matrex.CreateRotation(i    / Settings.Pi);

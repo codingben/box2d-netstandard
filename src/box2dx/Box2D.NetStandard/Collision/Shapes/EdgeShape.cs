@@ -120,13 +120,11 @@ namespace Box2D.NetStandard.Collision.Shapes
       }
 
       output.fraction = t;
-      if (numerator > 0.0f)
-      {
-        output.normal = -Math.Mul(xf.q, normal);
+      if (numerator > 0.0f) {
+        output.normal = -Vector2.Transform(normal, xf.q); //   Math.Mul(xf.q, normal);
       }
-      else
-      {
-        output.normal = Math.Mul(xf.q, normal);
+      else {
+        output.normal = Vector2.Transform(normal, xf.q); //Math.Mul(xf.q, normal);
       }
       return true;
     }

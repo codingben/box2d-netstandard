@@ -30,7 +30,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Common {
-  internal class Math {
+  internal static class Math {
     internal const ushort USHRT_MAX  = ushort.MaxValue;
     internal const byte   UCHAR_MAX  = byte.MaxValue;
     internal const int    RAND_LIMIT = 32767;
@@ -148,6 +148,7 @@ namespace Box2D.NetStandard.Common {
     // [MethodImpl(MethodImplOptions.AggressiveInlining)]
     // internal static Vector2 Mul(Mat22 A, Vector2 v) =>
     //   new Vector2(A.ex.X * v.X + A.ey.X * v.Y, A.ex.Y * v.X + A.ey.Y * v.Y);
+    [Obsolete("Use Vector2.Transform instead",true)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 Mul(Matrix3x2 A, Vector2 v) =>
       Vector2.Transform(v, A);
@@ -160,7 +161,7 @@ namespace Box2D.NetStandard.Common {
     // internal static Vector2 MulT(Mat22 A, Vector2 v) => new Vector2(Vector2.Dot(v, A.ex), Vector2.Dot(v, A.ey));
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 MulT(Matrix3x2 A, Vector2 v) {
-      Matrix3x2.Invert(A, out Matrix3x2 AT);
+      /*Matrix3x2*/ Matrex.Invert(A, out Matrix3x2 AT);
       return Vector2.Transform(v, AT);
     }
 
@@ -190,12 +191,12 @@ namespace Box2D.NetStandard.Common {
     // }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Matrix3x2 MulT(Matrix3x2 A, Matrix3x2 B) {
-      Matrix3x2.Invert(A, out Matrix3x2 AT);
+      /*Matrix3x2*/ Matrex.Invert(A, out Matrix3x2 AT);
       return AT * B;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector2 Mul(Transform T, Vector2 v) => T.p + Mul(T.q, v);
+    internal static Vector2 Mul(Transform T, Vector2 v) => T.p + Vector2.Transform(v, T.q);  //Mul(T.q, v);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 MulT(Transform T, Vector2 v) => MulT(T.q, v - T.p);
@@ -205,11 +206,7 @@ namespace Box2D.NetStandard.Common {
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector3 Mul(Mat33 A, Vector3 v) => v.X * A.ex + v.Y * A.ey + v.Z * A.ez;
-
-    [Obsolete("Use MathF.Atan2", true)]
-    internal static float Atan2(float y, float x) {
-      return (float) System.Math.Atan2(y, x);
-    }
+    
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 Mul(Rot q, Vector2 v) =>
@@ -228,7 +225,7 @@ namespace Box2D.NetStandard.Common {
     internal static Transform Mul(in Transform A, in Transform B) {
       Transform C;
       C.q = Mul(A.q, B.q);
-      C.p = Mul(A.q, B.p) + A.p;
+      C.p = A.p + Vector2.Transform(B.p, A.q); //Mul(A.q, B.p);
       return C;
     }
 

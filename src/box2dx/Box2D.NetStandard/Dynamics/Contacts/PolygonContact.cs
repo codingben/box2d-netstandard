@@ -36,26 +36,11 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 	{
 		private static readonly Collider<PolygonShape,PolygonShape> collider = new PolygonAndPolygonCollider();
 		
-		public PolygonContact(Fixture fixtureA, Fixture fixtureB)
-			: base(fixtureA,0, fixtureB,0)
-		{
-			//Debug.Assert(fixtureA.Type == ShapeType.Polygon);
-			//Debug.Assert(fixtureB.Type == ShapeType.Polygon);
-		}
-
-		
-		public new static Contact Create(Fixture fixtureA, Fixture fixtureB)
-		{
-			return new PolygonContact(fixtureA, fixtureB);
-		}
-
-		public new static void Destroy(ref Contact contact)
-		{
-			contact = null;
-		}
 
 		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
 			collider.Collide(out manifold, (PolygonShape)m_fixtureA.Shape, in xfA, (PolygonShape)m_fixtureB.Shape, in xfB);
 		}
+
+		public PolygonContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB) { }
 	}
 }

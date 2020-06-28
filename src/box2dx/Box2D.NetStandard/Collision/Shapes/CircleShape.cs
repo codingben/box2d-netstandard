@@ -37,7 +37,7 @@ namespace Box2D.NetStandard.Collision.Shapes
 	/// A circle shape.
 	/// </summary>
 	public class CircleShape : Shape {
-		public Vector2 m_p;
+		internal Vector2 m_p;
 
 		public CircleShape() {
 			m_type = ShapeType.Circle;
@@ -64,15 +64,15 @@ namespace Box2D.NetStandard.Collision.Shapes
 		public override int GetChildCount() => 1;
 
 		public override bool TestPoint(in Transform transform, in Vector2 p) {
-			Vector2 center = transform.p + Math.Mul(transform.q, m_p);
+			Vector2 center = transform.p + Vector2.Transform(m_p, transform.q);//   Math.Mul(transform.q, m_p);
 			Vector2 d      = p           - center;
 			return Vector2.Dot(d, d) <= m_radius * m_radius;
 		}
 
 		public override bool RayCast(out RayCastOutput output, in RayCastInput input, in Transform transform, int childIndex) {
 			output = default;
-			
-			Vector2 position = transform.p + Math.Mul(transform.q, m_p);
+
+			Vector2 position = transform.p + Vector2.Transform(m_p, transform.q); // Math.Mul(transform.q, m_p);
 			Vector2 s        = input.p1    - position;
 			float  b        = Vector2.Dot(s, s) - m_radius * m_radius;
 
@@ -104,7 +104,7 @@ namespace Box2D.NetStandard.Collision.Shapes
 		}
 
 		public override void ComputeAABB(out AABB aabb, in Transform transform, int childIndex) {
-			Vector2 p = transform.p   + Math.Mul(transform.q, m_p);
+			Vector2 p = transform.p + Vector2.Transform(m_p, transform.q); // Math.Mul(transform.q, m_p);
 			aabb.lowerBound=new Vector2(p.X - m_radius, p.Y - m_radius);
 			aabb.upperBound=new Vector2(p.X + m_radius, p.Y + m_radius);
 		}

@@ -31,9 +31,8 @@ using Box2D.NetStandard.Dynamics.Contacts;
 
 namespace Box2D.NetStandard.Collision {
   public static class TOI {
-    internal static TOIOutput TimeOfImpact(in TOIInput input) {
+    internal static void TimeOfImpact(out TOIOutput output, in TOIInput input) {
 
-      TOIOutput output = default;
       //++_toiCalls;
       output.t = input.tMax;
       output.state = TOIOutputState.Unknown;
@@ -57,12 +56,10 @@ namespace Box2D.NetStandard.Collision {
       //Debug.Assert(target > tolerance);
 
       float     t1              = 0.0f;
-      const int k_maxIterations = 20; // TODO_ERIN b2Settings
       int       iter            = 0;
 
       // Prepare input for distance query.
       SimplexCache cache = new SimplexCache();
-      cache.count = 0;
       DistanceInput distanceInput;
       distanceInput.proxyA   = input.proxyA;
       distanceInput.proxyB   = input.proxyB;
@@ -70,6 +67,7 @@ namespace Box2D.NetStandard.Collision {
 
       // The outer loop progressively attempts to compute new separating axes.
       // This loop terminates when an axis is repeated (no progress is made).
+      SeparationFunction fcn = default;
       for (;;) {
         sweepA.GetTransform(out Transform xfA, t1);
         sweepB.GetTransform(out Transform xfB, t1);
@@ -96,7 +94,7 @@ namespace Box2D.NetStandard.Collision {
         }
 
         // Initialize the separating axis.
-        SeparationFunction fcn = default;
+        
         fcn.Initialize(cache, proxyA, sweepA, proxyB, sweepB, t1);
 
         // Compute the TOI on the separating axis. We do this by successively
@@ -146,9 +144,9 @@ namespace Box2D.NetStandard.Collision {
           }
 
           // Compute 1D root of: f(x) - target = 0
-          int   rootIterCount = 0;
+          //int   rootIterCount = 0;
           float a1            = t1, a2 = t2;
-          for (;;) {
+          for (int rootIterCount = 0; rootIterCount<50; ++rootIterCount) {
             // Use a mix of the secant rule and bisection.
             float t;
             if ((rootIterCount & 1) > 0) {
@@ -160,7 +158,7 @@ namespace Box2D.NetStandard.Collision {
               t = 0.5f * (a1 + a2);
             }
 
-            ++rootIterCount;
+            //++rootIterCount;
             //++b2_toiRootIters;
 
             float s = fcn.Evaluate(indexA, indexB, t);
@@ -181,9 +179,9 @@ namespace Box2D.NetStandard.Collision {
               s2 = s;
             }
 
-            if (rootIterCount == 50) {
-              break;
-            }
+            // if (rootIterCount == 50) {
+            //   break;
+            // }
           }
 
           //b2_toiMaxRootIters = b2Max(b2_toiMaxRootIters, rootIterCount);
@@ -202,7 +200,7 @@ namespace Box2D.NetStandard.Collision {
           break;
         }
 
-        if (iter == k_maxIterations) {
+        if (iter == Settings.MaxTOIIterations) {
           // Root finder got stuck. Semi-victory.
           output.state = TOIOutputState.Failed;
           output.t     = t1;
@@ -215,7 +213,6 @@ namespace Box2D.NetStandard.Collision {
       // float time = timer.GetMilliseconds();
       // b2_toiMaxTime = b2Max(b2_toiMaxTime, time);
       // b2_toiTime += time;
-      return output;
     }
   }
 }

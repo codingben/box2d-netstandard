@@ -31,23 +31,18 @@ namespace Box2D.NetStandard.Common
 {
 	public class Settings
 	{
-		
+		public const int MaxTOIIterations = 20;
+
 		public const float AABBMultiplier = 4.0f;
 		public const float AABBExtension = 0.1f;
 		public const int MaxTOIContacts = 32;
 		public const int MaxSubSteps = 8;
-#if TARGET_FLOAT32_IS_FIXED
-		public const float FLT_EPSILON = FIXED_EPSILON;
-		public const float FLT_MAX = FIXED_MAX;
-		public static float	FORCE_SCALE2(x){ return x<<7;}
-		public static float FORCE_INV_SCALE2(x)	{return x>>7;}
-#else
 
 		public const float FLT_EPSILON = float.Epsilon; //1.192092896e-07F;//smallest such that 1.0f+FLT_EPSILON != 1.0f
 		public const float FLT_EPSILON_SQUARED = FLT_EPSILON * FLT_EPSILON;//smallest such that 1.0f+FLT_EPSILON != 1.0f
 		public static float FORCE_SCALE(float x) { return x; }
 		public static float FORCE_INV_SCALE(float x) { return x; }
-#endif
+
 
 		public const float Pib2 = 3.14159265359f; // Original code. Comes out at 3.1415927f
 		public const float Pi = MathF.PI; // Also 3.1415927f
@@ -122,20 +117,14 @@ namespace Box2D.NetStandard.Common
 		/// The maximum linear velocity of a body. This limit is very large and is used
 		/// to prevent numerical problems. You shouldn't need to adjust this.
 		/// </summary>
-#if TARGET_FLOAT32_IS_FIXED
-		public const float MaxLinearVelocity = 100.0f;
-#else
 		public const float MaxLinearVelocity = 200.0f;
 		public const float MaxLinearVelocitySquared = MaxLinearVelocity * MaxLinearVelocity;
-#endif
+
 		/// <summary>
 		/// The maximum angular velocity of a body. This limit is very large and is used
 		/// to prevent numerical problems. You shouldn't need to adjust this.
 		/// </summary>
 		public const float MaxAngularVelocity = 250.0f;
-#if !TARGET_FLOAT32_IS_FIXED
-		public const float MaxAngularVelocitySquared = MaxAngularVelocity * MaxAngularVelocity;
-#endif
 
 		/// <summary>
 		/// The maximum linear velocity of a body. This limit is very large and is used

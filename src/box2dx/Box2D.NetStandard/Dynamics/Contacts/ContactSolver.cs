@@ -75,15 +75,15 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
         _velocityConstraints[i] = new ContactVelocityConstraint();
         ContactVelocityConstraint vc = _velocityConstraints[i];
-        vc.friction     = contact._friction;
-        vc.restitution  = contact._restitution;
-        vc.tangentSpeed = contact._tangentSpeed;
-        vc.indexA       = bodyA._islandIndex;
-        vc.indexB       = bodyB._islandIndex;
-        vc.invMassA     = bodyA._invMass;
-        vc.invMassB     = bodyB._invMass;
-        vc.invIA        = bodyA._invI;
-        vc.invIB        = bodyB._invI;
+        vc.friction     = contact.m_friction;
+        vc.restitution  = contact.m_restitution;
+        vc.tangentSpeed = contact.m_tangentSpeed;
+        vc.indexA       = bodyA.m_islandIndex;
+        vc.indexB       = bodyB.m_islandIndex;
+        vc.invMassA     = bodyA.m_invMass;
+        vc.invMassB     = bodyB.m_invMass;
+        vc.invIA        = bodyA.m_invI;
+        vc.invIB        = bodyB.m_invI;
         vc.contactIndex = i;
         vc.pointCount   = pointCount;
         vc.K = new Matrix3x2();// .SetZero();
@@ -91,14 +91,14 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
         _positionConstraints[i] = new ContactPositionConstraint();
         ContactPositionConstraint pc = _positionConstraints[i];
-        pc.indexA       = bodyA._islandIndex;
-        pc.indexB       = bodyB._islandIndex;
-        pc.invMassA     = bodyA._invMass;
-        pc.invMassB     = bodyB._invMass;
-        pc.localCenterA = bodyA._sweep.localCenter;
-        pc.localCenterB = bodyB._sweep.localCenter;
-        pc.invIA        = bodyA._invI;
-        pc.invIB        = bodyB._invI;
+        pc.indexA       = bodyA.m_islandIndex;
+        pc.indexB       = bodyB.m_islandIndex;
+        pc.invMassA     = bodyA.m_invMass;
+        pc.invMassB     = bodyB.m_invMass;
+        pc.localCenterA = bodyA.m_sweep.localCenter;
+        pc.localCenterB = bodyB.m_sweep.localCenter;
+        pc.invIA        = bodyA.m_invI;
+        pc.invIB        = bodyB.m_invI;
         pc.localNormal  = manifold.localNormal;
         pc.localPoint   = manifold.localPoint;
         pc.pointCount   = pointCount;
@@ -168,8 +168,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
         xfA.q = Matrex.CreateRotation(aA);// Actually about twice as fast to use our own function
         xfB.q = Matrex.CreateRotation(aB);// Actually about twice as fast to use our own function
-        xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
-        xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
+        xfA.p = cA - Vector2.Transform(localCenterA, xfA.q); // Common.Math.Mul(xfA.q, localCenterA);
+        xfB.p = cB - Vector2.Transform(localCenterB, xfB.q); // Common.Math.Mul(xfB.q, localCenterB);
 
         WorldManifold worldManifold = new WorldManifold();
         worldManifold.Initialize(manifold, xfA, radiusA, xfB, radiusB);
@@ -228,7 +228,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             
             // vc.K.ex       = new Vector2(k11, k12);
             // vc.K.ey       = new Vector2(k12, k22);
-            Matrix3x2.Invert(vc.K, out Matrix3x2 KT);
+            /*Matrix3x2*/ Matrex.Invert(vc.K, out Matrix3x2 KT);
             vc.normalMass = KT;
           }
           else {
@@ -403,12 +403,11 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           float vn1 = Vector2.Dot(dv1, normal);
           float vn2 = Vector2.Dot(dv2, normal);
 
-          Vector2 b = new Vector2();
-          b.X = vn1 - cp1.velocityBias;
-          b.Y = vn2 - cp2.velocityBias;
+          Vector2 b = new Vector2((float)(vn1 - cp1.velocityBias),
+                                  (float)(vn2 - cp2.velocityBias));
 
           // Compute b'
-          b -= Common.Math.Mul(vc.K, a);
+          b -= Vector2.Transform(a, vc.K); // Common.Math.Mul(vc.K, a);
 
           const float k_errorTol = 1e-3f;
           //B2_NOT_USED(k_errorTol);
@@ -423,7 +422,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             //
             // x = - inv(A) * b'
             //
-            Vector2 x = -Common.Math.Mul(vc.normalMass, b);
+            Vector2 x = -Vector2.Transform(b, vc.normalMass);    //Common.Math.Mul(vc.normalMass, b);
 
             if (x.X >= 0.0f && x.Y >= 0.0f) {
               // Get the incremental impulse
@@ -597,7 +596,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             break;
           }
           case ManifoldType.FaceA: {
-            normal = Common.Math.Mul(xfA.q, pc.localNormal);
+            normal = Vector2.Transform(pc.localNormal, xfA.q); // Common.Math.Mul(xfA.q, pc.localNormal);
             Vector2 planePoint = Common.Math.Mul(xfA, pc.localPoint);
 
             Vector2 clipPoint = Common.Math.Mul(xfB, pc.localPoints[index]);
@@ -609,7 +608,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
 
           case ManifoldType.FaceB: {
-            normal = Common.Math.Mul(xfB.q, pc.localNormal);
+            normal = Vector2.Transform(pc.localNormal, xfB.q); // Common.Math.Mul(xfB.q, pc.localNormal);
             Vector2 planePoint = Common.Math.Mul(xfB, pc.localPoint);
 
             Vector2 clipPoint = Common.Math.Mul(xfA, pc.localPoints[index]);
@@ -665,8 +664,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           Transform xfB = new Transform();
           xfA.q = Matrex.CreateRotation(aA);// Actually about twice as fast to use our own function
           xfB.q = Matrex.CreateRotation(aB);// Actually about twice as fast to use our own function
-          xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
-          xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
+          xfA.p = cA - Vector2.Transform(localCenterA, xfA.q); // Common.Math.Mul(xfA.q, localCenterA);
+          xfB.p = cB - Vector2.Transform(localCenterB, xfB.q); // Common.Math.Mul(xfB.q, localCenterB);
 
           PositionSolverManifold psm = new PositionSolverManifold();
           psm.Initialize(pc, xfA, xfB, j);
@@ -753,8 +752,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           Transform xfB = new Transform();
           xfA.q = Matrex.CreateRotation(aA); // Actually about twice as fast to use our own function
           xfB.q = Matrex.CreateRotation(aB); // Actually about twice as fast to use our own function
-          xfA.p = cA - Common.Math.Mul(xfA.q, localCenterA);
-          xfB.p = cB - Common.Math.Mul(xfB.q, localCenterB);
+          xfA.p = cA - Vector2.Transform(localCenterA, xfA.q); // Common.Math.Mul(xfA.q, localCenterA);
+          xfB.p = cB - Vector2.Transform(localCenterB, xfB.q); // Common.Math.Mul(xfB.q, localCenterB);
 
           PositionSolverManifold psm = new PositionSolverManifold();
           psm.Initialize(pc, xfA, xfB, j);

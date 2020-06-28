@@ -9,6 +9,7 @@
 //  a b2World for use as the 'm_world' variable in the code below.
 
 
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Dynamics.Bodies;
@@ -16,6 +17,7 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
 
 namespace TestWorlds {
+  [ExcludeFromCodeCoverage]
   public static class PolyEdgeTest {
     public static World CreateWorld() {
       Vector2 gravity = new Vector2(0.000000000000000e+00f, -1.000000000000000e+01f);

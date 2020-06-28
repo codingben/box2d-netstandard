@@ -36,7 +36,6 @@ namespace Box2D.NetStandard.Common
 		public Vector2 localCenter;	//local center of mass position
 		public Vector2 c0, c; //local center of mass position
 		public float a0, a; //world angles
-		//public float T0; //time interval = [T0,1], where T0 is in [0,1]
 		public float alpha0;
 
 		/// <summary>
@@ -44,14 +43,9 @@ namespace Box2D.NetStandard.Common
 		/// </summary>
 		/// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void GetTransform(out Transform xf, float alpha)
-		{
-			//xf = new Transform();
-			float f = (1.0f - alpha);
-			float angle = f * a0 + alpha * a;
-			xf.q = Matrex.CreateRotation(angle); // Actually about twice as fast to use our own function
-			// Shift to origin
-			xf.p = f * c0 + alpha * c - Math.Mul(xf.q, localCenter);
+		public void GetTransform(out Transform xf, in float alpha) {
+			xf.q = Matrex.CreateRotation( (1.0f - alpha) * a0 + alpha * a); // Actually about twice as fast to use our own function
+			xf.p = (float)(1.0f - alpha) * c0 + (float)alpha * c - Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
 		}
 
 		/// <summary>

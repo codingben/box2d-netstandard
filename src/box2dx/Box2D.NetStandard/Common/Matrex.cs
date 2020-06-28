@@ -54,5 +54,16 @@ namespace Box2D.NetStandard.Common
 			result.M22 = cos;
 			return result;
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void Invert(in Matrix3x2 matrix, out Matrix3x2 result) {
+			float x   = (matrix.M11 * matrix.M22 - matrix.M21 * matrix.M12);
+			float num = 1f / x;
+			result.M11 = matrix.M22  * (float)num;
+			result.M12 = -matrix.M12 * (float)num;
+			result.M21 = -matrix.M21 * (float)num;
+			result.M22 = matrix.M11  * (float)num;
+			result.M31 = result.M32 = 0;
+		}
 	}
 }

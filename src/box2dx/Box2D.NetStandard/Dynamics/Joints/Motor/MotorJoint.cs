@@ -5,8 +5,8 @@ using Box2D.NetStandard.Dynamics.World;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Motor {
   internal class MotorJoint : Joint {
-    public override Vector2 GetAnchorA => _bodyA.GetPosition();
-    public override Vector2 GetAnchorB => _bodyB.GetPosition();
+    public override Vector2 GetAnchorA => m_bodyA.GetPosition();
+    public override Vector2 GetAnchorB => m_bodyB.GetPosition();
 
     public override Vector2 GetReactionForce(float  inv_dt) => inv_dt * m_linearImpulse;
     public override float   GetReactionTorque(float inv_dt) => inv_dt * m_angularImpulse;
@@ -15,8 +15,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetLinearOffset(in Vector2 linearOffset) {
       if (linearOffset.X != m_linearOffset.X || linearOffset.Y != m_linearOffset.Y) {
-        _bodyA.SetAwake(true);
-        _bodyB.SetAwake(true);
+        m_bodyA.SetAwake(true);
+        m_bodyB.SetAwake(true);
         m_linearOffset = linearOffset;
       }
     }
@@ -28,8 +28,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetAngularOffset(float angularOffset) {
       if (angularOffset != m_angularOffset) {
-        _bodyA.SetAwake(true);
-        _bodyB.SetAwake(true);
+        m_bodyA.SetAwake(true);
+        m_bodyB.SetAwake(true);
         m_angularOffset = angularOffset;
       }
     }
@@ -72,13 +72,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
 
 
     // Solver shared
-    internal Vector2 m_linearOffset;
-    internal float   m_angularOffset;
-    internal Vector2 m_linearImpulse;
-    internal float   m_angularImpulse;
-    internal float   m_maxForce;
-    internal float   m_maxTorque;
-    internal float   m_correctionFactor;
+    private Vector2 m_linearOffset;
+    private float   m_angularOffset;
+    private Vector2 m_linearImpulse;
+    private float   m_angularImpulse;
+    private float   m_maxForce;
+    private float   m_maxTorque;
+    private float   m_correctionFactor;
 
     // Solver temp
     private int       m_indexA;
@@ -97,14 +97,14 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
     private float     m_angularMass;
 
     internal override void InitVelocityConstraints(in SolverData data) {
-      m_indexA       = _bodyA._islandIndex;
-      m_indexB       = _bodyB._islandIndex;
-      m_localCenterA = _bodyA._sweep.localCenter;
-      m_localCenterB = _bodyB._sweep.localCenter;
-      m_invMassA     = _bodyA._invMass;
-      m_invMassB     = _bodyB._invMass;
-      m_invIA        = _bodyA._invI;
-      m_invIB        = _bodyB._invI;
+      m_indexA       = m_bodyA.m_islandIndex;
+      m_indexB       = m_bodyB.m_islandIndex;
+      m_localCenterA = m_bodyA.m_sweep.localCenter;
+      m_localCenterB = m_bodyB.m_sweep.localCenter;
+      m_invMassA     = m_bodyA.m_invMass;
+      m_invMassB     = m_bodyB.m_invMass;
+      m_invIA        = m_bodyA.m_invI;
+      m_invIB        = m_bodyB.m_invI;
 
       Vector2 cA = data.positions[m_indexA].c;
       float  aA = data.positions[m_indexA].a;
@@ -140,7 +140,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
       K.M12 = K.M21;
       K.M22 = mA + mB + iA * m_rA.X * m_rA.X + iB * m_rB.X * m_rB.X;
 
-      Matrix3x2.Invert(K, out m_linearMass);
+      /*Matrix3x2*/ Matrex.Invert(K, out m_linearMass);
 
       m_angularMass = iA + iB;
       if (m_angularMass > 0.0f) {
@@ -204,7 +204,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
         Vector2 Cdot = vB + Vectex.Cross(wB, m_rB) - vA - Vectex.Cross(wA, m_rA) +
                       inv_h * m_correctionFactor * m_linearError;
 
-        Vector2 impulse    = -Math.Mul(m_linearMass, Cdot);
+        Vector2 impulse = -Vector2.Transform(Cdot, m_linearMass);  // Math.Mul(m_linearMass, Cdot);
         Vector2 oldImpulse = m_linearImpulse;
         m_linearImpulse += impulse;
 
@@ -212,7 +212,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
 
         if (m_linearImpulse.LengthSquared() > maxImpulse * maxImpulse) {
           m_linearImpulse =  Vector2.Normalize(m_linearImpulse);
-          m_linearImpulse *= maxImpulse;
+          m_linearImpulse *= (float)maxImpulse;
         }
 
         impulse = m_linearImpulse - oldImpulse;

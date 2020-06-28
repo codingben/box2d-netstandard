@@ -48,7 +48,7 @@ namespace Box2D.NetStandard.Collision {
 
     // Sutherland-Hodgman clipping.
     internal static int ClipSegmentToLine(out ClipVertex[ /*2*/] vOut, in ClipVertex[ /*2*/] vIn, in Vector2 normal,
-       float                                                    offset, int vertexIndexA) {
+       float  offset, int vertexIndexA) {
       vOut = new ClipVertex[2];
 
       // Start with no output points

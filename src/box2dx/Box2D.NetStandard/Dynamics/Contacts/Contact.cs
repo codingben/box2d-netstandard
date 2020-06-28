@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Collision;
@@ -34,6 +33,7 @@ using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
+using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Contacts {
   /// <summary>
@@ -42,10 +42,22 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
   /// that has no contact points.
   /// </summary>
   public abstract class Contact {
-    private static ContactRegister[][] s_registers =
-      new ContactRegister[(int) ShapeType.TypeCount][ /*(int)ShapeType.ShapeTypeCount*/];
-
-    
+    private const byte CircleCircle   = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Circle;
+    private const byte CircleEdge     = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Edge;
+    private const byte CirclePolygon  = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Polygon;
+    private const byte CircleChain    = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Chain;
+    private const byte EdgeCircle     = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Circle;
+    private const byte EdgeEdge       = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Edge;
+    private const byte EdgePolygon    = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Polygon;
+    private const byte EdgeChain      = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Chain;
+    private const byte PolygonCircle  = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Circle;
+    private const byte PolygonEdge    = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Edge;
+    private const byte PolygonPolygon = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Polygon;
+    private const byte PolygonChain   = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Chain;
+    private const byte ChainCircle    = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Circle;
+    private const byte ChainEdge      = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Edge;
+    private const byte ChainPolygon   = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Polygon;
+    private const byte ChainChain     = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Chain;
     
     private static bool s_initialized;
 
@@ -62,18 +74,18 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     internal readonly Fixture m_fixtureA;
     internal readonly Fixture m_fixtureB;
 
-    private int m_indexA;
-    private int m_indexB;
+    private readonly int m_indexA;
+    private readonly int m_indexB;
 
     internal Manifold m_manifold = new Manifold();
 
-    private int m_toiCount;
-    internal float _toi;
+    internal int   m_toiCount;
+    internal float m_toi;
 
-    private float m_friction;
-    private float m_restitution;
+    internal float m_friction;
+    internal float m_restitution;
 
-    private float m_tangentSpeed;
+    internal float m_tangentSpeed;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Manifold GetManifold() => m_manifold;
@@ -85,13 +97,14 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void GetWorldManifold(out WorldManifold worldManifold) {
-      Body bodyA = m_fixtureA.Body;
-      Body bodyB = m_fixtureB.Body;
+      Body  bodyA  = m_fixtureA.Body;
+      Body  bodyB  = m_fixtureB.Body;
       Shape shapeA = m_fixtureA.Shape;
       Shape shapeB = m_fixtureB.Shape;
 
       worldManifold = new WorldManifold();
-      worldManifold.Initialize(m_manifold, bodyA.GetTransform(), shapeA.m_radius, bodyB.GetTransform(), shapeB.m_radius);
+      worldManifold.Initialize(m_manifold, bodyA.GetTransform(), shapeA.m_radius, bodyB.GetTransform(),
+                               shapeB.m_radius);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -113,7 +126,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       set => SetEnabled(value);
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsTouching() => (m_flags & CollisionFlags.Touching) == CollisionFlags.Touching;
 
@@ -129,7 +142,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetNext();
     }
-    
+
     /// <summary>
     /// Get the first fixture in this contact.
     /// </summary>
@@ -208,8 +221,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetChildIndexA();
     }
-    
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetChildIndexB() => m_indexB;
 
@@ -218,24 +230,16 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       get => GetChildIndexB();
     }
     
-    
-    public   float                _friction;
-    public   float                _restitution;
-    public   float                _tangentSpeed;
-    private  int                  _indexA;
-    private  int                  _indexB;
-    internal int                  _toiCount;
-
     internal abstract void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB);
-    
+
     public Contact(Fixture fA, int indexA, Fixture fB, int indexB) {
       m_flags = CollisionFlags.Enabled;
 
       m_fixtureA = fA;
       m_fixtureB = fB;
 
-      _indexA = indexA;
-      _indexB = indexB;
+      m_indexA = indexA;
+      m_indexB = indexB;
 
       m_manifold.pointCount = 0;
 
@@ -245,94 +249,36 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       m_nodeA = new ContactEdge();
       m_nodeB = new ContactEdge();
 
-      _toiCount = 0;
+      m_toiCount = 0;
 
-      _friction    = Settings.MixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
-      _restitution = Settings.MixRestitution(m_fixtureA.Restitution, m_fixtureB.Restitution);
+      m_friction    = Settings.MixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
+      m_restitution = Settings.MixRestitution(m_fixtureA.Restitution, m_fixtureB.Restitution);
 
       m_tangentSpeed = 0f;
     }
 
-
-    public static void AddType(ContactCreateFcn createFcn, ContactDestroyFcn destoryFcn,
-      ShapeType                                 type1,     ShapeType         type2) {
-      //Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
-      //Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
-
-      if (s_registers[(int) type1] == null)
-        s_registers[(int) type1] = new ContactRegister[(int) ShapeType.TypeCount];
-
-      s_registers[(int) type1][(int) type2].CreateFcn  = createFcn;
-      s_registers[(int) type1][(int) type2].DestroyFcn = destoryFcn;
-      s_registers[(int) type1][(int) type2].Primary    = true;
-
-      if (type1 != type2) {
-        s_registers[(int) type2][(int) type1].CreateFcn  = createFcn;
-        s_registers[(int) type2][(int) type1].DestroyFcn = destoryFcn;
-        s_registers[(int) type2][(int) type1].Primary    = false;
-      }
-    }
-
-    public static void InitializeRegisters() {
-      AddType(CircleContact.Create, CircleContact.Destroy, ShapeType.Circle, ShapeType.Circle);
-      AddType(PolyAndCircleContact.Create, PolyAndCircleContact.Destroy, ShapeType.Polygon, ShapeType.Circle);
-      AddType(PolygonContact.Create, PolygonContact.Destroy, ShapeType.Polygon, ShapeType.Polygon);
-      AddType(EdgeAndCircleContact.Create, EdgeAndCircleContact.Destroy, ShapeType.Edge, ShapeType.Circle);
-      AddType(EdgeAndPolygonContact.Create, EdgeAndPolygonContact.Destroy, ShapeType.Edge, ShapeType.Polygon);
-#if CHAINSHAPE
-      AddType(ChainAndCircleContact.Create, ChainAndCircleContact.Destroy, ShapeType.Chain, ShapeType.Circle);
-      AddType(ChainAndPolygonContact.Create, ChainAndPolygonContact.Destroy, ShapeType.Chain,
-              ShapeType.Polygon);
-#endif
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
-      if (s_initialized == false) {
-        InitializeRegisters();
-        s_initialized = true;
-      }
 
-      ShapeType type1 = fixtureA.Type;
-      ShapeType type2 = fixtureB.Type;
-
-      //Debug.Assert(ShapeType.Invalid < type1 && type1 < ShapeType.TypeCount);
-      //Debug.Assert(ShapeType.Invalid < type2 && type2 < ShapeType.TypeCount);
-
-      ContactCreateFcn createFcn = s_registers[(int) type1][(int) type2].CreateFcn;
-      if (createFcn != null) {
-        if (s_registers[(int) type1][(int) type2].Primary) {
-          return createFcn(fixtureA, fixtureB);
-        }
-        else {
-          return createFcn(fixtureB, fixtureA);
-        }
-      }
-      else {
-        return null;
-      }
-    }
-
-    public static void Destroy(ref Contact contact) {
-      //Debug.Assert(s_initialized == true);
-
-      Fixture fixtureA = contact.m_fixtureA;
-      Fixture fixtureB = contact.m_fixtureB;
-      
-      if (contact.m_manifold.pointCount > 0 &&
-          fixtureA.IsSensor()==false &&
-          fixtureB.IsSensor()==false) {
-        fixtureA.Body.SetAwake(true);
-        fixtureB.Body.SetAwake(true);
-      }
-
-      ShapeType typeA = fixtureA.Type;
-      ShapeType typeB = fixtureB.Type;
-
-      //Debug.Assert(ShapeType.Invalid < typeA && typeA < ShapeType.TypeCount);
-      //Debug.Assert(ShapeType.Invalid < typeB && typeB < ShapeType.TypeCount);
-
-      ContactDestroyFcn destroyFcn = s_registers[(int) typeA][(int) typeB].DestroyFcn;
-      destroyFcn(ref contact);
+      int match = ((byte) fixtureA.Type << 2) + (byte) fixtureB.Type;
+      return (match switch {
+                             CircleCircle   => new CircleContact(fixtureA, indexA, fixtureB, indexB),
+                             CircleEdge     => new EdgeAndCircleContact(fixtureB, indexB, fixtureA, indexA),
+                             CirclePolygon  => new PolyAndCircleContact(fixtureB, indexB, fixtureA, indexA),
+                             CircleChain    => new ChainAndCircleContact(fixtureB, indexB, fixtureA, indexA),
+                             EdgeCircle     => new EdgeAndCircleContact(fixtureA, indexA, fixtureB, indexB),
+                             EdgeEdge       => null,
+                             EdgePolygon    => new EdgeAndPolygonContact(fixtureA, indexA, fixtureB, indexB),
+                             EdgeChain      => null,
+                             PolygonCircle  => new PolyAndCircleContact(fixtureA, indexA, fixtureB, indexB),
+                             PolygonEdge    => new EdgeAndPolygonContact(fixtureB, indexB, fixtureA, indexA),
+                             PolygonPolygon => new PolygonContact(fixtureA, indexA, fixtureB, indexB),
+                             PolygonChain   => new ChainAndPolygonContact(fixtureB, indexB, fixtureA, indexA),
+                             ChainCircle    => new ChainAndCircleContact(fixtureA, indexA, fixtureB, indexB),
+                             ChainEdge      => null,
+                             ChainPolygon   => new ChainAndPolygonContact(fixtureA, indexA, fixtureB, indexB),
+                             ChainChain     => null,
+                           })!;
     }
 
     public void Update(ContactListener listener) {
@@ -341,8 +287,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       // Re-enable this contact.
       m_flags |= CollisionFlags.Enabled;
 
-      bool touching    = false;
-      bool wasTouching = m_flags.HasFlag(CollisionFlags.Touching);
+      bool touching;
+      bool wasTouching = (m_flags & CollisionFlags.Touching) != 0;
 
       bool sensorA = m_fixtureA.IsSensor();
       bool sensorB = m_fixtureB.IsSensor();
@@ -357,7 +303,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       if (sensor) {
         Shape shapeA = m_fixtureA.Shape;
         Shape shapeB = m_fixtureB.Shape;
-        touching = TestOverlap(shapeA, _indexA, shapeB, _indexB, xfA, xfB);
+        touching = TestOverlap(shapeA, m_indexA, shapeB, m_indexB, xfA, xfB);
 
         // Sensors don't generate manifolds.
         m_manifold.pointCount = 0;
@@ -407,7 +353,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           listener.EndContact(this);
         }
 
-        if (sensor == false && touching==true) {
+        if (sensor == false && touching == true) {
           listener.PreSolve(this, oldManifold);
         }
       }
@@ -433,7 +379,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
     internal static void Distance(out DistanceOutput output, SimplexCache cache, in DistanceInput input) {
       output = new DistanceOutput();
-      
+
       DistanceProxy proxyA = input.proxyA;
       DistanceProxy proxyB = input.proxyB;
 
@@ -446,7 +392,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
       // Get simplex vertices as an array.
       SimplexVertex[] vertices   = simplex.m_v;
-      const int           k_maxIters = 20;
+      const int       k_maxIters = 20;
 
       // These store the vertices of the last simplex so that we
       // can check for duplicates and prevent cycling.
@@ -563,7 +509,5 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         }
       }
     }
-
-
   }
 }
