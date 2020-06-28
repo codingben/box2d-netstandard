@@ -176,14 +176,14 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction {
 
     internal override bool SolvePositionConstraints(in SolverData data) => true;
 
-    internal Vector2 m_localAnchorA;
-    internal Vector2 m_localAnchorB;
+    private Vector2 m_localAnchorA;
+    private Vector2 m_localAnchorB;
 
     // Solver shared
-    internal Vector2 m_linearImpulse;
-    internal float   m_angularImpulse;
-    internal float   m_maxForce;
-    internal float   m_maxTorque;
+    private Vector2 m_linearImpulse;
+    private float   m_angularImpulse;
+    private float   m_maxForce;
+    private float   m_maxTorque;
 
     // Solver temp
     private int       m_indexA;

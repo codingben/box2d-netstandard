@@ -27,6 +27,7 @@
 
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision {
@@ -45,13 +46,23 @@ namespace Box2D.NetStandard.Collision {
     /// </summary>
     internal Vector2 upperBound;
 
+    public Vector2 LowerBound {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => lowerBound;
+    }
+    
+    public Vector2 UpperBound {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => upperBound;
+    }
+    
     /// Get the center of the AABB.
-    internal Vector2 GetCenter() {
+    public Vector2 GetCenter() {
       return 0.5f * (lowerBound + upperBound);
     }
 
     /// Get the extents of the AABB (half-widths).
-    internal Vector2 GetExtents() {
+    public Vector2 GetExtents() {
       return 0.5f * (upperBound - lowerBound);
     }
 

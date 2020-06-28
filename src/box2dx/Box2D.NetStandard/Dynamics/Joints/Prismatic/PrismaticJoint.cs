@@ -108,7 +108,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
   /// use a joint limit to restrict the range of motion and a joint motor to
   /// drive the motion or to model joint friction.
   /// </summary>
-  public class PrismaticJoint : Joint {
+  public class PrismaticJoint : Joint, IMotorisedJoint {
     internal Vector2 m_localAnchorA;
     internal Vector2 m_localAnchorB;
     internal Vector2 m_localXAxisA;
@@ -262,6 +262,16 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
       m_enableMotor = flag;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetMotorSpeed(float speed) {
+      m_bodyA.SetAwake(true);
+      m_bodyB.SetAwake(true);
+      m_motorSpeed = speed;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float GetMotorSpeed() => m_motorSpeed;
+
     /// <summary>
     /// Get\Set the motor speed, usually in meters per second.
     /// </summary>
@@ -269,11 +279,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_motorSpeed;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      set {
-        m_bodyA.SetAwake(true);
-        m_bodyB.SetAwake(true);
-        m_motorSpeed = value;
-      }
+      set => SetMotorSpeed(value);
     }
 
     /// <summary>

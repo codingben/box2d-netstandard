@@ -56,7 +56,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute {
   /// to drive the relative rotation about the shared point. A maximum motor torque
   /// is provided so that infinite forces are not generated.
   /// </summary>
-  public class RevoluteJoint : Joint {
+  public class RevoluteJoint : Joint, IMotorisedJoint {
     internal Vector2 m_localAnchorA;
     internal Vector2 m_localAnchorB;
     private Vector3    m_impulse;
@@ -182,18 +182,25 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute {
       m_enableMotor = flag;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float GetMotorSpeed() => m_motorSpeed;
+
     /// <summary>
-    /// Get\Set the motor speed in radians per second.
+    /// Get/Set the motor speed in radians per second.
     /// </summary>
     public float MotorSpeed {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_motorSpeed;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      set {
-        m_bodyA.SetAwake(true);
-        m_bodyB.SetAwake(true);
-        m_motorSpeed = value;
-      }
+      set => SetMotorSpeed(value);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetMotorSpeed(float speed) {
+      m_motorSpeed = speed;
+      m_bodyA.SetAwake(true);
+      m_bodyB.SetAwake(true);
+      m_motorSpeed = speed;
     }
 
     /// <summary>

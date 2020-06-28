@@ -50,7 +50,7 @@ using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
-  public class WheelJoint : Joint {
+  public class WheelJoint : Joint, IMotorisedJoint {
     private readonly Vector2 m_localAnchorA;
     private readonly Vector2 m_localAnchorB;
     private readonly Vector2 m_localXAxisA;
@@ -239,7 +239,18 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
       }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] void SetMaxMotorTorque(float torque)
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public float GetMotorSpeed() => m_motorSpeed;
+
+    public float MotorSpeed {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => GetMotorSpeed();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => SetMotorSpeed(value);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    void SetMaxMotorTorque(float torque)
     {
       if (torque != m_maxMotorTorque)
       {

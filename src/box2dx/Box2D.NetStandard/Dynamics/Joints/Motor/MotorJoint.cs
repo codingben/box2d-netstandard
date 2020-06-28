@@ -72,13 +72,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
 
 
     // Solver shared
-    internal Vector2 m_linearOffset;
-    internal float   m_angularOffset;
-    internal Vector2 m_linearImpulse;
-    internal float   m_angularImpulse;
-    internal float   m_maxForce;
-    internal float   m_maxTorque;
-    internal float   m_correctionFactor;
+    private Vector2 m_linearOffset;
+    private float   m_angularOffset;
+    private Vector2 m_linearImpulse;
+    private float   m_angularImpulse;
+    private float   m_maxForce;
+    private float   m_maxTorque;
+    private float   m_correctionFactor;
 
     // Solver temp
     private int       m_indexA;

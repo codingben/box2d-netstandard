@@ -42,6 +42,19 @@ using Box2D.NetStandard.Dynamics.World.Callbacks;
 
 namespace Box2D.NetStandard.Dynamics.Joints
 {
+	public interface IMotorisedJoint {
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		void SetMotorSpeed(float speed);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		float GetMotorSpeed();
+		
+		float MotorSpeed {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]get;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]set;
+		}
+	}
+	
 	/// <summary>
 	/// The base joint class. Joints are used to constraint two bodies together in
 	/// various fashions. Some joints also feature limits and motors.

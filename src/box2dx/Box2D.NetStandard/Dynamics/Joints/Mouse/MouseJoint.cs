@@ -63,7 +63,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 		private float m_invIB;
 		private Vector2 m_rB;
 		private Vector2 m_localAnchorB;
-		// private Mat22 _mass;
 		private Matrix3x2 m_mass;
 		private Vector2 m_C;
 
