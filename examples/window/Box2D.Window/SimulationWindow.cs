@@ -36,15 +36,16 @@ namespace Box2D.Window
             this.view = view;
         }
 
-        private int mouseLast = 0;
         public static bool stepNext;
-        private       int  frames = 0;
         public static bool paused = false;
-        
+
+        private int mouseLast = 0;
+        private int frames = 0;
+
         protected override void OnMouseWheel(MouseWheelEventArgs eventArgs)
         {
             base.OnMouseWheel(eventArgs);
-            
+
             int mouseDelta = eventArgs.Value - mouseLast;
             mouseLast = eventArgs.Value;
 
@@ -64,11 +65,13 @@ namespace Box2D.Window
                 }
             }
 
-            if (eventArgs.Key == Key.Space) {
+            if (eventArgs.Key == Key.Space)
+            {
                 stepNext = true;
             }
 
-            if (eventArgs.Key == Key.P) {
+            if (eventArgs.Key == Key.P)
+            {
                 paused = !paused;
             }
         }
@@ -109,17 +112,18 @@ namespace Box2D.Window
         protected override void OnRenderFrame(FrameEventArgs eventArgs)
         {
             if (!paused) frames++;
-            
+
             base.OnRenderFrame(eventArgs);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(OpenTK.Color.Black);
 
-            if (_focusBody != null) {
+            if (_focusBody != null)
+            {
                 var bodyPosition = _focusBody.GetPosition();
                 view.Position = new Vector2(bodyPosition.X, bodyPosition.Y);
             }
-            
+
             view?.Update();
 
             while (drawActions.TryDequeue(out var action))
@@ -284,16 +288,16 @@ namespace Box2D.Window
                 GL.Color3(1.0f, 0.0f, 0.0f);
                 GL.Vertex2(a.X, a.Y);
 
-                System.Numerics.Vector2 ex = new System.Numerics.Vector2(xf.q.M11, xf.q.M21);
-                
+                var ex = new System.Numerics.Vector2(xf.q.M11, xf.q.M21);
+
                 var b = a + (kAxisScale * ex);
 
                 GL.Vertex2(b.X, b.Y);
                 GL.Color3(0.0f, 1.0f, 0.0f);
                 GL.Vertex2(a.X, a.Y);
 
-                System.Numerics.Vector2 ey = new System.Numerics.Vector2(xf.q.M12, xf.q.M22);
-                
+                var ey = new System.Numerics.Vector2(xf.q.M12, xf.q.M22);
+
                 b = a + (kAxisScale * ey);
 
                 GL.Vertex2(b.X, b.Y);
