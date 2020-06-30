@@ -6,41 +6,55 @@ using b2Vec2 = System.Numerics.Vector2;
 using b2CircleShape = Box2D.NetStandard.Collision.Shapes.CircleShape;
 using b2ChainShape = Box2D.NetStandard.Collision.Shapes.ChainShape;
 
-namespace TestWorlds {
-  public static class box2dBug604 {
-    public static World CreateWorld() {
-      b2Vec2 gravity = new b2Vec2(0.0f, -10.0f);
-      World world = new World(gravity);
-      b2ChainShape chainShape = new b2ChainShape();
-      b2Vec2[] vertices =  {new b2Vec2(-5, 0), new b2Vec2(5, 0), new b2Vec2(5, 5), new b2Vec2(4, 1), new b2Vec2(-4, 1), new b2Vec2(-5, 5)};
-      chainShape.CreateLoop(vertices);
+namespace TestWorlds
+{
+    public static class box2dBug604
+    {
+        public static World CreateWorld()
+        {
+            var gravity = new b2Vec2(0.0f, -10.0f);
+            var world = new World(gravity);
+            var chainShape = new b2ChainShape();
+            var vertices =
+            {
+                new b2Vec2(-5, 0),
+                new b2Vec2(5, 0),
+                new b2Vec2(5, 5),
+                new b2Vec2(4, 1),
+                new b2Vec2(-4, 1),
+                new b2Vec2(-5, 5)
+            };
 
-      FixtureDef groundFixtureDef = new FixtureDef();
-      groundFixtureDef.density = 0;
-      groundFixtureDef.shape   = chainShape;
+            chainShape.CreateLoop(vertices);
 
-      BodyDef groundBodyDef = new BodyDef();
-      groundBodyDef.type = BodyType.Static;
+            var groundFixtureDef = new FixtureDef();
+            groundFixtureDef.density = 0;
+            groundFixtureDef.shape = chainShape;
 
-      Body     groundBody        = world.CreateBody(groundBodyDef);
-      Fixture  groundBodyFixture = groundBody.CreateFixture(groundFixtureDef);
+            var groundBodyDef = new BodyDef();
+            groundBodyDef.type = BodyType.Static;
 
-      b2CircleShape ballShape = new b2CircleShape();
-      ballShape.Radius = 1;
+            var groundBody = world.CreateBody(groundBodyDef);
+            var groundBodyFixture = groundBody.CreateFixture(groundFixtureDef);
 
-      FixtureDef ballFixtureDef = new FixtureDef();
-      ballFixtureDef.restitution = 0.75f;
-      ballFixtureDef.density     = 1;
-      ballFixtureDef.shape       = ballShape;
+            var ballShape = new b2CircleShape();
+            ballShape.Radius = 1;
 
-      BodyDef ballBodyDef = new BodyDef();
-      ballBodyDef.type     = BodyType.Dynamic;
-      ballBodyDef.position = new b2Vec2(0, 10);
+            var ballFixtureDef = new FixtureDef();
+            ballFixtureDef.restitution = 0.75f;
+            ballFixtureDef.density = 1;
+            ballFixtureDef.shape = ballShape;
 
-      Body     ball        = world.CreateBody(ballBodyDef);
-      Fixture  ballFixture = ball.CreateFixture(ballFixtureDef);
-      ball.ApplyForceToCenter(new b2Vec2(-1000, -400), true);
-      return world;
+            var ballBodyDef = new BodyDef();
+            ballBodyDef.type = BodyType.Dynamic;
+            ballBodyDef.position = new b2Vec2(0, 10);
+
+            var ball = world.CreateBody(ballBodyDef);
+            var ballFixture = ball.CreateFixture(ballFixtureDef);
+
+            ball.ApplyForceToCenter(new b2Vec2(-1000, -400), true);
+
+            return world;
+        }
     }
-  }
 }
