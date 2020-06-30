@@ -1,4 +1,4 @@
-//Source code dump of Box2D scene: rubegoldberg.rube
+//  Source code dump of Box2D scene: rubegoldberg.rube
 //
 //  Created by R.U.B.E 1.7.4
 //  Using Box2D version 2.3.0
