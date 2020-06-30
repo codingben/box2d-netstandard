@@ -22,7 +22,9 @@ namespace Box2D.NetStandard.UnitTests
             World world = Car.CreateWorld(out Body[] bodies, out Joint[] joints);
 
             for (int i = 0; i < 1400; i++)
+            {
                 world.Step(0.016f, 8, 3);
+            }
 
             Assert.True(bodies[1].GetPosition().X > 275f);
             Assert.True(bodies[2].GetPosition().X > 225f);
