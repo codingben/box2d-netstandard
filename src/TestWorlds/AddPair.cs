@@ -9,6 +9,8 @@ namespace TestWorlds
     // AddPair stress test as per Box2D Testbed
     public class AddPair
     {
+        private static Random random = new Random();
+
         public static World CreateWorld()
         {
             var world = new World(Vector2.Zero);
@@ -27,8 +29,8 @@ namespace TestWorlds
                 var bd = new BodyDef();
                 bd.type = BodyType.Dynamic;
                 bd.position = new Vector2(
-                    (float)(r.NextDouble() * xRange + minX),
-                    (float)(r.NextDouble() * yRange + minY));
+                    (float)(random.NextDouble() * xRange + minX),
+                    (float)(random.NextDouble() * yRange + minY));
 
                 var body = world.CreateBody(bd);
                 body.CreateFixture(circle, 0.01f);
