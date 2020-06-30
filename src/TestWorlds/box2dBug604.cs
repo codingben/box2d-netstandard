@@ -15,7 +15,8 @@ namespace TestWorlds
             var gravity = new b2Vec2(0.0f, -10.0f);
             var world = new World(gravity);
             var chainShape = new b2ChainShape();
-            var vertices =
+
+            b2Vec2 vertices =
             {
                 new b2Vec2(-5, 0),
                 new b2Vec2(5, 0),
