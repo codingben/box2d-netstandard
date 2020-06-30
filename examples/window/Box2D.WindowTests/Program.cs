@@ -23,7 +23,7 @@ namespace Box2D.WindowTests
         private static World world;
         private static Body focusBody;
 
-        private static Program()
+        static Program()
         {
             CreateWorld();
         }
