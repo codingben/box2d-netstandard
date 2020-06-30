@@ -25,7 +25,9 @@ namespace Box2D.NetStandard.UnitTests
             World world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
 
             for (int i = 0; i < 2100; i++)
+            {
                 world.Step(0.016f, 8, 3);
+            }
 
             Assert.Equal(5.375222f, bodies[1].GetPosition().X);
             Assert.Equal(-6.7589993f, bodies[1].GetPosition().Y);
