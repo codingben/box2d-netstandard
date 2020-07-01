@@ -1,4 +1,3 @@
-using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
@@ -8,7 +7,7 @@ using b2ChainShape = Box2D.NetStandard.Collision.Shapes.ChainShape;
 
 namespace Box2D.WorldTests
 {
-    public static class Box2DBug604
+    public static class Box2DBug604World
     {
         public static World CreateWorld()
         {
