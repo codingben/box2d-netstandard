@@ -11,8 +11,7 @@ using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 using Box2D.Window;
-using OpenTK;
-using TestWorlds;
+using Box2D.WorldTests;
 
 namespace Box2D.WindowTests
 {
@@ -32,18 +31,18 @@ namespace Box2D.WindowTests
         {
             // world = CreateWorld();
 
-            world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
+            world = RubeGoldbergWorld.CreateWorld(out Body[] bodies, out Joint[] joints);
 
-            // world = AddPair.CreateWorld();
-            // world = CollisionTest.CreateWorld();
-            // world = PolyEdgeTest.CreateWorld();
-            // world = DistanceJointProblem.CreateWorld();
+            // world = AddPairWorld.CreateWorld();
+            // world = CollisionTestWorld.CreateWorld();
+            // world = PolyEdgeTestWorld.CreateWorld();
+            // world = DistanceJointProblemWorld.CreateWorld();
 
             // Car Test
-            // world     = Car.CreateWorld(out Body[] bodies, out Joint[] joints);
+            // world     = CarWorld.CreateWorld(out Body[] bodies, out Joint[] joints);
             // focusBody = bodies[8];
 
-            // world = Box2DBug604.CreateWorld();
+            // world = Box2DBug604World.CreateWorld();
         }
 
         private static void Main()
