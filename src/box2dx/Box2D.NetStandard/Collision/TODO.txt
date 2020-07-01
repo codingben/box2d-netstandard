@@ -1,4 +1,3 @@
 Todo:
 
-ChainShape
 Rope
