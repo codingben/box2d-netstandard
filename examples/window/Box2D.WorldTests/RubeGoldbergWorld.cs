@@ -22,7 +22,7 @@ using Box2D.NetStandard.Dynamics.World;
 namespace Box2D.WorldTests
 {
     [ExcludeFromCodeCoverage]
-    public static class RubeGoldberg
+    public static class RubeGoldbergWorld
     {
         public static World CreateWorld(out Body[] bodies, out Joint[] joints)
         {
