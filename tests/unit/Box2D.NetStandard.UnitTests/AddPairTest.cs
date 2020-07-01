@@ -1,5 +1,5 @@
 using Box2D.NetStandard.Dynamics.World;
-using TestWorlds;
+using Box2D.WorldTests;
 using Xunit;
 using MathF = System.Math;
 using Float = System.Double;
@@ -14,7 +14,7 @@ namespace Box2D.NetStandard.UnitTests
         {
             for (int j = 0; j < 1; j++)
             {
-                World world = AddPair.CreateWorld();
+                World world = AddPairWorld.CreateWorld();
 
                 for (int i = 0; i < 40; i++)
                 {
