@@ -43,7 +43,7 @@ namespace Box2D.WindowTests
             // world     = Car.CreateWorld(out Body[] bodies, out Joint[] joints);
             // focusBody = bodies[8];
 
-            // world = box2dBug604.CreateWorld();
+            // world = Box2DBug604.CreateWorld();
         }
 
         private static void Main()

@@ -8,7 +8,7 @@ using b2ChainShape = Box2D.NetStandard.Collision.Shapes.ChainShape;
 
 namespace TestWorlds
 {
-    public static class box2dBug604
+    public static class Box2DBug604
     {
         public static World CreateWorld()
         {
