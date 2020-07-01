@@ -4,7 +4,7 @@ using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
 
-namespace ConsoleApp1
+namespace ConsoleApp
 {
     public class Program
     {
@@ -31,7 +31,7 @@ namespace ConsoleApp1
 
             var ballDef = new BodyDef();
             ballDef.Position = new Vec2(0, 0);
-            
+
             var ball = world.CreateBody(ballDef);
 
             var ballFixtureDef = new CircleDef();
