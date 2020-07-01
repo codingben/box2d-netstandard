@@ -20,7 +20,7 @@ using Box2D.NetStandard.Dynamics.World;
 namespace Box2D.WorldTests
 {
     [ExcludeFromCodeCoverage]
-    public static class CollisionTest
+    public static class CollisionTestWorld
     {
         public static World CreateWorld()
         {
