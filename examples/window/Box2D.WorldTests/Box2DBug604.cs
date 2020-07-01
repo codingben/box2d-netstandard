@@ -6,7 +6,7 @@ using b2Vec2 = System.Numerics.Vector2;
 using b2CircleShape = Box2D.NetStandard.Collision.Shapes.CircleShape;
 using b2ChainShape = Box2D.NetStandard.Collision.Shapes.ChainShape;
 
-namespace TestWorlds
+namespace Box2D.WorldTests
 {
     public static class Box2DBug604
     {

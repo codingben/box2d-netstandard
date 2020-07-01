@@ -15,7 +15,7 @@ using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
 
-namespace TestWorlds
+namespace Box2D.WorldTests
 {
     [ExcludeFromCodeCoverage]
     public static class PolyEdgeTest
