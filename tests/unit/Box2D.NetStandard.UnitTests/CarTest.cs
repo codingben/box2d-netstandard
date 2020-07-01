@@ -1,7 +1,7 @@
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
-using TestWorlds;
+using Box2D.WorldTests;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,7 +19,7 @@ namespace Box2D.NetStandard.UnitTests
         [Fact]
         public void CarTest1()
         {
-            World world = Car.CreateWorld(out Body[] bodies, out Joint[] joints);
+            World world = CarWorld.CreateWorld(out Body[] bodies, out Joint[] joints);
 
             for (int i = 0; i < 1400; i++)
             {

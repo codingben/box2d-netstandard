@@ -10,9 +10,9 @@ using Box2D.NetStandard.Dynamics.World;
 using b2Vec2 = System.Numerics.Vector2;
 using int32 = System.Int32;
 
-namespace TestWorlds
+namespace Box2D.WorldTests
 {
-    public static class Car
+    public static class CarWorld
     {
         public static World CreateWorld(out Body[] bodies, out Joint[] joints)
         {

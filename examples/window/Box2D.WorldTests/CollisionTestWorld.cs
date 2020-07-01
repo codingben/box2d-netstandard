@@ -17,10 +17,10 @@ using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.Joints.Revolute;
 using Box2D.NetStandard.Dynamics.World;
 
-namespace TestWorlds
+namespace Box2D.WorldTests
 {
     [ExcludeFromCodeCoverage]
-    public static class CollisionTest
+    public static class CollisionTestWorld
     {
         public static World CreateWorld()
         {

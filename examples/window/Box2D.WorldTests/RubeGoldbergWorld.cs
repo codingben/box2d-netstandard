@@ -19,10 +19,10 @@ using Box2D.NetStandard.Dynamics.Joints.Prismatic;
 using Box2D.NetStandard.Dynamics.Joints.Revolute;
 using Box2D.NetStandard.Dynamics.World;
 
-namespace TestWorlds
+namespace Box2D.WorldTests
 {
     [ExcludeFromCodeCoverage]
-    public static class RubeGoldberg
+    public static class RubeGoldbergWorld
     {
         public static World CreateWorld(out Body[] bodies, out Joint[] joints)
         {

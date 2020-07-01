@@ -1,4 +1,3 @@
-using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
@@ -6,9 +5,9 @@ using b2Vec2 = System.Numerics.Vector2;
 using b2CircleShape = Box2D.NetStandard.Collision.Shapes.CircleShape;
 using b2ChainShape = Box2D.NetStandard.Collision.Shapes.ChainShape;
 
-namespace TestWorlds
+namespace Box2D.WorldTests
 {
-    public static class box2dBug604
+    public static class Box2DBug604World
     {
         public static World CreateWorld()
         {

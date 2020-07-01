@@ -4,10 +4,10 @@ using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.World;
 
-namespace TestWorlds
+namespace Box2D.WorldTests
 {
     // AddPair stress test as per Box2D Testbed
-    public class AddPair
+    public class AddPairWorld
     {
         private static Random random = new Random();
 

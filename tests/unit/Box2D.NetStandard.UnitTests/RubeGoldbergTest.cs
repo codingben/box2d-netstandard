@@ -4,7 +4,7 @@ using System.Linq;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
-using TestWorlds;
+using Box2D.WorldTests;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,7 +22,7 @@ namespace Box2D.NetStandard.UnitTests
         [Fact]
         public void Test1()
         {
-            World world = RubeGoldberg.CreateWorld(out Body[] bodies, out Joint[] joints);
+            World world = RubeGoldbergWorld.CreateWorld(out Body[] bodies, out Joint[] joints);
 
             for (int i = 0; i < 2100; i++)
             {
