@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.WindowTests", "Box2D.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.Window", "Box2D.Window\Box2D.Window.csproj", "{78472121-1376-471D-8801-6C67882B28AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.WorldTests", "Box2D.WorldTests\Box2D.WorldTests.csproj", "{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,5 +49,17 @@ Global
 		{78472121-1376-471D-8801-6C67882B28AD}.Release|x64.Build.0 = Release|Any CPU
 		{78472121-1376-471D-8801-6C67882B28AD}.Release|x86.ActiveCfg = Release|Any CPU
 		{78472121-1376-471D-8801-6C67882B28AD}.Release|x86.Build.0 = Release|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Debug|x64.Build.0 = Debug|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Debug|x86.Build.0 = Debug|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|x64.ActiveCfg = Release|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|x64.Build.0 = Release|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|x86.ActiveCfg = Release|Any CPU
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
