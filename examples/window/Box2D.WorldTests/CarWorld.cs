@@ -12,7 +12,7 @@ using int32 = System.Int32;
 
 namespace Box2D.WorldTests
 {
-    public static class Car
+    public static class CarWorld
     {
         public static World CreateWorld(out Body[] bodies, out Joint[] joints)
         {
