@@ -7,7 +7,7 @@ using Box2D.NetStandard.Dynamics.World;
 namespace Box2D.WorldTests
 {
     // AddPair stress test as per Box2D Testbed
-    public class AddPair
+    public class AddPairWorld
     {
         private static Random random = new Random();
 
