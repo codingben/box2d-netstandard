@@ -10,7 +10,7 @@ using Box2D.NetStandard.Dynamics.World;
 namespace Box2D.WorldTests
 {
     [ExcludeFromCodeCoverage]
-    public class DistanceJointProblem
+    public class DistanceJointProblemWorld
     {
         public static World CreateWorld()
         {
