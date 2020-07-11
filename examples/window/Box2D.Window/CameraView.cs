@@ -15,9 +15,8 @@ namespace Box2D.Window
 
         public CameraView()
         {
-            
-            Position = new Vector2(12,5);
-            Zoom = 0.072F;// WindowSettings.MinimumCameraZoom;
+            Position = new Vector2(12, 5);
+            Zoom = 0.072F; // WindowSettings.MinimumCameraZoom;
         }
 
         public void Update()
@@ -26,7 +25,7 @@ namespace Box2D.Window
 
             var transform = Matrix4.Identity;
             var translation = Matrix4.CreateTranslation(-Position.X, -Position.Y, 0);
-            var scale = Matrix4.CreateScale(Zoom*.75f, Zoom, 1.0f);
+            var scale = Matrix4.CreateScale(Zoom * .75f, Zoom, 1.0f);
 
             transform = Matrix4.Mult(transform, translation);
             transform = Matrix4.Mult(transform, scale);

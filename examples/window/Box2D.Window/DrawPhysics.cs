@@ -50,8 +50,9 @@ namespace Box2D.Window
             window.DrawXForm(xf);
         }
 
-        public override void DrawPoint(in Vector2 position, float size, in Color color) {
-            // Todo: Draw points
+        public override void DrawPoint(in Vector2 position, float size, in Color color)
+        {
+            // TODO: Draw points
         }
     }
 }

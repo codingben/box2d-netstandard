@@ -31,7 +31,7 @@ namespace HelloWorld
         // This is a simple example of building and running a simulation
         // using Box2DX. Here we create a large ground box and a small dynamic
         // box.
-        public static void Main()
+        private static void Main()
         {
             // Define the size of the world. Simulation will still work
             // if bodies reach the end of the world, but it will be slower.
