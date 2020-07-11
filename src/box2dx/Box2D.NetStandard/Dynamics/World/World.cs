@@ -1209,6 +1209,11 @@ namespace Box2D.NetStandard.Dynamics.World {
           Vector2   v1   = Math.Mul(xf, edge.m_vertex1);
           Vector2   v2   = Math.Mul(xf, edge.m_vertex2);
           m_debugDraw.DrawSegment(v1, v2, color);
+
+          if (!edge.m_oneSided) {
+            m_debugDraw.DrawPoint(v1, 4f, color);
+            m_debugDraw.DrawPoint(v2, 4f, color);
+          }
         }
           break;
 
@@ -1216,30 +1221,16 @@ namespace Box2D.NetStandard.Dynamics.World {
           ChainShape chain    = (ChainShape) fixture.Shape;
           int        count    = chain.m_count;
           Vector2[]  vertices = chain.m_vertices;
-
-          Color ghostColor = new Color(0.75f * color.R, 0.75f * color.G, 0.75f * color.B, color.A);
-
+          
           Vector2 v1 = Math.Mul(xf, vertices[0]);
           m_debugDraw.DrawPoint(v1, 4.0f, color);
-
-          if (chain.m_hasPrevVertex) {
-            Vector2 vp = Math.Mul(xf, chain.m_prevVertex.Value);
-            m_debugDraw.DrawSegment(vp, v1, ghostColor);
-            m_debugDraw.DrawCircle(vp, 0.1f, ghostColor);
-          }
 
           for (int i = 1; i < count; ++i) {
             Vector2 v2 = Math.Mul(xf, vertices[i]);
             m_debugDraw.DrawSegment(v1, v2, color);
-            m_debugDraw.DrawPoint(v2, 4.0f, color);
             v1 = v2;
           }
 
-          if (chain.m_hasNextVertex) {
-            Vector2 vn = Math.Mul(xf, chain.m_nextVertex.Value);
-            m_debugDraw.DrawSegment(v1, vn, ghostColor);
-            m_debugDraw.DrawCircle(vn, 0.1f, ghostColor);
-          }
         }
           break;
 

@@ -130,8 +130,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         }
       }
     }
-
-
+    
     public void InitializeVelocityConstraints() {
       for (int i = 0; i < _count; ++i) {
         ContactVelocityConstraint vc = _velocityConstraints[i];
@@ -440,19 +439,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               // Accumulate
               cp1.normalImpulse = x.X;
               cp2.normalImpulse = x.Y;
-
-#if B2_DEBUG_SOLVER
-              // Postconditions
-              dv1 = vB + Vectex.Cross(wB, cp1.rB) - vA - Vectex.Cross(wA, cp1.rA);
-              dv2 = vB + Vectex.Cross(wB, cp2.rB) - vA - Vectex.Cross(wA, cp2.rA);
-
-              // Compute normal velocity
-              vn1 = Vector2.Dot(dv1, normal);
-              vn2 = Vector2.Dot(dv2, normal);
-
-              //Debug.Assert(MathF.Abs(vn1 - cp1.velocityBias) < k_errorTol);
-              //Debug.Assert(MathF.Abs(vn2 - cp2.velocityBias) < k_errorTol);
-#endif
+              
               break;
             }
 
@@ -483,15 +470,6 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               cp1.normalImpulse = x.X;
               cp2.normalImpulse = x.Y;
 
-#if B2_DEBUG_SOLVER
-              // Postconditions
-              dv1 = vB + Vectex.Cross(wB, cp1.rB) - vA - Vectex.Cross(wA, cp1.rA);
-
-              // Compute normal velocity
-              vn1 = Vector2.Dot(dv1, normal);
-
-              //Debug.Assert(MathF.Abs(vn1 - cp1.velocityBias) < k_errorTol);
-#endif
               break;
             }
 
@@ -524,15 +502,6 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               cp1.normalImpulse = x.X;
               cp2.normalImpulse = x.Y;
 
-#if B2_DEBUG_SOLVER
-              // Postconditions
-              dv2 = vB + Vectex.Cross(wB, cp2.rB) - vA - Vectex.Cross(wA, cp2.rA);
-
-              // Compute normal velocity
-              vn2 = Vector.Dot(dv2, normal);
-
-              //Debug.Assert(MathF.Abs(vn2 - cp2.velocityBias) < k_errorTol);
-#endif
               break;
             }
 
@@ -605,8 +574,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
             break;
           }
-
-
+          
           case ManifoldType.FaceB: {
             normal = Vector2.Transform(pc.localNormal, xfB.q); // Common.Math.Mul(xfB.q, pc.localNormal);
             Vector2 planePoint = Common.Math.Mul(xfB, pc.localPoint);

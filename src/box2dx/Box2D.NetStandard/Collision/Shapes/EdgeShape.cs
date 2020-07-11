@@ -25,6 +25,7 @@
 // SOFTWARE.
 */
 
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
@@ -32,13 +33,19 @@ using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
-	public class EdgeShape : Shape {
+	/// <summary>
+	/// A line segment (edge) shape. These can be connected in chains or loops
+	/// to other edge shapes. Edges created independently are two-sided and do
+  /// no provide smooth movement across junctions. 
+	/// </summary>
+  public class EdgeShape : Shape {
     internal Vector2 m_vertex1;
     internal Vector2 m_vertex2;
 
     internal Vector2? m_vertex0;
     internal Vector2? m_vertex3;
 
+    internal bool m_oneSided;
 
     public EdgeShape() {
       m_type = ShapeType.Edge;
@@ -46,7 +53,7 @@ namespace Box2D.NetStandard.Collision.Shapes
     }
 
     public EdgeShape(Vector2 v1, Vector2 v2):this() {
-      Set(v1, v2);
+      SetTwoSided(v1, v2);
     }
 
     public Vector2 Vertex1 {
@@ -59,6 +66,27 @@ namespace Box2D.NetStandard.Collision.Shapes
       get=>m_vertex2;
     }
 
+    /// <summary>
+    /// Set this as a part of a sequence. Vertex v0 precedes the edge and vertex v3
+    /// follows. These extra vertices are used to provide smooth movement
+    /// across junctions. This also makes the collision one-sided. The edge
+    /// normal points to the right looking from v1 to v2.
+    /// </summary>
+    void SetOneSided(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3) {
+      m_vertex0 = v0;
+      m_vertex1 = v1;
+      m_vertex2 = v2;
+      m_vertex3 = v3;
+      m_oneSided = true;
+    }
+    
+    public void SetTwoSided(in Vector2 v1, in Vector2 v2) {
+      m_vertex1 = v1;
+      m_vertex2 = v2;
+      m_oneSided = false;
+    }
+    
+    [Obsolete("Use SetTwoSided instead",true)]
     public void Set(in Vector2 v1, in Vector2 v2) {
       m_vertex1    = v1;
       m_vertex2    = v2;
@@ -83,18 +111,18 @@ namespace Box2D.NetStandard.Collision.Shapes
       Vector2 v1 = m_vertex1;
       Vector2 v2 = m_vertex2;
       Vector2 e  = v2 - v1;
+      
+      // Normal points to the right, looking from v1 at v2
       Vector2 normal = Vector2.Normalize(new Vector2(e.Y, -e.X));
 
       // q = p1 + t * d
       // dot(normal, q - v1) = 0
       // dot(normal, p1 - v1) + t * dot(normal, d) = 0
       float numerator   = Vector2.Dot(normal, v1 - p1);
+      if (m_oneSided && numerator > 0.0f) return false;
       float denominator = Vector2.Dot(normal, d);
 
-      if (denominator == 0.0f)
-      {
-        return false;
-      }
+      if (denominator == 0.0f)  return false;
 
       float t = numerator / denominator;
       if (t < 0.0f || input.maxFraction < t)
