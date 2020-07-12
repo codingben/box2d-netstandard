@@ -414,6 +414,6 @@ namespace Box2D.NetStandard.Collision.Shapes {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Vector2[] GetVertices() => m_vertices;
+    public Vector2[] GetVertices() => m_vertices[.. m_count];
   }
 }
