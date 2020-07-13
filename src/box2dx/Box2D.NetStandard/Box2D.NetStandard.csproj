@@ -14,6 +14,7 @@
     <FileVersion>2.0.1.0</FileVersion>
     <Version>2.0.2-alpha</Version>
     <PackageVersion>2.0.2-alpha</PackageVersion>
+    <TieredCompilation>false</TieredCompilation>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
