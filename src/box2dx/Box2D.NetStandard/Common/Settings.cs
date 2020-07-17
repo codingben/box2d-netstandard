@@ -69,7 +69,7 @@ namespace Box2D.NetStandard.Common
 		/// A small angle used as a collision and constraint tolerance. Usually it is
 		/// chosen to be numerically significant, but visually insignificant.
 		/// </summary>
-		public const float AngularSlop = 2.0f / 180.0f * Settings.Pi; // 2 degrees
+		public const float AngularSlop = 2.0f / 180.0f * Pi; // 2 degrees
 
 		/// <summary>
 		/// The radius of the polygon/edge shape skin. This should not be modified. Making
@@ -111,7 +111,7 @@ namespace Box2D.NetStandard.Common
 		/// The maximum angular position correction used when solving constraints.
 		/// This helps to prevent overshoot.
 		/// </summary>
-		public const float MaxAngularCorrection = 8.0f / 180.0f * Settings.Pi; // 8 degrees
+		public const float MaxAngularCorrection = 8.0f / 180.0f * Pi; // 8 degrees
 
 		/// <summary>
 		/// The maximum linear velocity of a body. This limit is very large and is used
@@ -137,7 +137,7 @@ namespace Box2D.NetStandard.Common
 		/// The maximum angular velocity of a body. This limit is very large and is used
 		/// to prevent numerical problems. You shouldn't need to adjust this.
 		/// </summary>
-		public const float MaxRotation = (0.5f * Settings.Pi);
+		public const float MaxRotation = (0.5f * Pi);
 		public const float MaxRotationSquared = (MaxRotation * MaxRotation);
 
 		/// <summary>

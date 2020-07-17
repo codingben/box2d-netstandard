@@ -38,7 +38,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures {
     /// <summary>
     /// Use this to store application specific fixture data.
     /// </summary>
-    public object? userData;
+    public object userData;
 
     /// <summary>
     /// The friction coefficient, usually in the range [0,1].

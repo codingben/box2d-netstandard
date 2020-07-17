@@ -35,31 +35,31 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 using Math = Box2D.NetStandard.Common.Math;
 
-namespace Box2D.NetStandard.Dynamics.Contacts {
+namespace Box2D.NetStandard.Dynamics.Contacts
+{
   /// <summary>
   /// The class manages contact between two shapes. A contact exists for each overlapping
   /// AABB in the broad-phase (except if filtered). Therefore a contact object may exist
   /// that has no contact points.
   /// </summary>
-  public abstract class Contact {
-    private const byte CircleCircle   = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Circle;
-    private const byte CircleEdge     = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Edge;
-    private const byte CirclePolygon  = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Polygon;
-    private const byte CircleChain    = ((byte) ShapeType.Circle  << 2) + (byte) ShapeType.Chain;
-    private const byte EdgeCircle     = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Circle;
-    private const byte EdgeEdge       = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Edge;
-    private const byte EdgePolygon    = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Polygon;
-    private const byte EdgeChain      = ((byte) ShapeType.Edge    << 2) + (byte) ShapeType.Chain;
-    private const byte PolygonCircle  = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Circle;
-    private const byte PolygonEdge    = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Edge;
+  public abstract class Contact
+  {
+    private const byte CircleCircle = ((byte) ShapeType.Circle << 2) + (byte) ShapeType.Circle;
+    private const byte CircleEdge = ((byte) ShapeType.Circle << 2) + (byte) ShapeType.Edge;
+    private const byte CirclePolygon = ((byte) ShapeType.Circle << 2) + (byte) ShapeType.Polygon;
+    private const byte CircleChain = ((byte) ShapeType.Circle << 2) + (byte) ShapeType.Chain;
+    private const byte EdgeCircle = ((byte) ShapeType.Edge << 2) + (byte) ShapeType.Circle;
+    private const byte EdgeEdge = ((byte) ShapeType.Edge << 2) + (byte) ShapeType.Edge;
+    private const byte EdgePolygon = ((byte) ShapeType.Edge << 2) + (byte) ShapeType.Polygon;
+    private const byte EdgeChain = ((byte) ShapeType.Edge << 2) + (byte) ShapeType.Chain;
+    private const byte PolygonCircle = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Circle;
+    private const byte PolygonEdge = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Edge;
     private const byte PolygonPolygon = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Polygon;
-    private const byte PolygonChain   = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Chain;
-    private const byte ChainCircle    = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Circle;
-    private const byte ChainEdge      = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Edge;
-    private const byte ChainPolygon   = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Polygon;
-    private const byte ChainChain     = ((byte) ShapeType.Chain   << 2) + (byte) ShapeType.Chain;
-    
-    private static bool s_initialized;
+    private const byte PolygonChain = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Chain;
+    private const byte ChainCircle = ((byte) ShapeType.Chain << 2) + (byte) ShapeType.Circle;
+    private const byte ChainEdge = ((byte) ShapeType.Chain << 2) + (byte) ShapeType.Edge;
+    private const byte ChainPolygon = ((byte) ShapeType.Chain << 2) + (byte) ShapeType.Polygon;
+    private const byte ChainChain = ((byte) ShapeType.Chain << 2) + (byte) ShapeType.Chain;
 
     internal CollisionFlags m_flags;
 
@@ -79,7 +79,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
     internal Manifold m_manifold = new Manifold();
 
-    internal int   m_toiCount;
+    internal int m_toiCount;
     internal float m_toi;
 
     internal float m_friction;
@@ -90,15 +90,17 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Manifold GetManifold() => m_manifold;
 
-    internal Manifold Manifold {
+    internal Manifold Manifold
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_manifold;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void GetWorldManifold(out WorldManifold worldManifold) {
-      Body  bodyA  = m_fixtureA.Body;
-      Body  bodyB  = m_fixtureB.Body;
+    internal void GetWorldManifold(out WorldManifold worldManifold)
+    {
+      Body bodyA = m_fixtureA.Body;
+      Body bodyB = m_fixtureB.Body;
       Shape shapeA = m_fixtureA.Shape;
       Shape shapeB = m_fixtureB.Shape;
 
@@ -108,7 +110,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetEnabled(bool flag) {
+    public void SetEnabled(bool flag)
+    {
       if (flag) {
         m_flags |= CollisionFlags.Enabled;
       }
@@ -120,7 +123,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsEnabled() => (m_flags & CollisionFlags.Enabled) == CollisionFlags.Enabled;
 
-    public bool Enabled {
+    public bool Enabled
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => IsEnabled();
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -130,7 +134,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsTouching() => (m_flags & CollisionFlags.Touching) == CollisionFlags.Touching;
 
-    public bool Touching {
+    public bool Touching
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => IsTouching();
     }
@@ -138,7 +143,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Contact GetNext() => m_next;
 
-    public Contact Next {
+    public Contact Next
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetNext();
     }
@@ -146,7 +152,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     /// <summary>
     /// Get the first fixture in this contact.
     /// </summary>
-    public Fixture FixtureA {
+    public Fixture FixtureA
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_fixtureA;
     }
@@ -154,7 +161,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     /// <summary>
     /// Get the second fixture in this contact.
     /// </summary>
-    public Fixture FixtureB {
+    public Fixture FixtureB
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_fixtureB;
     }
@@ -174,7 +182,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetFriction(float friction) => m_friction = friction;
 
-    public float Friction {
+    public float Friction
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetFriction();
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -190,7 +199,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float GetRestitution() => m_restitution;
 
-    public float Restitution {
+    public float Restitution
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetRestitution();
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -207,7 +217,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float GetTangentSpeed() => m_tangentSpeed;
 
-    public float TangentSpeed {
+    public float TangentSpeed
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetTangentSpeed();
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -217,7 +228,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetChildIndexA() => m_indexA;
 
-    public int ChildIndexA {
+    public int ChildIndexA
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetChildIndexA();
     }
@@ -225,14 +237,16 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetChildIndexB() => m_indexB;
 
-    public int ChildIndexB {
+    public int ChildIndexB
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => GetChildIndexB();
     }
-    
+
     internal abstract void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB);
 
-    public Contact(Fixture fA, int indexA, Fixture fB, int indexB) {
+    public Contact(Fixture fA, int indexA, Fixture fB, int indexB)
+    {
       m_flags = CollisionFlags.Enabled;
 
       m_fixtureA = fA;
@@ -251,15 +265,15 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
       m_toiCount = 0;
 
-      m_friction    = Settings.MixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
+      m_friction = Settings.MixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
       m_restitution = Settings.MixRestitution(m_fixtureA.Restitution, m_fixtureB.Restitution);
 
       m_tangentSpeed = 0f;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
-
+    public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB)
+    {
       int match = ((byte) fixtureA.Type << 2) + (byte) fixtureB.Type;
       return (match switch {
                              CircleCircle   => new CircleContact(fixtureA, indexA, fixtureB, indexB),
@@ -278,10 +292,12 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
                              ChainEdge      => null,
                              ChainPolygon   => new ChainAndPolygonContact(fixtureA, indexA, fixtureB, indexB),
                              ChainChain     => null,
+                             _              => null
                            })!;
     }
 
-    public void Update(ContactListener listener) {
+    public void Update(ContactListener listener)
+    {
       Manifold oldManifold = m_manifold;
 
       // Re-enable this contact.
@@ -292,12 +308,12 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
       bool sensorA = m_fixtureA.IsSensor();
       bool sensorB = m_fixtureB.IsSensor();
-      bool sensor  = sensorA || sensorB;
+      bool sensor = sensorA || sensorB;
 
-      Body      bodyA = m_fixtureA.Body;
-      Body      bodyB = m_fixtureB.Body;
-      Transform xfA   = bodyA.GetTransform();
-      Transform xfB   = bodyB.GetTransform();
+      Body bodyA = m_fixtureA.Body;
+      Body bodyB = m_fixtureB.Body;
+      Transform xfA = bodyA.GetTransform();
+      Transform xfB = bodyB.GetTransform();
 
       // Is this contact a sensor?
       if (sensor) {
@@ -316,7 +332,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         // stored impulses to warm start the solver.
         for (int i = 0; i < m_manifold.pointCount; ++i) {
           ManifoldPoint mp2 = m_manifold.points[i];
-          mp2.normalImpulse  = 0.0f;
+          mp2.normalImpulse = 0.0f;
           mp2.tangentImpulse = 0.0f;
           ContactID id2 = mp2.id;
 
@@ -324,7 +340,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             ManifoldPoint mp1 = oldManifold.points[j];
 
             if (mp1.id.key == id2.key) {
-              mp2.normalImpulse  = mp1.normalImpulse;
+              mp2.normalImpulse = mp1.normalImpulse;
               mp2.tangentImpulse = mp1.tangentImpulse;
               break;
             }
@@ -359,15 +375,16 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       }
     }
 
-    private bool TestOverlap(in Shape     shapeA, int          indexA,
-      in                        Shape     shapeB, int          indexB,
-      in                        Transform xfA,    in Transform xfB) {
+    private bool TestOverlap(in Shape shapeA, int indexA,
+      in Shape shapeB, int indexB,
+      in Transform xfA, in Transform xfB)
+    {
       DistanceInput input = new DistanceInput();
       input.proxyA.Set(shapeA, indexA);
       input.proxyB.Set(shapeB, indexB);
       input.transformA = xfA;
       input.transformB = xfB;
-      input.useRadii   = true;
+      input.useRadii = true;
 
       SimplexCache cache = new SimplexCache();
       cache.count = 0;
@@ -377,7 +394,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       return output.distance < 10.0f * Settings.FLT_EPSILON;
     }
 
-    internal static void Distance(out DistanceOutput output, SimplexCache cache, in DistanceInput input) {
+    internal static void Distance(out DistanceOutput output, SimplexCache cache, in DistanceInput input)
+    {
       output = new DistanceOutput();
 
       DistanceProxy proxyA = input.proxyA;
@@ -391,13 +409,13 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       simplex.ReadCache(cache, proxyA, transformA, proxyB, transformB);
 
       // Get simplex vertices as an array.
-      SimplexVertex[] vertices   = simplex.m_v;
-      const int       k_maxIters = 20;
+      SimplexVertex[] vertices = simplex.m_v;
+      const int k_maxIters = 20;
 
       // These store the vertices of the last simplex so that we
       // can check for duplicates and prevent cycling.
-      int[] saveA     = new int[3], saveB = new int[3];
-      int   saveCount = 0;
+      int[] saveA = new int[3], saveB = new int[3];
+      int saveCount = 0;
 
       // Main iteration loop.
       int iter = 0;
@@ -448,10 +466,10 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         // Compute a tentative new simplex vertex using support points.
         SimplexVertex vertex = vertices[simplex.m_count];
         vertex.indexA = proxyA.GetSupport(Math.MulT(transformA.q, -d));
-        vertex.wA     = Math.Mul(transformA, proxyA.GetVertex(vertex.indexA));
+        vertex.wA = Math.Mul(transformA, proxyA.GetVertex(vertex.indexA));
         vertex.indexB = proxyB.GetSupport(Math.MulT(transformB.q, d));
-        vertex.wB     = Math.Mul(transformB, proxyB.GetVertex(vertex.indexB));
-        vertex.w      = vertex.wB - vertex.wA;
+        vertex.wB = Math.Mul(transformB, proxyB.GetVertex(vertex.indexB));
+        vertex.w = vertex.wB - vertex.wA;
 
         // Iteration count is equated to the number of support point calls.
         ++iter;
@@ -479,7 +497,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
       // Prepare output.
       simplex.GetWitnessPoints(out output.pointA, out output.pointB);
-      output.distance   = Vector2.Distance(output.pointA, output.pointB);
+      output.distance = Vector2.Distance(output.pointA, output.pointB);
       output.iterations = iter;
 
       // Cache the simplex.
@@ -495,7 +513,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           // Move the witness points to the outer surface.
           output.distance -= rA + rB;
           Vector2 normal = output.pointB - output.pointA;
-          normal        =  Vector2.Normalize(normal);
+          normal = Vector2.Normalize(normal);
           output.pointA += rA * normal;
           output.pointB -= rB * normal;
         }
@@ -503,8 +521,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           // Shapes are overlapped when radii are considered.
           // Move the witness points to the middle.
           Vector2 p = 0.5f * (output.pointA + output.pointB);
-          output.pointA   = p;
-          output.pointB   = p;
+          output.pointA = p;
+          output.pointB = p;
           output.distance = 0.0f;
         }
       }

@@ -34,253 +34,250 @@ using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
+using Vector2 = System.Numerics.Vector2;
 
 namespace Box2D.NetStandard.Dynamics.Fixtures
 {
-	/// <summary>
-	/// A fixture is used to attach a shape to a body for collision detection. A fixture
-	/// inherits its transform from its parent. Fixtures hold additional non-geometric data
-	/// such as friction, collision filters, etc.
-	/// Fixtures are created via Body.CreateFixture.
-	/// @warning you cannot reuse fixtures.
-	/// </summary>
-	[DebuggerDisplay("Fixture of {m_body._userData}")]
-	public class Fixture
-	{
-		internal float m_density;
+  /// <summary>
+  /// A fixture is used to attach a shape to a body for collision detection. A fixture
+  /// inherits its transform from its parent. Fixtures hold additional non-geometric data
+  /// such as friction, collision filters, etc.
+  /// Fixtures are created via Body.CreateFixture.
+  /// @warning you cannot reuse fixtures.
+  /// </summary>
+  [DebuggerDisplay("Fixture of {m_body._userData}")]
+  public class Fixture
+  {
+    internal float m_density;
 
-		internal Fixture? m_next;
-		internal Body m_body;
+    internal Fixture m_next;
+    internal Body m_body;
 
-		private Shape m_shape;
+    private Shape m_shape;
 
-		internal float m_friction;
-		internal float m_restitution;
+    internal float m_friction;
+    internal float m_restitution;
 
-		internal FixtureProxy[] m_proxies;
-		internal int            m_proxyCount;
+    internal FixtureProxy[] m_proxies;
+    internal int m_proxyCount;
 
-		internal Filter m_filter;
+    internal Filter m_filter;
 
-		private bool m_isSensor;
+    private bool m_isSensor;
 
-		private object? m_userData;
+    private object m_userData;
 
 
-		// non-public default constructor
-		internal Fixture()
-		{
-			m_userData = null;
-			m_proxyCount = 0;
-			m_density = 0f;
-		}
+    // non-public default constructor
+    internal Fixture()
+    {
+      m_userData = null;
+      m_proxyCount = 0;
+      m_density = 0f;
+    }
 
-		public void Create(Body body, FixtureDef def) {
-			if (def.shape ==null) throw new ArgumentNullException("def.shape");
+    public void Create(Body body, FixtureDef def)
+    {
+      if (def.shape == null) throw new ArgumentNullException("def.shape");
 
-			m_userData    = def.userData;
-			m_friction    = def.friction;
-			m_restitution = def.restitution;
+      m_userData = def.userData;
+      m_friction = def.friction;
+      m_restitution = def.restitution;
 
-			m_body = body;
-			m_next = null;
+      m_body = body;
+      m_next = null;
 
-			m_filter = def.filter;
+      m_filter = def.filter;
 
-			m_isSensor = def.isSensor;
+      m_isSensor = def.isSensor;
 
-			m_shape = def.shape.Clone();
+      m_shape = def.shape.Clone();
 
-			// Reserve proxy space
-			int childCount = m_shape.GetChildCount();
-			m_proxies = new FixtureProxy[childCount];
-			for (int i = 0; i < childCount; ++i) {
-				m_proxies[i] = new FixtureProxy();
-			}
-			m_proxyCount = 0;
+      // Reserve proxy space
+      int childCount = m_shape.GetChildCount();
+      m_proxies = new FixtureProxy[childCount];
+      for (int i = 0; i < childCount; ++i) {
+        m_proxies[i] = new FixtureProxy();
+      }
 
-			m_density = def.density;
-		}
-		
-		internal void CreateProxies(BroadPhase broadPhase, in Transform xf)
-		{
-			//Debug.Assert(m_proxyCount == 0);
+      m_proxyCount = 0;
 
-			// Create proxies in the broad-phase.
-			m_proxyCount = m_shape.GetChildCount();
+      m_density = def.density;
+    }
 
-			for (int i = 0; i < m_proxyCount; ++i)
-			{
-				
-				FixtureProxy proxy = m_proxies[i];
-				m_shape.ComputeAABB(out proxy.aabb, in xf, i);
-				proxy.proxyId    = broadPhase.CreateProxy(proxy.aabb, proxy);
-				proxy.fixture    = this;
-				proxy.childIndex = i;
-			}
-		}
+    internal void CreateProxies(BroadPhase broadPhase, in Transform xf)
+    {
+      //Debug.Assert(m_proxyCount == 0);
 
-		internal void DestroyProxies(BroadPhase broadPhase)
-		{
-			// Destroy proxies in the broad-phase.
-			for (int i = 0; i < m_proxyCount; ++i)
-			{
-				FixtureProxy proxy = m_proxies[i];
-				broadPhase.DestroyProxy(proxy.proxyId);
-				proxy.proxyId = -1;
-			}
+      // Create proxies in the broad-phase.
+      m_proxyCount = m_shape.GetChildCount();
 
-			m_proxyCount = 0;
-		}
+      for (int i = 0; i < m_proxyCount; ++i) {
+        FixtureProxy proxy = m_proxies[i];
+        m_shape.ComputeAABB(out proxy.aabb, in xf, i);
+        proxy.proxyId = broadPhase.CreateProxy(proxy.aabb, proxy);
+        proxy.fixture = this;
+        proxy.childIndex = i;
+      }
+    }
 
-		internal void Synchronize(BroadPhase broadPhase, in Transform transform1, in Transform transform2)
-		{
-			if (m_proxyCount == 0)
-			{	
-				return;
-			}
+    internal void DestroyProxies(BroadPhase broadPhase)
+    {
+      // Destroy proxies in the broad-phase.
+      for (int i = 0; i < m_proxyCount; ++i) {
+        FixtureProxy proxy = m_proxies[i];
+        broadPhase.DestroyProxy(proxy.proxyId);
+        proxy.proxyId = -1;
+      }
 
-			for (int i = 0; i < m_proxyCount; ++i)
-			{
-				FixtureProxy proxy = m_proxies[i];
+      m_proxyCount = 0;
+    }
 
-				// Compute an AABB that covers the swept shape (may miss some rotation effect).
-				m_shape.ComputeAABB(out AABB aabb1, in transform1, proxy.childIndex);
-				m_shape.ComputeAABB(out AABB aabb2, in transform2, proxy.childIndex);
-	
-				proxy.aabb.Combine(aabb1, aabb2);
+    internal void Synchronize(BroadPhase broadPhase, in Transform transform1, in Transform transform2)
+    {
+      if (m_proxyCount == 0) {
+        return;
+      }
 
-				Vector2 displacement = aabb2.GetCenter() - aabb1.GetCenter();
+      for (int i = 0; i < m_proxyCount; ++i) {
+        FixtureProxy proxy = m_proxies[i];
 
-				broadPhase.MoveProxy(proxy.proxyId, proxy.aabb, displacement);
-			}
-		}
+        // Compute an AABB that covers the swept shape (may miss some rotation effect).
+        m_shape.ComputeAABB(out AABB aabb1, in transform1, proxy.childIndex);
+        m_shape.ComputeAABB(out AABB aabb2, in transform2, proxy.childIndex);
 
-		void SetFilterData(in Filter filter)
-		{
-			m_filter = filter;
+        proxy.aabb.Combine(aabb1, aabb2);
 
-			Refilter();
-		}
+        Vector2 displacement = aabb2.GetCenter() - aabb1.GetCenter();
 
-		public void Refilter()
-		{
-			if (m_body == null)
-			{
-				return;
-			}
+        broadPhase.MoveProxy(proxy.proxyId, proxy.aabb, displacement);
+      }
+    }
 
-			// Flag associated contacts for filtering.
-			ContactEdge edge = m_body.GetContactList();
-			while (edge!=null)
-			{
-				Contact contact  = edge.contact;
-				Fixture fixtureA = contact.GetFixtureA();
-				Fixture fixtureB = contact.GetFixtureB();
-				if (fixtureA == this || fixtureB == this)
-				{
-					contact.FlagForFiltering();
-				}
+    void SetFilterData(in Filter filter)
+    {
+      m_filter = filter;
 
-				edge = edge.next;
-			}
+      Refilter();
+    }
 
-			World.World world = m_body.GetWorld();
+    public void Refilter()
+    {
+      if (m_body == null) {
+        return;
+      }
 
-			if (world == null)
-			{
-				return;
-			}
+      // Flag associated contacts for filtering.
+      ContactEdge edge = m_body.GetContactList();
+      while (edge != null) {
+        Contact contact = edge.contact;
+        Fixture fixtureA = contact.GetFixtureA();
+        Fixture fixtureB = contact.GetFixtureB();
+        if (fixtureA == this || fixtureB == this) {
+          contact.FlagForFiltering();
+        }
 
-			// Touch each proxy so that new pairs may be created
-			BroadPhase broadPhase = world.m_contactManager.m_broadPhase;
-			for (int i = 0; i < m_proxyCount; ++i)
-			{
-				broadPhase.TouchProxy(m_proxies[i].proxyId);
-			}
-		}
+        edge = edge.next;
+      }
 
-		public ShapeType Type {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get=>m_shape.m_type;
-		}
+      World.World world = m_body.GetWorld();
 
-		public Shape Shape {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => m_shape;
-		}
+      if (world == null) {
+        return;
+      }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool IsSensor() => m_isSensor;
+      // Touch each proxy so that new pairs may be created
+      BroadPhase broadPhase = world.m_contactManager.m_broadPhase;
+      for (int i = 0; i < m_proxyCount; ++i) {
+        broadPhase.TouchProxy(m_proxies[i].proxyId);
+      }
+    }
 
-		private bool Sensor {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => m_isSensor;
-		}
+    public ShapeType Type
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_shape.m_type;
+    }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Shape Shape
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_shape;
+    }
 
-		Filter GetFilterData() => m_filter;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsSensor() => m_isSensor;
 
-		public Filter FilterData {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => m_filter;
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set {
-				m_filter = value;
-				Refilter();
-			}
-		}
+    private bool Sensor
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_isSensor;
+    }
 
-		public Body Body {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => m_body;
-		}
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Body GetBody() => Body;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    Filter GetFilterData() => m_filter;
 
-		public Fixture GetNext() => m_next;
-		public Fixture Next {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Filter FilterData
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_filter;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set {
+        m_filter = value;
+        Refilter();
+      }
+    }
 
-			get => m_next;
-		}
+    public Body Body
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_body;
+    }
 
-		public float Density {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => m_density;
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set => m_density = value;
-		}
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Body GetBody() => Body;
 
-		public float Restitution {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => m_restitution;
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set => m_restitution = value;
-		}
+    public Fixture GetNext() => m_next;
 
-		public object UserData {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => m_userData;
-		}
+    public Fixture Next
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_next;
+    }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool TestPoint(in Vector2 p) => m_shape.TestPoint(m_body.GetTransform(), p);
+    public float Density
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_density;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => m_density = value;
+    }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool RayCast(out RayCastOutput output, in RayCastInput input, int childIndex) =>
-			m_shape.RayCast(out output, in input, m_body.GetTransform(), childIndex);
+    public float Restitution
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_restitution;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => m_restitution = value;
+    }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void GetMassData(out MassData massData) => m_shape.ComputeMass(out massData, m_density);
+    public object UserData
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_userData;
+    }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public AABB GetAABB(int childIndex) => m_proxies[childIndex].aabb;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TestPoint(in Vector2 p) => m_shape.TestPoint(m_body.GetTransform(), p);
 
-	}
-	
-	
-	
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool RayCast(out RayCastOutput output, in RayCastInput input, int childIndex) =>
+      m_shape.RayCast(out output, in input, m_body.GetTransform(), childIndex);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetMassData(out MassData massData) => m_shape.ComputeMass(out massData, m_density);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public AABB GetAABB(int childIndex) => m_proxies[childIndex].aabb;
+  }
 }

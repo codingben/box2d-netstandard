@@ -524,14 +524,14 @@ namespace Box2D.NetStandard.Dynamics.World {
           ////Debug.Assert(b.IsEnabled() == true);
           island.Add(b);
 
-          // Make sure the body is awake (without resetting sleep timer).
-          b.SetFlag(BodyFlags.Awake);
-
           // To keep islands as small as possible, we don't
           // propagate islands across static bodies.
           if (b.m_type == BodyType.Static) {
             continue;
           }
+          
+          // Make sure the body is awake (without resetting sleep timer).
+          b.SetFlag(BodyFlags.Awake);
 
           // Search all contacts connected to this body.
           for (ContactEdge ce = b.m_contactList; ce != null; ce = ce.next) {
@@ -1067,10 +1067,7 @@ namespace Box2D.NetStandard.Dynamics.World {
       }
     }
 
-    private void DrawFixture(Fixture fixture, Transform xf, Color color, bool core) {
-#warning "the core argument is not used, the coreColor variable is also not used"
-      Color coreColor = new Color(0.9f, 0.6f, 0.6f);
-
+    private void DrawFixture(Fixture fixture, Transform xf, Color color) {
       switch (fixture.Type) {
         case ShapeType.Circle: {
           CircleShape circle = (CircleShape) fixture.Shape;

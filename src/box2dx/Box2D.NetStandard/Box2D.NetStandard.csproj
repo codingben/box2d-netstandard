@@ -15,7 +15,7 @@
     <Version>2.0.2-alpha</Version>
     <PackageVersion>2.0.2-alpha</PackageVersion>
     <TieredCompilation>false</TieredCompilation>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -62,7 +62,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 		private float m_invMassB;
 		private float m_invIB;
 		private Vector2 m_rB;
-		private Vector2 m_localAnchorB;
 		private Matrix3x2 m_mass;
 		private Vector2 m_C;
 
@@ -145,7 +144,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 			m_beta = h * k * m_gamma;
 
 			// Compute the effective mass matrix.
-			m_rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
+			m_rB = Math.Mul(qB,  -m_localCenterB);
 
 			// K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
 			//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]

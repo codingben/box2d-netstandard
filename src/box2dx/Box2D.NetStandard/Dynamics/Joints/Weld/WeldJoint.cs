@@ -4,7 +4,6 @@ using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
-using Vec2 = System.Numerics.Vector2;
 using b2Vec2 = System.Numerics.Vector2;
 using b2Vec3 = System.Numerics.Vector3;
 
@@ -67,11 +66,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
       m_invIB        = m_bodyB.m_invI;
 
       float aA = data.positions[m_indexA].a;
-      Vec2  vA = data.velocities[m_indexA].v;
+      Vector2  vA = data.velocities[m_indexA].v;
       float wA = data.velocities[m_indexA].w;
 
       float aB = data.positions[m_indexB].a;
-      Vec2  vB = data.velocities[m_indexB].v;
+      Vector2  vB = data.velocities[m_indexB].v;
       float wB = data.velocities[m_indexB].w;
 
       Rot qA = new Rot(aA), qB = new Rot(aB);
@@ -143,7 +142,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
         // Scale impulses to support a variable time step.
         m_impulse *= data.step.dtRatio;
 
-        Vec2 P = new Vector2(m_impulse.X, m_impulse.Y);
+        Vector2 P = new Vector2(m_impulse.X, m_impulse.Y);
 
         vA -= mA * P;
         wA -= iA * (Vectex.Cross(m_rA, P) + m_impulse.Z);

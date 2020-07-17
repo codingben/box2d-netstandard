@@ -36,8 +36,7 @@ namespace Box2D.NetStandard.Common
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 Solve(this Matrix3x2 m, Vector2 b) {
 			float det = 1f/m.GetDeterminant();
-			return new Vector2(
-			                   det * (m.M22 * b.X - m.M12 * b.Y),
+			return new Vector2(det * (m.M22 * b.X - m.M12 * b.Y),
 			                   det * (m.M11 * b.Y - m.M21 * b.X));
 		}
 

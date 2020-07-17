@@ -100,6 +100,7 @@ using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
+using Vector2 = System.Numerics.Vector2;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
   /// <summary>

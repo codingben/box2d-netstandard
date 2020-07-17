@@ -37,37 +37,40 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
 using Math = System.Math;
 
-namespace Box2D.NetStandard.Dynamics.Contacts {
-  internal class ContactSolver {
-    public   TimeStep                    _step;
+namespace Box2D.NetStandard.Dynamics.Contacts
+{
+  internal class ContactSolver
+  {
+    public TimeStep _step;
     internal ContactVelocityConstraint[] _velocityConstraints;
-    private  ContactPositionConstraint[] _positionConstraints;
+    private ContactPositionConstraint[] _positionConstraints;
 
-    public  int        _count;
+    public int _count;
     private Position[] _positions;
     private Velocity[] _velocities;
-    private Contact[]  _contacts;
+    private Contact[] _contacts;
 
-    public ContactSolver(ContactSolverDef def) {
-      _step                = def.step;
-      _count               = def.count;
+    public ContactSolver(ContactSolverDef def)
+    {
+      _step = def.step;
+      _count = def.count;
       _positionConstraints = new ContactPositionConstraint[_count];
       _velocityConstraints = new ContactVelocityConstraint[_count];
-      _positions           = def.positions;
-      _velocities          = def.velocities;
-      _contacts            = def.contacts;
+      _positions = def.positions;
+      _velocities = def.velocities;
+      _contacts = def.contacts;
 
       for (int i = 0; i < _count; ++i) {
         Contact contact = _contacts[i];
 
-        Fixture  fixtureA = contact.m_fixtureA;
-        Fixture  fixtureB = contact.m_fixtureB;
-        Shape    shapeA   = fixtureA.Shape;
-        Shape    shapeB   = fixtureB.Shape;
-        float    radiusA  = shapeA.m_radius;
-        float    radiusB  = shapeB.m_radius;
-        Body     bodyA    = fixtureA.Body;
-        Body     bodyB    = fixtureB.Body;
+        Fixture fixtureA = contact.m_fixtureA;
+        Fixture fixtureB = contact.m_fixtureB;
+        Shape shapeA = fixtureA.Shape;
+        Shape shapeB = fixtureB.Shape;
+        float radiusA = shapeA.m_radius;
+        float radiusB = shapeB.m_radius;
+        Body bodyA = fixtureA.Body;
+        Body bodyB = fixtureB.Body;
         Manifold manifold = contact.Manifold;
 
         int pointCount = manifold.pointCount;
@@ -75,36 +78,36 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
         _velocityConstraints[i] = new ContactVelocityConstraint();
         ContactVelocityConstraint vc = _velocityConstraints[i];
-        vc.friction     = contact.m_friction;
-        vc.restitution  = contact.m_restitution;
+        vc.friction = contact.m_friction;
+        vc.restitution = contact.m_restitution;
         vc.tangentSpeed = contact.m_tangentSpeed;
-        vc.indexA       = bodyA.m_islandIndex;
-        vc.indexB       = bodyB.m_islandIndex;
-        vc.invMassA     = bodyA.m_invMass;
-        vc.invMassB     = bodyB.m_invMass;
-        vc.invIA        = bodyA.m_invI;
-        vc.invIB        = bodyB.m_invI;
+        vc.indexA = bodyA.m_islandIndex;
+        vc.indexB = bodyB.m_islandIndex;
+        vc.invMassA = bodyA.m_invMass;
+        vc.invMassB = bodyB.m_invMass;
+        vc.invIA = bodyA.m_invI;
+        vc.invIB = bodyB.m_invI;
         vc.contactIndex = i;
-        vc.pointCount   = pointCount;
-        vc.K = new Matrix3x2();// .SetZero();
-        vc.normalMass = new Matrix3x2();// .SetZero();
+        vc.pointCount = pointCount;
+        vc.K = new Matrix3x2();          // .SetZero();
+        vc.normalMass = new Matrix3x2(); // .SetZero();
 
         _positionConstraints[i] = new ContactPositionConstraint();
         ContactPositionConstraint pc = _positionConstraints[i];
-        pc.indexA       = bodyA.m_islandIndex;
-        pc.indexB       = bodyB.m_islandIndex;
-        pc.invMassA     = bodyA.m_invMass;
-        pc.invMassB     = bodyB.m_invMass;
+        pc.indexA = bodyA.m_islandIndex;
+        pc.indexB = bodyB.m_islandIndex;
+        pc.invMassA = bodyA.m_invMass;
+        pc.invMassB = bodyB.m_invMass;
         pc.localCenterA = bodyA.m_sweep.localCenter;
         pc.localCenterB = bodyB.m_sweep.localCenter;
-        pc.invIA        = bodyA.m_invI;
-        pc.invIB        = bodyB.m_invI;
-        pc.localNormal  = manifold.localNormal;
-        pc.localPoint   = manifold.localPoint;
-        pc.pointCount   = pointCount;
-        pc.radiusA      = radiusA;
-        pc.radiusB      = radiusB;
-        pc.type         = manifold.type;
+        pc.invIA = bodyA.m_invI;
+        pc.invIB = bodyB.m_invI;
+        pc.localNormal = manifold.localNormal;
+        pc.localPoint = manifold.localPoint;
+        pc.pointCount = pointCount;
+        pc.radiusA = radiusA;
+        pc.radiusB = radiusB;
+        pc.type = manifold.type;
 
         for (int j = 0; j < pointCount; ++j) {
           ManifoldPoint cp = manifold.points[j];
@@ -112,61 +115,62 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           VelocityConstraintPoint vcp = vc.points[j];
 
           if (_step.warmStarting) {
-            vcp.normalImpulse  = _step.dtRatio * cp.normalImpulse;
+            vcp.normalImpulse = _step.dtRatio * cp.normalImpulse;
             vcp.tangentImpulse = _step.dtRatio * cp.tangentImpulse;
           }
           else {
-            vcp.normalImpulse  = 0f;
+            vcp.normalImpulse = 0f;
             vcp.tangentImpulse = 0f;
           }
 
-          vcp.rA           = Vector2.Zero;
-          vcp.rB           = Vector2.Zero;
-          vcp.normalMass   = 0f;
-          vcp.tangentMass  = 0f;
+          vcp.rA = Vector2.Zero;
+          vcp.rB = Vector2.Zero;
+          vcp.normalMass = 0f;
+          vcp.tangentMass = 0f;
           vcp.velocityBias = 0f;
 
           pc.localPoints[j] = cp.localPoint;
         }
       }
     }
-    
-    public void InitializeVelocityConstraints() {
+
+    public void InitializeVelocityConstraints()
+    {
       for (int i = 0; i < _count; ++i) {
         ContactVelocityConstraint vc = _velocityConstraints[i];
         ContactPositionConstraint pc = _positionConstraints[i];
 
-        float    radiusA  = pc.radiusA;
-        float    radiusB  = pc.radiusB;
+        float radiusA = pc.radiusA;
+        float radiusB = pc.radiusB;
         Manifold manifold = _contacts[vc.contactIndex].Manifold;
 
         int indexA = vc.indexA;
         int indexB = vc.indexB;
 
-        float   mA           = vc.invMassA;
-        float   mB           = vc.invMassB;
-        float   iA           = vc.invIA;
-        float   iB           = vc.invIB;
+        float mA = vc.invMassA;
+        float mB = vc.invMassB;
+        float iA = vc.invIA;
+        float iB = vc.invIB;
         Vector2 localCenterA = pc.localCenterA;
         Vector2 localCenterB = pc.localCenterB;
 
         Vector2 cA = _positions[indexA].c;
-        float   aA = _positions[indexA].a;
+        float aA = _positions[indexA].a;
         Vector2 vA = _velocities[indexA].v;
-        float   wA = _velocities[indexA].w;
+        float wA = _velocities[indexA].w;
 
         Vector2 cB = _positions[indexB].c;
-        float   aB = _positions[indexB].a;
+        float aB = _positions[indexB].a;
         Vector2 vB = _velocities[indexB].v;
-        float   wB = _velocities[indexB].w;
+        float wB = _velocities[indexB].w;
 
         //Debug.Assert(manifold.pointCount > 0);
 
         Transform xfA = new Transform();
         Transform xfB = new Transform();
 
-        xfA.q = Matrex.CreateRotation(aA);// Actually about twice as fast to use our own function
-        xfB.q = Matrex.CreateRotation(aB);// Actually about twice as fast to use our own function
+        xfA.q = Matrex.CreateRotation(aA);                   // Actually about twice as fast to use our own function
+        xfB.q = Matrex.CreateRotation(aB);                   // Actually about twice as fast to use our own function
         xfA.p = cA - Vector2.Transform(localCenterA, xfA.q); // Common.Math.Mul(xfA.q, localCenterA);
         xfB.p = cB - Vector2.Transform(localCenterB, xfB.q); // Common.Math.Mul(xfB.q, localCenterB);
 
@@ -223,11 +227,12 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           const float k_maxConditionNumber = 1000.0f;
           if (k11 * k11 < k_maxConditionNumber * (k11 * k22 - k12 * k12)) {
             // K is safe to invert.
-            vc.K = new Matrix3x2(k11, k12, k12, k22,0,0);
-            
+            vc.K = new Matrix3x2(k11, k12, k12, k22, 0, 0);
+
             // vc.K.ex       = new Vector2(k11, k12);
             // vc.K.ey       = new Vector2(k12, k22);
-            /*Matrix3x2*/ Matrex.Invert(vc.K, out Matrix3x2 KT);
+            /*Matrix3x2*/
+            Matrex.Invert(vc.K, out Matrix3x2 KT);
             vc.normalMass = KT;
           }
           else {
@@ -239,30 +244,31 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       }
     }
 
-    public void WarmStart() {
+    public void WarmStart()
+    {
       // Warm start.
       for (int i = 0; i < _count; ++i) {
         ContactVelocityConstraint vc = _velocityConstraints[i];
 
-        int   indexA     = vc.indexA;
-        int   indexB     = vc.indexB;
-        float mA         = vc.invMassA;
-        float iA         = vc.invIA;
-        float mB         = vc.invMassB;
-        float iB         = vc.invIB;
-        int   pointCount = vc.pointCount;
+        int indexA = vc.indexA;
+        int indexB = vc.indexB;
+        float mA = vc.invMassA;
+        float iA = vc.invIA;
+        float mB = vc.invMassB;
+        float iB = vc.invIB;
+        int pointCount = vc.pointCount;
 
         Vector2 vA = _velocities[indexA].v;
-        float   wA = _velocities[indexA].w;
+        float wA = _velocities[indexA].w;
         Vector2 vB = _velocities[indexB].v;
-        float   wB = _velocities[indexB].w;
+        float wB = _velocities[indexB].w;
 
-        Vector2 normal  = vc.normal;
+        Vector2 normal = vc.normal;
         Vector2 tangent = Vectex.Cross(normal, 1.0f);
 
         for (int j = 0; j < pointCount; ++j) {
           VelocityConstraintPoint vcp = vc.points[j];
-          Vector2                 P   = vcp.normalImpulse * normal + vcp.tangentImpulse * tangent;
+          Vector2 P = vcp.normalImpulse * normal + vcp.tangentImpulse * tangent;
           wA -= iA * Vectex.Cross(vcp.rA, P);
           vA -= mA * P;
           wB += iB * Vectex.Cross(vcp.rB, P);
@@ -277,26 +283,27 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     }
 
 
-    public void SolveVelocityConstraints() {
+    public void SolveVelocityConstraints()
+    {
       for (int i = 0; i < _count; ++i) {
         ContactVelocityConstraint vc = _velocityConstraints[i];
 
-        int   indexA     = vc.indexA;
-        int   indexB     = vc.indexB;
-        float mA         = vc.invMassA;
-        float iA         = vc.invIA;
-        float mB         = vc.invMassB;
-        float iB         = vc.invIB;
-        int   pointCount = vc.pointCount;
+        int indexA = vc.indexA;
+        int indexB = vc.indexB;
+        float mA = vc.invMassA;
+        float iA = vc.invIA;
+        float mB = vc.invMassB;
+        float iB = vc.invIB;
+        int pointCount = vc.pointCount;
 
         Vector2 vA = _velocities[indexA].v;
-        float   wA = _velocities[indexA].w;
+        float wA = _velocities[indexA].w;
         Vector2 vB = _velocities[indexB].v;
-        float   wB = _velocities[indexB].w;
+        float wB = _velocities[indexB].w;
 
-        Vector2 normal   = vc.normal;
-        Vector2 tangent  = Vectex.Cross(normal, 1.0f);
-        float   friction = vc.friction;
+        Vector2 normal = vc.normal;
+        Vector2 tangent = Vectex.Cross(normal, 1.0f);
+        float friction = vc.friction;
 
         //Debug.Assert(pointCount == 1 || pointCount == 2);
 
@@ -309,13 +316,13 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           Vector2 dv = vB + Vectex.Cross(wB, vcp.rB) - vA - Vectex.Cross(wA, vcp.rA);
 
           // Compute tangent force
-          float vt     = Vector2.Dot(dv, tangent) - vc.tangentSpeed;
+          float vt = Vector2.Dot(dv, tangent) - vc.tangentSpeed;
           float lambda = vcp.tangentMass * (-vt);
 
           // b2Clamp the accumulated force
           float maxFriction = friction * vcp.normalImpulse;
-          float newImpulse  = Math.Clamp(vcp.tangentImpulse + lambda, -maxFriction, maxFriction);
-          lambda             = newImpulse - vcp.tangentImpulse;
+          float newImpulse = Math.Clamp(vcp.tangentImpulse + lambda, -maxFriction, maxFriction);
+          lambda = newImpulse - vcp.tangentImpulse;
           vcp.tangentImpulse = newImpulse;
 
           // Apply contact impulse
@@ -337,12 +344,12 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             Vector2 dv = vB + Vectex.Cross(wB, vcp.rB) - vA - Vectex.Cross(wA, vcp.rA);
 
             // Compute normal impulse
-            float vn     = Vector2.Dot(dv, normal);
+            float vn = Vector2.Dot(dv, normal);
             float lambda = -vcp.normalMass * (vn - vcp.velocityBias);
 
             // b2Clamp the accumulated impulse
             float newImpulse = MathF.Max(vcp.normalImpulse + lambda, 0.0f);
-            lambda            = newImpulse - vcp.normalImpulse;
+            lambda = newImpulse - vcp.normalImpulse;
             vcp.normalImpulse = newImpulse;
 
             // Apply contact impulse
@@ -402,13 +409,13 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           float vn1 = Vector2.Dot(dv1, normal);
           float vn2 = Vector2.Dot(dv2, normal);
 
-          Vector2 b = new Vector2((float)(vn1 - cp1.velocityBias),
-                                  (float)(vn2 - cp2.velocityBias));
+          Vector2 b = new Vector2((float) (vn1 - cp1.velocityBias),
+                                  (float) (vn2 - cp2.velocityBias));
 
           // Compute b'
           b -= Vector2.Transform(a, vc.K); // Common.Math.Mul(vc.K, a);
 
-          const float k_errorTol = 1e-3f;
+          //const float k_errorTol = 1e-3f;
           //B2_NOT_USED(k_errorTol);
 
           for (;;) {
@@ -421,7 +428,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
             //
             // x = - inv(A) * b'
             //
-            Vector2 x = -Vector2.Transform(b, vc.normalMass);    //Common.Math.Mul(vc.normalMass, b);
+            Vector2 x = -Vector2.Transform(b, vc.normalMass); //Common.Math.Mul(vc.normalMass, b);
 
             if (x.X >= 0.0f && x.Y >= 0.0f) {
               // Get the incremental impulse
@@ -430,16 +437,16 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               // Apply incremental impulse
               Vector2 P1 = d.X * normal;
               Vector2 P2 = d.Y * normal;
-              vA -= mA * (P1                       + P2);
+              vA -= mA * (P1 + P2);
               wA -= iA * (Vectex.Cross(cp1.rA, P1) + Vectex.Cross(cp2.rA, P2));
 
-              vB += mB * (P1                       + P2);
+              vB += mB * (P1 + P2);
               wB += iB * (Vectex.Cross(cp1.rB, P1) + Vectex.Cross(cp2.rB, P2));
 
               // Accumulate
               cp1.normalImpulse = x.X;
               cp2.normalImpulse = x.Y;
-              
+
               break;
             }
 
@@ -460,10 +467,10 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               // Apply incremental impulse
               Vector2 P1 = d.X * normal;
               Vector2 P2 = d.Y * normal;
-              vA -= mA * (P1                       + P2);
+              vA -= mA * (P1 + P2);
               wA -= iA * (Vectex.Cross(cp1.rA, P1) + Vectex.Cross(cp2.rA, P2));
 
-              vB += mB * (P1                       + P2);
+              vB += mB * (P1 + P2);
               wB += iB * (Vectex.Cross(cp1.rB, P1) + Vectex.Cross(cp2.rB, P2));
 
               // Accumulate
@@ -492,10 +499,10 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               // Apply incremental impulse
               Vector2 P1 = d.X * normal;
               Vector2 P2 = d.Y * normal;
-              vA -= mA * (P1                       + P2);
+              vA -= mA * (P1 + P2);
               wA -= iA * (Vectex.Cross(cp1.rA, P1) + Vectex.Cross(cp2.rA, P2));
 
-              vB += mB * (P1                       + P2);
+              vB += mB * (P1 + P2);
               wB += iB * (Vectex.Cross(cp1.rB, P1) + Vectex.Cross(cp2.rB, P2));
 
               // Accumulate
@@ -522,10 +529,10 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
               // Apply incremental impulse
               Vector2 P1 = d.X * normal;
               Vector2 P2 = d.Y * normal;
-              vA -= mA * (P1                       + P2);
+              vA -= mA * (P1 + P2);
               wA -= iA * (Vectex.Cross(cp1.rA, P1) + Vectex.Cross(cp2.rA, P2));
 
-              vB += mB * (P1                       + P2);
+              vB += mB * (P1 + P2);
               wB += iB * (Vectex.Cross(cp1.rB, P1) + Vectex.Cross(cp2.rB, P2));
 
               // Accumulate
@@ -547,20 +554,22 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       }
     }
 
-    internal class PositionSolverManifold {
+    internal class PositionSolverManifold
+    {
       internal Vector2 normal;
       internal Vector2 point;
-      internal float   separation;
+      internal float separation;
 
-      internal void Initialize(ContactPositionConstraint pc, Transform xfA, Transform xfB, int index) {
+      internal void Initialize(ContactPositionConstraint pc, Transform xfA, Transform xfB, int index)
+      {
         //Debug.Assert(pc.pointCount > 0);
 
         switch (pc.type) {
           case ManifoldType.Circles: {
             Vector2 pointA = Common.Math.Mul(xfA, pc.localPoint);
             Vector2 pointB = Common.Math.Mul(xfB, pc.localPoints[0]);
-            normal     = Vector2.Normalize(pointB - pointA);
-            point      = 0.5f * (pointA + pointB);
+            normal = Vector2.Normalize(pointB - pointA);
+            point = 0.5f * (pointA + pointB);
             separation = Vector2.Dot(pointB - pointA, normal) - pc.radiusA - pc.radiusB;
             break;
           }
@@ -570,18 +579,18 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
 
             Vector2 clipPoint = Common.Math.Mul(xfB, pc.localPoints[index]);
             separation = Vector2.Dot(clipPoint - planePoint, normal) - pc.radiusA - pc.radiusB;
-            point      = clipPoint;
+            point = clipPoint;
 
             break;
           }
-          
+
           case ManifoldType.FaceB: {
             normal = Vector2.Transform(pc.localNormal, xfB.q); // Common.Math.Mul(xfB.q, pc.localNormal);
             Vector2 planePoint = Common.Math.Mul(xfB, pc.localPoint);
 
             Vector2 clipPoint = Common.Math.Mul(xfA, pc.localPoints[index]);
             separation = Vector2.Dot(clipPoint - planePoint, normal) - pc.radiusA - pc.radiusB;
-            point      = clipPoint;
+            point = clipPoint;
 
             // Ensure normal points from A to B
             normal = -normal;
@@ -591,47 +600,49 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
       }
     }
 
-    public void StoreImpulses() {
+    public void StoreImpulses()
+    {
       for (int i = 0; i < _count; ++i) {
-        ContactVelocityConstraint vc       = _velocityConstraints[i];
-        Manifold                  manifold = _contacts[vc.contactIndex].Manifold;
+        ContactVelocityConstraint vc = _velocityConstraints[i];
+        Manifold manifold = _contacts[vc.contactIndex].Manifold;
 
         for (int j = 0; j < vc.pointCount; ++j) {
-          manifold.points[j].normalImpulse  = vc.points[j].normalImpulse;
+          manifold.points[j].normalImpulse = vc.points[j].normalImpulse;
           manifold.points[j].tangentImpulse = vc.points[j].tangentImpulse;
         }
       }
     }
 
 
-    public bool SolvePositionConstraints() {
+    public bool SolvePositionConstraints()
+    {
       float minSeparation = 0.0f;
 
       for (int i = 0; i < _count; ++i) {
         ContactPositionConstraint pc = _positionConstraints[i];
 
-        int     indexA       = pc.indexA;
-        int     indexB       = pc.indexB;
+        int indexA = pc.indexA;
+        int indexB = pc.indexB;
         Vector2 localCenterA = pc.localCenterA;
-        float   mA           = pc.invMassA;
-        float   iA           = pc.invIA;
+        float mA = pc.invMassA;
+        float iA = pc.invIA;
         Vector2 localCenterB = pc.localCenterB;
-        float   mB           = pc.invMassB;
-        float   iB           = pc.invIB;
-        int     pointCount   = pc.pointCount;
+        float mB = pc.invMassB;
+        float iB = pc.invIB;
+        int pointCount = pc.pointCount;
 
         Vector2 cA = _positions[indexA].c;
-        float   aA = _positions[indexA].a;
+        float aA = _positions[indexA].a;
 
         Vector2 cB = _positions[indexB].c;
-        float   aB = _positions[indexB].a;
+        float aB = _positions[indexB].a;
 
         // Solve normal constraints
         for (int j = 0; j < pointCount; ++j) {
           Transform xfA = new Transform();
           Transform xfB = new Transform();
-          xfA.q = Matrex.CreateRotation(aA);// Actually about twice as fast to use our own function
-          xfB.q = Matrex.CreateRotation(aB);// Actually about twice as fast to use our own function
+          xfA.q = Matrex.CreateRotation(aA);                   // Actually about twice as fast to use our own function
+          xfB.q = Matrex.CreateRotation(aB);                   // Actually about twice as fast to use our own function
           xfA.p = cA - Vector2.Transform(localCenterA, xfA.q); // Common.Math.Mul(xfA.q, localCenterA);
           xfB.p = cB - Vector2.Transform(localCenterB, xfB.q); // Common.Math.Mul(xfB.q, localCenterB);
 
@@ -639,8 +650,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           psm.Initialize(pc, xfA, xfB, j);
           Vector2 normal = psm.normal;
 
-          Vector2 point      = psm.point;
-          float   separation = psm.separation;
+          Vector2 point = psm.point;
+          float separation = psm.separation;
 
           Vector2 rA = point - cA;
           Vector2 rB = point - cB;
@@ -655,7 +666,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           // Compute the effective mass.
           float rnA = Vectex.Cross(rA, normal);
           float rnB = Vectex.Cross(rB, normal);
-          float K   = mA + mB + iA * rnA * rnA + iB * rnB * rnB;
+          float K = mA + mB + iA * rnA * rnA + iB * rnB * rnB;
 
           // Compute normal impulse
           float impulse = K > 0.0f ? -C / K : 0.0f;
@@ -682,17 +693,18 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
     }
 
 
-    public bool SolveTOIPositionConstraints(int toiIndexA, int toiIndexB) {
+    public bool SolveTOIPositionConstraints(int toiIndexA, int toiIndexB)
+    {
       float minSeparation = 0.0f;
 
       for (int i = 0; i < _count; ++i) {
         ContactPositionConstraint pc = _positionConstraints[i];
 
-        int     indexA       = pc.indexA;
-        int     indexB       = pc.indexB;
+        int indexA = pc.indexA;
+        int indexB = pc.indexB;
         Vector2 localCenterA = pc.localCenterA;
         Vector2 localCenterB = pc.localCenterB;
-        int     pointCount   = pc.pointCount;
+        int pointCount = pc.pointCount;
 
         float mA = 0.0f;
         float iA = 0.0f;
@@ -709,17 +721,17 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
         }
 
         Vector2 cA = _positions[indexA].c;
-        float   aA = _positions[indexA].a;
+        float aA = _positions[indexA].a;
 
         Vector2 cB = _positions[indexB].c;
-        float   aB = _positions[indexB].a;
+        float aB = _positions[indexB].a;
 
         // Solve normal constraints
         for (int j = 0; j < pointCount; ++j) {
           Transform xfA = new Transform();
           Transform xfB = new Transform();
-          xfA.q = Matrex.CreateRotation(aA); // Actually about twice as fast to use our own function
-          xfB.q = Matrex.CreateRotation(aB); // Actually about twice as fast to use our own function
+          xfA.q = Matrex.CreateRotation(aA);                   // Actually about twice as fast to use our own function
+          xfB.q = Matrex.CreateRotation(aB);                   // Actually about twice as fast to use our own function
           xfA.p = cA - Vector2.Transform(localCenterA, xfA.q); // Common.Math.Mul(xfA.q, localCenterA);
           xfB.p = cB - Vector2.Transform(localCenterB, xfB.q); // Common.Math.Mul(xfB.q, localCenterB);
 
@@ -727,8 +739,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           psm.Initialize(pc, xfA, xfB, j);
           Vector2 normal = psm.normal;
 
-          Vector2 point      = psm.point;
-          float   separation = psm.separation;
+          Vector2 point = psm.point;
+          float separation = psm.separation;
 
           Vector2 rA = point - cA;
           Vector2 rB = point - cB;
@@ -743,7 +755,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts {
           // Compute the effective mass.
           float rnA = Vectex.Cross(rA, normal);
           float rnB = Vectex.Cross(rB, normal);
-          float K   = mA + mB + iA * rnA * rnA + iB * rnB * rnB;
+          float K = mA + mB + iA * rnA * rnA + iB * rnB * rnB;
 
           // Compute normal impulse
           float impulse = K > 0.0f ? -C / K : 0.0f;

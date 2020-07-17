@@ -29,31 +29,33 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 
-namespace Box2D.NetStandard.Collision.Shapes {
+namespace Box2D.NetStandard.Collision.Shapes
+{
   /// <summary>
   /// A shape is used for collision detection. You can create a shape however you like.
   /// Shapes used for simulation in World are created automatically when a Fixture is created.
   /// </summary>
-  public abstract class Shape {
+  public abstract class Shape
+  {
     public abstract Shape Clone();
-    public abstract int   GetChildCount();
-    public abstract bool  TestPoint(in Transform xf, in Vector2 p);
+    public abstract int GetChildCount();
+    public abstract bool TestPoint(in Transform xf, in Vector2 p);
 
     public abstract bool RayCast(out RayCastOutput output, in RayCastInput input, in Transform transform,
-                                    int childIndex);
+      int childIndex);
 
     public abstract void ComputeAABB(out AABB aabb, in Transform xf, int childIndex);
-    
+
     public abstract void ComputeMass(out MassData massData, float density);
 
     protected internal ShapeType m_type;
 
-    public ShapeType Type {
+    public ShapeType Type
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_type;
     }
 
     internal float m_radius;
-    
   }
 }
