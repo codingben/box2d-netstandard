@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using Box2D.NetStandard.Dynamics.Bodies;
 
@@ -23,17 +24,23 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
       damping = 0.0f;
     }
 
+    [Obsolete("Use Initialize or use Joint.LinearStiffness to get stiffness & damping values",true)]
+    public float frequencyHz;
+    [Obsolete("Use Initialize or use Joint.LinearStiffness to get stiffness & damping values",true)]
+    public float dampingRatio;
+    
     /// <summary>
     /// Initialize the bodies, anchors, and length using the world anchors.
     /// </summary>
-    public void Initialize(Body body1, Body body2, Vector2 anchor1, Vector2 anchor2)
+    public void Initialize(Body bodyA, Body bodyB, Vector2 anchor1, Vector2 anchor2, float frequencyHz = 0f, float dampingRatio = 0f)
     {
-      bodyA = body1;
-      bodyB = body2;
-      localAnchorA = body1.GetLocalPoint(anchor1);
-      localAnchorB = body2.GetLocalPoint(anchor2);
+      this.bodyA = bodyA;
+      this.bodyB = bodyB;
+      localAnchorA = bodyA.GetLocalPoint(anchor1);
+      localAnchorB = bodyB.GetLocalPoint(anchor2);
       Vector2 d = anchor2 - anchor1;
       length = d.Length();
+      Joint.LinearStiffness(out stiffness,out damping, frequencyHz, dampingRatio, bodyA, bodyB);
     }
 
     /// <summary>

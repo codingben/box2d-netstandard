@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Weld {
@@ -7,6 +8,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
       Type = JointType.WeldJoint;
     }
 
+    [Obsolete("Use Joint.AngularStiffness to get stiffness & damping values",true)]
+    public float frequencyHz;
+    [Obsolete("Use Joint.AngularStiffness to get stiffness & damping values",true)]
+    public float dampingRatio;
+    
     public Vector2 localAnchorA;
     public Vector2 localAnchorB;
     public float referenceAngle;
