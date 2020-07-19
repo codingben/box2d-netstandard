@@ -323,6 +323,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
       m_enableLimit   = def.enableLimit;
       m_enableMotor   = def.enableMotor;
 
+      m_translation = 0.0f;
       m_axis = Vector2.Zero;
       m_perp = Vector2.Zero;
     }

@@ -55,17 +55,18 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
   /// to remain at a fixed distance from each other. You can view
   /// this as a massless, rigid rod.
   /// </summary>
-  public class DistanceJoint : Joint {
+  public class DistanceJoint : Joint
+  {
     private readonly Vector2 m_localAnchorA;
     private readonly Vector2 m_localAnchorB;
     private Vector2 m_u;
-    private readonly float   m_frequencyHz;
-    private readonly float   m_dampingRatio;
-    private float   m_gamma;
-    private float   m_bias;
-    private float   m_impulse;
-    private float   m_mass; // effective mass for the constraint.
-    private readonly float   m_length;
+    private float m_stiffness;
+    private float m_damping;
+    private float m_gamma;
+    private float m_bias;
+    private float m_impulse;
+    private float m_mass; // effective mass for the constraint.
+    private readonly float m_length;
     private int m_indexA;
     private int m_indexB;
     private Vector2 m_localCenterA;
@@ -87,13 +88,29 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override float GetReactionTorque(float inv_dt) => 0.0f;
 
+    /// <summary>
+    /// Set/get the linear stiffness in N/m
+    /// </summary>
+    public float Stiffness{
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]get=>m_stiffness;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]set => m_stiffness = value;
+    }
+    
+    /// <summary>
+    /// Set/get linear damping in N*s/m
+    /// </summary>
+    public float Damping{
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]get=>m_damping;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]set => m_damping = value;
+    }
+
     public DistanceJoint(DistanceJointDef def)
       : base(def) {
       m_localAnchorA = def.localAnchorA;
       m_localAnchorB = def.localAnchorB;
       m_length       = def.length;
-      m_frequencyHz  = def.frequencyHz;
-      m_dampingRatio = def.dampingRatio;
+      m_stiffness  = def.stiffness;
+      m_damping = def.damping;
       m_impulse      = 0.0f;
       m_gamma        = 0.0f;
       m_bias         = 0.0f;
@@ -139,19 +156,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
       float invMass = m_invMassA + m_invIA * crAu * crAu + m_invMassB + m_invIB * crBu * crBu;
 
       // Compute the effective mass matrix.
-      m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
-
-      if (m_frequencyHz > 0.0f) {
+      if (m_stiffness > 0.0f) {
         float C = length - m_length;
 
-        // Frequency
-        float omega = Settings.Tau * m_frequencyHz;
+        float d = m_damping;
 
-        // Damping coefficient
-        float d = 2.0f * m_mass * m_dampingRatio * omega;
-
-        // Spring stiffness
-        float k = m_mass * omega * omega;
+        float k = m_stiffness;
 
         // magic formulas
         float h = data.step.dt;
@@ -167,6 +177,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
       else {
         m_gamma = 0.0f;
         m_bias  = 0.0f;
+        m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
       }
 
       if (data.step.warmStarting) {
@@ -189,8 +200,34 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
       data.velocities[m_indexB].w = wB;
     }
 
+    internal override void SolveVelocityConstraints(in SolverData data) {
+      Vector2 vA = data.velocities[m_indexA].v;
+      float  wA = data.velocities[m_indexA].w;
+      Vector2 vB = data.velocities[m_indexB].v;
+      float  wB = data.velocities[m_indexB].w;
+
+      // Cdot = dot(u, v + cross(w, r))
+      Vector2 vpA  = vA + Vectex.Cross(wA, m_rA);
+      Vector2 vpB  = vB + Vectex.Cross(wB, m_rB);
+      float  Cdot = Vector2.Dot(m_u, vpB - vpA);
+
+      float impulse = -m_mass * (Cdot + m_bias + m_gamma * m_impulse);
+      m_impulse += impulse;
+
+      Vector2 P = impulse * m_u;
+      vA -= m_invMassA * P;
+      wA -= m_invIA    * Vectex.Cross(m_rA, P);
+      vB += m_invMassB * P;
+      wB += m_invIB    * Vectex.Cross(m_rB, P);
+
+      data.velocities[m_indexA].v = vA;
+      data.velocities[m_indexA].w = wA;
+      data.velocities[m_indexB].v = vB;
+      data.velocities[m_indexB].w = wB;
+    }
+    
     internal override bool SolvePositionConstraints(in SolverData data) {
-      if (m_frequencyHz > 0.0f) {
+      if (m_stiffness > 0.0f) {
         //There is no position correction for soft distance constraints.
         return true;
       }
@@ -225,32 +262,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
       data.positions[m_indexB].a = aB;
       
       return System.Math.Abs(C) < Settings.LinearSlop;
-    }
-
-    internal override void SolveVelocityConstraints(in SolverData data) {
-      Vector2 vA = data.velocities[m_indexA].v;
-      float  wA = data.velocities[m_indexA].w;
-      Vector2 vB = data.velocities[m_indexB].v;
-      float  wB = data.velocities[m_indexB].w;
-
-      // Cdot = dot(u, v + cross(w, r))
-      Vector2 vpA  = vA + Vectex.Cross(wA, m_rA);
-      Vector2 vpB  = vB + Vectex.Cross(wB, m_rB);
-      float  Cdot = Vector2.Dot(m_u, vpB - vpA);
-
-      float impulse = -m_mass * (Cdot + m_bias + m_gamma * m_impulse);
-      m_impulse += impulse;
-
-      Vector2 P = impulse * m_u;
-      vA -= m_invMassA * P;
-      wA -= m_invIA    * Vectex.Cross(m_rA, P);
-      vB += m_invMassB * P;
-      wB += m_invIB    * Vectex.Cross(m_rB, P);
-
-      data.velocities[m_indexA].v = vA;
-      data.velocities[m_indexA].w = wA;
-      data.velocities[m_indexB].v = vB;
-      data.velocities[m_indexB].w = wB;
     }
   }
 }

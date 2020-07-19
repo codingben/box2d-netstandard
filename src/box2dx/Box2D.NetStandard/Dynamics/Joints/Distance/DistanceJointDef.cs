@@ -1,7 +1,8 @@
 using System.Numerics;
 using Box2D.NetStandard.Dynamics.Bodies;
 
-namespace Box2D.NetStandard.Dynamics.Joints.Distance {
+namespace Box2D.NetStandard.Dynamics.Joints.Distance
+{
   /// <summary>
   /// Distance joint definition. This requires defining an
   /// anchor point on both bodies and the non-zero length of the
@@ -10,22 +11,25 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
   /// slightly. This helps when saving and loading a game.
   /// @warning Do not use a zero or short length.
   /// </summary>
-  public class DistanceJointDef : JointDef {
-    public DistanceJointDef() {
-      Type         = JointType.DistanceJoint;
+  public class DistanceJointDef : JointDef
+  {
+    public DistanceJointDef()
+    {
+      Type = JointType.DistanceJoint;
       localAnchorA = new Vector2(0.0f, 0.0f);
       localAnchorB = new Vector2(0.0f, 0.0f);
-      length       = 1.0f;
-      frequencyHz  = 0.0f;
-      dampingRatio = 0.0f;
+      length = 1.0f;
+      stiffness = 0.0f;
+      damping = 0.0f;
     }
 
     /// <summary>
     /// Initialize the bodies, anchors, and length using the world anchors.
     /// </summary>
-    public void Initialize(Body body1, Body body2, Vector2 anchor1, Vector2 anchor2) {
-      bodyA        = body1;
-      bodyB        = body2;
+    public void Initialize(Body body1, Body body2, Vector2 anchor1, Vector2 anchor2)
+    {
+      bodyA = body1;
+      bodyB = body2;
       localAnchorA = body1.GetLocalPoint(anchor1);
       localAnchorB = body2.GetLocalPoint(anchor2);
       Vector2 d = anchor2 - anchor1;
@@ -48,13 +52,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
     public float length;
 
     /// <summary>
-    /// The response speed.
+    /// The linear stiffness in N/m. A value of 0 disables softness.
     /// </summary>
-    public float frequencyHz;
+    public float stiffness;
 
     /// <summary>
-    /// The damping ratio. 0 = no damping, 1 = critical damping.
+    /// The linear damping in N*s/m.
     /// </summary>
-    public float dampingRatio;
+    public float damping;
   }
 }

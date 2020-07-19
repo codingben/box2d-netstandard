@@ -42,19 +42,6 @@ using Box2D.NetStandard.Dynamics.World.Callbacks;
 
 namespace Box2D.NetStandard.Dynamics.Joints
 {
-	public interface IMotorisedJoint {
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void SetMotorSpeed(float speed);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		float GetMotorSpeed();
-		
-		float MotorSpeed {
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]get;
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]set;
-		}
-	}
-	
 	/// <summary>
 	/// The base joint class. Joints are used to constraint two bodies together in
 	/// various fashions. Some joints also feature limits and motors.
@@ -79,6 +66,54 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		protected float m_invMass1, m_invI1;
 		protected float m_invMass2, m_invI2;
 
+		public static void LinearStiffness(out float stiffness, out float damping, in float frequencyHz,
+			in float dampingRatio, in Body bodyA, in Body bodyB)
+		{
+			float massA = bodyA.GetMass();
+			float massB = bodyB.GetMass();
+			float mass;
+			if (massA > 0.0f && massB > 0.0f)
+			{
+				mass = massA * massB / (massA + massB);
+			}
+			else if (massA > 0.0f)
+			{
+				mass = massA;
+			}
+			else
+			{
+				mass = massB;
+			}
+
+			float omega = 2.0f * Settings.Pi * frequencyHz;
+			stiffness = mass * omega * omega;
+			damping = 2.0f * mass * dampingRatio * omega;
+		}
+
+		public static void AngularStiffness(out float stiffness, out float damping, in float frequencyHz,
+			in float dampingRatio, in Body bodyA, in Body bodyB)
+		{
+			float IA = bodyA.GetInertia();
+			float IB = bodyB.GetInertia();
+			float I;
+			if (IA > 0.0f && IB > 0.0f)
+			{
+				I = IA * IB / (IA + IB);
+			}
+			else if (IA > 0.0f)
+			{
+				I = IA;
+			}
+			else
+			{
+				I = IB;
+			}
+
+			float omega = 2.0f * Settings.Pi * frequencyHz;
+			stiffness = I * omega * omega;
+			damping = 2.0f * I * dampingRatio * omega;
+		}
+		
 		/// <summary>
 		/// Get the type of the concrete joint.
 		/// </summary>
@@ -150,7 +185,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 			m_islandFlag = false;
 			m_userData = def.UserData;
 		}
-
+		
 		internal static Joint Create(JointDef def)
 		{
 			Joint joint = null;
