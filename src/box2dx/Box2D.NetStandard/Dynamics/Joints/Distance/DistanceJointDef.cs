@@ -24,10 +24,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
       damping = 0.0f;
     }
 
-    [Obsolete("Use Initialize or use Joint.LinearStiffness to get stiffness & damping values",true)]
-    public float frequencyHz;
-    [Obsolete("Use Initialize or use Joint.LinearStiffness to get stiffness & damping values",true)]
-    public float dampingRatio;
+    [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]
+    public float? frequencyHz;
+    [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]
+    public float? dampingRatio;
     
     /// <summary>
     /// Initialize the bodies, anchors, and length using the world anchors.

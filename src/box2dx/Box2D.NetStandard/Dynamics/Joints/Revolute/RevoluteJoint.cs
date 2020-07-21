@@ -298,7 +298,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 
       // ex.x = M11 ey.x = M12
       // ex.y = M21 ey.y = M22
-      
+
       m_K.M11 = mA + mB + m_rA.Y * m_rA.Y * iA + m_rB.Y * m_rB.Y * iB;
       m_K.M12 = -m_rA.Y * m_rA.X * iA - m_rB.Y * m_rB.X * iB;
       m_K.M21 = m_K.M12;
@@ -386,32 +386,34 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
       // Solve limit constraint.
       if (m_enableLimit && fixedRotation == false) {
         // Lower limit
-        float C = m_angle - m_lowerAngle;
-        float Cdot = wB - wA;
-        float impulse = -m_axialMass * (Cdot + MathF.Max(C, 0.0f) * data.step.inv_dt);
-        float oldImpulse = m_lowerImpulse;
-        m_lowerImpulse = MathF.Max(m_lowerImpulse + impulse, 0.0f);
-        impulse = m_lowerImpulse - oldImpulse;
+        {
+          float C = m_angle - m_lowerAngle;
+          float Cdot = wB - wA;
+          float impulse = -m_axialMass * (Cdot + MathF.Max(C, 0.0f) * data.step.inv_dt);
+          float oldImpulse = m_lowerImpulse;
+          m_lowerImpulse = MathF.Max(m_lowerImpulse + impulse, 0.0f);
+          impulse = m_lowerImpulse - oldImpulse;
 
-        wA -= iA * impulse;
-        wB += iB * impulse;
+          wA -= iA * impulse;
+          wB += iB * impulse;
+        }
+
+        // Upper limit
+        // Note: signs are flipped to keep C positive when the constraint is satisfied.
+        // This also keeps the impulse positive when the limit is active.
+        {
+          float C = m_upperAngle - m_angle;
+          float Cdot = wA - wB;
+          float impulse = -m_axialMass * (Cdot + MathF.Max(C, 0.0f) * data.step.inv_dt);
+          float oldImpulse = m_upperImpulse;
+          m_upperImpulse = MathF.Max(m_upperImpulse + impulse, 0.0f);
+          impulse = m_upperImpulse - oldImpulse;
+
+          wA += iA * impulse;
+          wB -= iB * impulse;
+        }
       }
 
-      // Upper limit
-      // Note: signs are flipped to keep C positive when the constraint is satisfied.
-      // This also keeps the impulse positive when the limit is active.
-      {
-        float C = m_upperAngle - m_angle;
-        float Cdot = wA - wB;
-        float impulse = -m_axialMass * (Cdot + MathF.Max(C, 0.0f) * data.step.inv_dt);
-        float oldImpulse = m_upperImpulse;
-        m_upperImpulse = MathF.Max(m_upperImpulse + impulse, 0.0f);
-        impulse = m_upperImpulse - oldImpulse;
-
-        wA += iA * impulse;
-        wB -= iB * impulse;
-      }
-      
       // Solve point-to-point constraint
       {
         Vector2 Cdot = vB + Vectex.Cross(wB, m_rB) - vA - Vectex.Cross(wA, m_rA);
@@ -424,6 +426,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
         vB += mB * impulse;
         wB += iB * Vectex.Cross(m_rB, impulse);
       }
+
       data.velocities[m_indexA].v = vA;
       data.velocities[m_indexA].w = wA;
       data.velocities[m_indexB].v = vB;
@@ -454,14 +457,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
           // Prevent large angular corrections
           C = System.Math.Clamp(angle - m_lowerAngle, -Settings.MaxAngularCorrection, Settings.MaxAngularCorrection);
         }
-        else if (angle<m_lowerAngle) {
-          
+        else if (angle < m_lowerAngle) {
           // Prevent large angular corrections and allow some slop.
           C = System.Math.Clamp(angle - m_lowerAngle + Settings.AngularSlop, -Settings.MaxAngularCorrection, 0.0f);
         }
-        else if (angle >=m_upperAngle) {
+        else if (angle >= m_upperAngle) {
           // Prevent large angular corrections and allow some slop.
-          C = System.Math.Clamp(angle-m_upperAngle - Settings.AngularSlop, 0.0f, Settings.MaxAngularCorrection);
+          C = System.Math.Clamp(angle - m_upperAngle - Settings.AngularSlop, 0.0f, Settings.MaxAngularCorrection);
         }
 
         float limitImpulse = -m_axialMass * C;

@@ -45,7 +45,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
   /// Fixtures are created via Body.CreateFixture.
   /// @warning you cannot reuse fixtures.
   /// </summary>
-  [DebuggerDisplay("Fixture of {m_body._userData}")]
+  [DebuggerDisplay("Fixture of {m_body.m_userData}")]
   public class Fixture
   {
     internal float m_density;
@@ -55,7 +55,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
     private Shape m_shape;
 
-    internal float m_friction;
+    public float m_friction;
     internal float m_restitution;
 
     internal FixtureProxy[] m_proxies;

@@ -361,17 +361,17 @@ namespace Box2D.NetStandard.Dynamics.Contacts
       }
 
       if (listener != null) {
-        if (wasTouching == false && touching == true) {
+        if (touching && !wasTouching) {
           listener.BeginContact(this);
         }
-
-        if (wasTouching == true && touching == false) {
+        if (!touching && wasTouching) {
           listener.EndContact(this);
         }
-
-        if (sensor == false && touching == true) {
+        if (touching && !sensor) {
           listener.PreSolve(this, oldManifold);
         }
+
+        
       }
     }
 

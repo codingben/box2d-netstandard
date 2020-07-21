@@ -41,11 +41,9 @@
 // K = J * invM * JT
 //   = invMass1 + invI1 * cross(r1, u)^2 + invMass2 + invI2 * cross(r2, u)^2
 
-using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
-using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
 
@@ -109,9 +107,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance {
       m_localAnchorA = def.localAnchorA;
       m_localAnchorB = def.localAnchorB;
       m_length       = def.length;
+      
+      if (def.frequencyHz.HasValue && def.dampingRatio.HasValue)
+        LinearStiffness(out def.stiffness,out def.damping, def.frequencyHz.Value,def.dampingRatio.Value,def.bodyA,def.bodyB);
+      
       m_stiffness  = def.stiffness;
       m_damping = def.damping;
-      m_impulse      = 0.0f;
+       m_impulse      = 0.0f;
       m_gamma        = 0.0f;
       m_bias         = 0.0f;
     }
