@@ -170,17 +170,10 @@ namespace Box2D.NetStandard.Dynamics.World {
 
     internal readonly int m_bodyCapacity;
     internal readonly int m_contactCapacity;
-    private int m_jointCapacity;
-
-    private int m_positionIterationCount;
 
     public Island(int bodyCapacity, int contactCapacity, int jointCapacity, ContactListener listener) {
       m_bodyCapacity    = bodyCapacity;
       m_contactCapacity = contactCapacity;
-      m_jointCapacity   = jointCapacity;
-      //__bodyCount = 0;
-      //_contactCount = 0;
-      //_jointCount = 0;
 
       m_listener = listener;
 

@@ -25,7 +25,6 @@
 // SOFTWARE.
 */
 
-using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 
 namespace Box2D.NetStandard.Dynamics.Fixtures {
@@ -38,7 +37,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures {
     /// <summary>
     /// Use this to store application specific fixture data.
     /// </summary>
-    public object? userData;
+    public object userData;
 
     /// <summary>
     /// The friction coefficient, usually in the range [0,1].
@@ -66,12 +65,5 @@ namespace Box2D.NetStandard.Dynamics.Fixtures {
     public Filter filter = new Filter();
 
     public Shape shape;
-  }
-
-  class FixtureProxy {
-    internal AABB aabb;
-    internal Fixture fixture;
-    internal int childIndex;
-    internal int proxyId = -1;
   }
 }

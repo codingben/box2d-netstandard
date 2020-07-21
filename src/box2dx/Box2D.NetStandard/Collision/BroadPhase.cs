@@ -52,35 +52,35 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Box2D.NetStandard.Collision {
-#warning "CAS"
-
-
-  internal class BroadPhase {
+namespace Box2D.NetStandard.Collision
+{
+  internal class BroadPhase
+  {
     private readonly DynamicTree m_tree;
 
     private int m_proxyCount;
 
     private int[] m_moveBuffer;
-    private int   m_moveCapacity;
-    private int   m_moveCount;
+    private int m_moveCapacity;
+    private int m_moveCount;
 
     private Pair[] m_pairBuffer;
-    private int    m_pairCapacity;
-    private int    m_pairCount;
+    private int m_pairCapacity;
+    private int m_pairCount;
 
     private int m_queryProxyId;
 
-    public BroadPhase() {
+    public BroadPhase()
+    {
       m_proxyCount = 0;
 
       m_pairCapacity = 16;
-      m_pairCount    = 0;
-      m_pairBuffer   = new Pair[m_pairCapacity];
+      m_pairCount = 0;
+      m_pairBuffer = new Pair[m_pairCapacity];
 
       m_moveCapacity = 16;
-      m_moveCount    = 0;
-      m_moveBuffer   = new int[m_moveCapacity];
+      m_moveCount = 0;
+      m_moveBuffer = new int[m_moveCapacity];
 
       m_tree = new DynamicTree();
     }
@@ -90,12 +90,13 @@ namespace Box2D.NetStandard.Collision {
     internal object GetUserData(int proxyId) => m_tree.GetUserData(proxyId);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TestOverlap(int proxyIdA, int proxyIdB) {
+    public bool TestOverlap(int proxyIdA, int proxyIdB)
+    {
       AABB aabbA = m_tree.GetFatAABB(proxyIdA);
       AABB aabbB = m_tree.GetFatAABB(proxyIdB);
       return Collision.TestOverlap(aabbA, aabbB);
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public AABB GetFatAABB(int proxyId) => m_tree.GetFatAABB(proxyId);
 
@@ -105,7 +106,8 @@ namespace Box2D.NetStandard.Collision {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetTreeHeight() => m_tree.GetHeight();
 
-    public void UpdatePairs(Action<object, object> AddPair) {
+    public void UpdatePairs(Action<object, object> AddPair)
+    {
       m_pairCount = 0;
 
       for (int i = 0; i < m_moveCount; ++i) {
@@ -118,9 +120,9 @@ namespace Box2D.NetStandard.Collision {
       }
 
       for (int i = 0; i < m_pairCount; ++i) {
-        Pair   primaryPair = m_pairBuffer[i];
-        object userDataA   = m_tree.GetUserData(primaryPair.proxyIdA);
-        object userDataB   = m_tree.GetUserData(primaryPair.proxyIdB);
+        Pair primaryPair = m_pairBuffer[i];
+        object userDataA = m_tree.GetUserData(primaryPair.proxyIdA);
+        object userDataB = m_tree.GetUserData(primaryPair.proxyIdB);
         AddPair(userDataA, userDataB);
       }
 
@@ -143,14 +145,16 @@ namespace Box2D.NetStandard.Collision {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ShiftOrigin(in Vector2 newOrigin) => m_tree.ShiftOrigin(in newOrigin);
 
-    public int CreateProxy(in AABB aabb, object userData) {
+    public int CreateProxy(in AABB aabb, object userData)
+    {
       int proxyId = m_tree.CreateProxy(aabb, userData);
       ++m_proxyCount;
       BufferMove(proxyId);
       return proxyId;
     }
 
-    public void DestroyProxy(int proxyId) {
+    public void DestroyProxy(int proxyId)
+    {
       UnBufferMove(proxyId);
       --m_proxyCount;
       m_tree.DestroyProxy(proxyId);
@@ -158,23 +162,26 @@ namespace Box2D.NetStandard.Collision {
 
     // Call MoveProxy as many times as you like, then when you are done
     // call Commit to finalized the proxy pairs (for your time step).
-    public void MoveProxy(int proxyId, in AABB aabb, in Vector2 displacement) {
+    public void MoveProxy(int proxyId, in AABB aabb, in Vector2 displacement)
+    {
       bool buffer = m_tree.MoveProxy(proxyId, aabb, displacement);
       if (buffer) {
         BufferMove(proxyId);
       }
     }
 
-    internal void TouchProxy(int proxyId) {
+    internal void TouchProxy(int proxyId)
+    {
       BufferMove(proxyId);
     }
 
 
-    private void BufferMove(int proxyId) {
+    private void BufferMove(int proxyId)
+    {
       if (m_moveCount == m_moveCapacity) {
         int[] oldBuffer = m_moveBuffer;
         m_moveCapacity *= 2;
-        m_moveBuffer   =  new int[m_moveCapacity];
+        m_moveBuffer = new int[m_moveCapacity];
         Array.Copy(oldBuffer, m_moveBuffer, m_moveCount);
       }
 
@@ -182,7 +189,8 @@ namespace Box2D.NetStandard.Collision {
       ++m_moveCount;
     }
 
-    private void UnBufferMove(int proxyId) {
+    private void UnBufferMove(int proxyId)
+    {
       for (int i = 0; i < m_moveCount; ++i) {
         if (m_moveBuffer[i] == proxyId) {
           m_moveBuffer[i] = -1;
@@ -190,7 +198,8 @@ namespace Box2D.NetStandard.Collision {
       }
     }
 
-    private bool QueryCallback(int proxyId) {
+    private bool QueryCallback(int proxyId)
+    {
       // A proxy cannot form a pair with itself.
       if (proxyId == m_queryProxyId) {
         return true;
@@ -206,7 +215,7 @@ namespace Box2D.NetStandard.Collision {
       if (m_pairCount == m_pairCapacity) {
         Pair[] oldBuffer = m_pairBuffer;
         m_pairCapacity = m_pairCapacity + (m_pairCapacity >> 1);
-        m_pairBuffer   = new Pair[m_pairCapacity];
+        m_pairBuffer = new Pair[m_pairCapacity];
         Array.Copy(oldBuffer, m_pairBuffer, m_pairCount);
       }
 
@@ -216,10 +225,5 @@ namespace Box2D.NetStandard.Collision {
 
       return true;
     }
-    
-    
-    
-
-
   }
 }

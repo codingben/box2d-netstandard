@@ -1,43 +1,46 @@
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.World;
 using Math = Box2D.NetStandard.Common.Math;
-using Vec2 = System.Numerics.Vector2;
 using b2Vec2 = System.Numerics.Vector2;
 using b2Vec3 = System.Numerics.Vector3;
 
-namespace Box2D.NetStandard.Dynamics.Joints.Weld {
-  public class WeldJoint : Joint {
-    private readonly float m_frequencyHz;
-    private readonly float m_dampingRatio;
+namespace Box2D.NetStandard.Dynamics.Joints.Weld
+{
+  public class WeldJoint : Joint
+  {
+    private float m_stiffness;
+    private float m_damping;
 
     private Vector2 m_localAnchorA;
     private Vector2 m_localAnchorB;
-    private float   m_referenceAngle;
-    private float   m_gamma;
+    private float m_referenceAngle;
+    private float m_gamma;
     private Vector3 m_impulse;
 
-    private int     m_indexA;
-    private int     m_indexB;
+    private int m_indexA;
+    private int m_indexB;
     private Vector2 m_rA;
     private Vector2 m_rB;
     private Vector2 m_localCenterA;
     private Vector2 m_localCenterB;
-    private float   m_invMassA;
-    private float   m_invMassB;
-    private float   m_invIA;
-    private float   m_invIB;
-    private Mat33   m_mass;
-    private float   m_bias;
+    private float m_invMassA;
+    private float m_invMassB;
+    private float m_invIA;
+    private float m_invIB;
+    private Mat33 m_mass;
+    private float m_bias;
 
-    public WeldJoint(WeldJointDef def) : base(def) {
-      m_localAnchorA   = def.localAnchorA;
-      m_localAnchorB   = def.localAnchorB;
+    public WeldJoint(WeldJointDef def) : base(def)
+    {
+      m_localAnchorA = def.localAnchorA;
+      m_localAnchorB = def.localAnchorB;
       m_referenceAngle = def.referenceAngle;
-      m_frequencyHz    = def.frequencyHz;
-      m_dampingRatio   = def.dampingRatio;
+      m_stiffness = def.stiffness;
+      m_damping = def.damping;
     }
 
     public override Vector2 GetAnchorA => m_bodyA.GetWorldPoint(m_localAnchorA);
@@ -47,31 +50,49 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
 
     public override float GetReactionTorque(float inv_dt) => inv_dt * m_impulse.Z;
 
+    public float Stiffness
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_stiffness;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => m_stiffness = value;
+    }
 
-    public void Initialize(Body bA, Body bB, in Vector2 anchor) {
-      m_bodyA          = bA;
-      m_bodyB          = bB;
-      m_localAnchorA   = m_bodyA.GetLocalPoint(anchor);
-      m_localAnchorB   = m_bodyB.GetLocalPoint(anchor);
+    public float Damping
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_damping;
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      set => m_damping = value;
+    }
+
+
+    public void Initialize(Body bA, Body bB, in Vector2 anchor)
+    {
+      m_bodyA = bA;
+      m_bodyB = bB;
+      m_localAnchorA = m_bodyA.GetLocalPoint(anchor);
+      m_localAnchorB = m_bodyB.GetLocalPoint(anchor);
       m_referenceAngle = m_bodyB.GetAngle() - m_bodyA.GetAngle();
     }
 
-    internal override void InitVelocityConstraints(in SolverData data) {
-      m_indexA       = m_bodyA.m_islandIndex;
-      m_indexB       = m_bodyB.m_islandIndex;
+    internal override void InitVelocityConstraints(in SolverData data)
+    {
+      m_indexA = m_bodyA.m_islandIndex;
+      m_indexB = m_bodyB.m_islandIndex;
       m_localCenterA = m_bodyA.m_sweep.localCenter;
       m_localCenterB = m_bodyB.m_sweep.localCenter;
-      m_invMassA     = m_bodyA.m_invMass;
-      m_invMassB     = m_bodyB.m_invMass;
-      m_invIA        = m_bodyA.m_invI;
-      m_invIB        = m_bodyB.m_invI;
+      m_invMassA = m_bodyA.m_invMass;
+      m_invMassB = m_bodyB.m_invMass;
+      m_invIA = m_bodyA.m_invI;
+      m_invIB = m_bodyB.m_invI;
 
       float aA = data.positions[m_indexA].a;
-      Vec2  vA = data.velocities[m_indexA].v;
+      Vector2 vA = data.velocities[m_indexA].v;
       float wA = data.velocities[m_indexA].w;
 
       float aB = data.positions[m_indexB].a;
-      Vec2  vB = data.velocities[m_indexB].v;
+      Vector2 vB = data.velocities[m_indexB].v;
       float wB = data.velocities[m_indexB].w;
 
       Rot qA = new Rot(aA), qB = new Rot(aB);
@@ -89,61 +110,55 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
       //     [          -r1y*iA-r2y*iB,           r1x*iA+r2x*iB,                   iA+iB]
 
       float mA = m_invMassA, mB = m_invMassB;
-      float iA = m_invIA,    iB = m_invIB;
+      float iA = m_invIA, iB = m_invIB;
 
       Mat33 K;
       K.ex.X = mA + mB + m_rA.Y * m_rA.Y * iA + m_rB.Y * m_rB.Y * iB;
-      K.ey.X = -m_rA.Y * m_rA.X                               * iA - m_rB.Y * m_rB.X * iB;
-      K.ez.X = -m_rA.Y                                       * iA - m_rB.Y         * iB;
+      K.ey.X = -m_rA.Y * m_rA.X * iA - m_rB.Y * m_rB.X * iB;
+      K.ez.X = -m_rA.Y * iA - m_rB.Y * iB;
       K.ex.Y = K.ey.X;
       K.ey.Y = mA + mB + m_rA.X * m_rA.X * iA + m_rB.X * m_rB.X * iB;
-      K.ez.Y = m_rA.X                                        * iA + m_rB.X * iB;
+      K.ez.Y = m_rA.X * iA + m_rB.X * iB;
       K.ex.Z = K.ez.X;
       K.ey.Z = K.ez.Y;
       K.ez.Z = iA + iB;
 
-      if (m_frequencyHz > 0.0f) {
+      if (m_stiffness > 0.0f) {
         K.GetInverse22(m_mass);
 
         float invM = iA + iB;
-        float m    = invM > 0.0f ? 1.0f / invM : 0.0f;
 
         float C = aB - aA - m_referenceAngle;
 
-        // Frequency
-        float omega = Settings.Tau * m_frequencyHz;
-
-        // Damping coefficient
-        float d = 2.0f * m * m_dampingRatio * omega;
-
-        // Spring stiffness
-        float k = m * omega * omega;
+        float d =  m_damping;
+        
+        float k = m_stiffness;
 
         // magic formulas
         float h = data.step.dt;
         m_gamma = h * (d + h * k);
         m_gamma = m_gamma != 0.0f ? 1.0f / m_gamma : 0.0f;
-        m_bias  = C * h * k * m_gamma;
+        m_bias = C * h * k * m_gamma;
 
-        invM       += m_gamma;
-        m_mass.ez.Z =  invM != 0.0f ? 1.0f / invM : 0.0f;
+        invM += m_gamma;
+        m_mass.ez.Z = invM != 0.0f ? 1.0f / invM : 0.0f;
       }
       else if (K.ez.Z == 0.0f) {
         K.GetInverse22(m_mass);
         m_gamma = 0.0f;
-        m_bias  = 0.0f;
+        m_bias = 0.0f;
       }
       else {
         K.GetSymInverse33(m_mass);
         m_gamma = 0.0f;
-        m_bias  = 0.0f;
+        m_bias = 0.0f;
       }
 
       if (data.step.warmStarting) {
         // Scale impulses to support a variable time step.
         m_impulse *= data.step.dtRatio;
 
-        Vec2 P = new Vector2(m_impulse.X, m_impulse.Y);
+        Vector2 P = new Vector2(m_impulse.X, m_impulse.Y);
 
         vA -= mA * P;
         wA -= iA * (Vectex.Cross(m_rA, P) + m_impulse.Z);
@@ -162,15 +177,16 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
     }
 
 
-    internal override void SolveVelocityConstraints(in SolverData data) {
+    internal override void SolveVelocityConstraints(in SolverData data)
+    {
       b2Vec2 vA = data.velocities[m_indexA].v;
-      float  wA = data.velocities[m_indexA].w;
+      float wA = data.velocities[m_indexA].w;
       b2Vec2 vB = data.velocities[m_indexB].v;
-      float  wB = data.velocities[m_indexB].w;
-      float  mA = m_invMassA, mB = m_invMassB;
+      float wB = data.velocities[m_indexB].w;
+      float mA = m_invMassA, mB = m_invMassB;
 
       float iA = m_invIA, iB = m_invIB;
-      if (m_frequencyHz > 0.0f) {
+      if (m_stiffness > 0.0f) {
         float Cdot2 = wB - wA;
 
         float impulse2 = -m_mass.ez.Z * (Cdot2 + m_bias + m_gamma * m_impulse.Z);
@@ -196,7 +212,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
 
       else {
         b2Vec2 Cdot1 = vB + Vectex.Cross(wB, m_rB) - vA - Vectex.Cross(wA, m_rA);
-        float  Cdot2 = wB                          - wA;
+        float Cdot2 = wB - wA;
         b2Vec3 Cdot = new Vector3(Cdot1.X, Cdot1.Y, Cdot2);
 
         b2Vec3 impulse = -Math.Mul(m_mass, Cdot);
@@ -217,16 +233,17 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
       data.velocities[m_indexB].w = wB;
     }
 
-    internal override bool SolvePositionConstraints(in SolverData data) {
+    internal override bool SolvePositionConstraints(in SolverData data)
+    {
       b2Vec2 cA = data.positions[m_indexA].c;
-      float  aA = data.positions[m_indexA].a;
+      float aA = data.positions[m_indexA].a;
       b2Vec2 cB = data.positions[m_indexB].c;
-      float  aB = data.positions[m_indexB].a;
+      float aB = data.positions[m_indexB].a;
 
-      Rot qA= new Rot(aA), qB = new Rot(aB);
+      Rot qA = new Rot(aA), qB = new Rot(aB);
 
       float mA = m_invMassA, mB = m_invMassB;
-      float iA = m_invIA,    iB = m_invIB;
+      float iA = m_invIA, iB = m_invIB;
 
       b2Vec2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
       b2Vec2 rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
@@ -235,21 +252,20 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
 
       Mat33 K = new Mat33();
       K.ex.X = mA + mB + rA.Y * rA.Y * iA + rB.Y * rB.Y * iB;
-      K.ey.X = -rA.Y * rA.X                             * iA - rB.Y * rB.X * iB;
-      K.ez.X = -rA.Y                                    * iA - rB.Y        * iB;
+      K.ey.X = -rA.Y * rA.X * iA - rB.Y * rB.X * iB;
+      K.ez.X = -rA.Y * iA - rB.Y * iB;
       K.ex.Y = K.ey.X;
       K.ey.Y = mA + mB + rA.X * rA.X * iA + rB.X * rB.X * iB;
-      K.ez.Y = rA.X                                     * iA + rB.X * iB;
+      K.ez.Y = rA.X * iA + rB.X * iB;
       K.ex.Z = K.ez.X;
       K.ey.Z = K.ez.Y;
       K.ez.Z = iA + iB;
 
-      if (m_frequencyHz > 0.0f)
-      {
-        b2Vec2 C1 =  cB + rB - cA - rA;
+      if (m_stiffness > 0.0f) {
+        b2Vec2 C1 = cB + rB - cA - rA;
 
         positionError = C1.Length();
-        angularError  = 0.0f;
+        angularError = 0.0f;
 
         b2Vec2 P = -K.Solve22(C1);
 
@@ -259,23 +275,20 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld {
         cB += mB * P;
         aB += iB * Vectex.Cross(rB, P);
       }
-      else
-      {
-        b2Vec2 C1 =  cB + rB - cA - rA;
-        float  C2 = aB - aA       - m_referenceAngle;
+      else {
+        b2Vec2 C1 = cB + rB - cA - rA;
+        float C2 = aB - aA - m_referenceAngle;
 
         positionError = C1.Length();
-        angularError  = MathF.Abs(C2);
+        angularError = MathF.Abs(C2);
 
         b2Vec3 C = new Vector3(C1.X, C1.Y, C2);
-	
+
         b2Vec3 impulse;
-        if (K.ez.Z > 0.0f)
-        {
+        if (K.ez.Z > 0.0f) {
           impulse = -K.Solve33(C);
         }
-        else
-        {
+        else {
           b2Vec2 impulse2 = -K.Solve22(C1);
           impulse = new Vector3(impulse2.X, impulse2.Y, 0.0f);
         }

@@ -43,9 +43,11 @@ namespace Box2D.NetStandard.Common
 		/// </summary>
 		/// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void GetTransform(out Transform xf, in float alpha) {
-			xf.q = Matrex.CreateRotation( (1.0f - alpha) * a0 + alpha * a); // Actually about twice as fast to use our own function
-			xf.p = (float)(1.0f - alpha) * c0 + (float)alpha * c - Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
+		public void GetTransform(out Transform xf, in float beta) {
+			xf.p = c0 + beta * (c - c0);
+			float angle = a0 + beta * (a - a0);
+			xf.q = Matrex.CreateRotation(angle);
+			xf.p -= Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
 		}
 
 		/// <summary>

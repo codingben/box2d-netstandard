@@ -58,7 +58,7 @@ namespace Box2D.NetStandard.Common {
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float InvSqrt(float x) {
-      Convert convert = new Convert();
+      Convert convert = default;
       convert.x = x;
       float xhalf = 0.5f * x;
       convert.i = 0x5f3759df - (convert.i >> 1);
@@ -90,7 +90,7 @@ namespace Box2D.NetStandard.Common {
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Random(float lo, float hi) {
-      float r = (float) (s_rnd.Next() & RAND_LIMIT);
+      float r = s_rnd.Next() & RAND_LIMIT;
       r /= RAND_LIMIT;
       r =  (hi - lo) * r + lo;
       return r;
@@ -118,40 +118,6 @@ namespace Box2D.NetStandard.Common {
       bool result = x > 0 && (x & (x - 1)) == 0;
       return result;
     }
-
-    [Obsolete("Use MathF.Abs", true)]
-    internal static float Abs(float a) {
-      return a > 0.0f ? a : -a;
-    }
-
-    [Obsolete("Use Vector2.Abs", true)]
-    internal static Vector2 Abs(Vector2 a) => new Vector2(Abs(a.X), Abs(a.Y));
-
-    // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    // internal static Mat22 Abs(Mat22 A) => new Mat22(Vector2.Abs(A.ex), Vector2.Abs(A.ey));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Matrix3x2 Abs(Matrix3x2 A) =>
-      new Matrix3x2(MathF.Abs(A.M11), MathF.Abs(A.M12), MathF.Abs(A.M21), MathF.Abs(22), 0, 0);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void Swap<T>(ref T a, ref T b) {
-      T tmp = a;
-      a = b;
-      b = tmp;
-    }
-
-    /// <summary>
-    /// Multiply a matrix times a vector. If a rotation matrix is provided,
-    /// then this transforms the vector from one frame to another.
-    /// </summary>
-    // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    // internal static Vector2 Mul(Mat22 A, Vector2 v) =>
-    //   new Vector2(A.ex.X * v.X + A.ey.X * v.Y, A.ex.Y * v.X + A.ey.Y * v.Y);
-    [Obsolete("Use Vector2.Transform instead",true)]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector2 Mul(Matrix3x2 A, Vector2 v) =>
-      Vector2.Transform(v, A);
 
     /// <summary>
     /// Multiply a matrix transpose times a vector. If a rotation matrix is provided,

@@ -100,15 +100,15 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       // pRef is the reference point for forming triangles.
       // It's location doesn't change the result (except for rounding error).
-      Vector2 pRef = Vector2.Zero;
+      Vector2 s = vs[0];
 
       const float inv3 = 1.0f / 3.0f;
 
       for (int i = 0; i < count; ++i) {
         // Triangle vertices.
-        Vector2 p1 = pRef;
-        Vector2 p2 = vs[i];
-        Vector2 p3 = i + 1 < count ? vs[i + 1] : vs[0];
+        Vector2 p1 = vs[0]-s;
+        Vector2 p2 = vs[i]-s;
+        Vector2 p3 = i + 1 < count ? vs[i + 1]-s : vs[0]-s;
 
         Vector2 e1 = p2 - p1;
         Vector2 e2 = p3 - p1;
@@ -124,7 +124,7 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
       // Centroid
       //Debug.Assert(area > Settings.FLT_EPSILON);
-      c *= 1.0f / area;
+      c = 1.0f / area * c + s;
       return c;
     }
 
@@ -363,16 +363,9 @@ namespace Box2D.NetStandard.Collision.Shapes {
       float area   = 0.0f;
       float I      = 0.0f;
 
-      // s is the reference point for forming triangles.
-      // It's location doesn't change the result (except for rounding error).
-      Vector2 s = Vector2.Zero;
-
-      // This code would put the reference point inside the polygon.
-      for (int i = 0; i < m_count; ++i) {
-        s += m_vertices[i];
-      }
-
-      s *= 1.0f / m_count;
+      // Get a reference point for forming triangles
+      // Use the first vertex to reduce round-off errors
+      Vector2 s = m_vertices[0];
 
       const float k_inv3 = 1.0f / 3.0f;
 

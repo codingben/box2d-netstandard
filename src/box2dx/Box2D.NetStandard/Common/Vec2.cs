@@ -35,6 +35,18 @@ namespace Box2D.NetStandard.Common {
   /// </summary>
   [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
   public struct Vec2 {
+    private bool Equals(Vec2 other) {
+      return X.Equals(other.X) && Y.Equals(other.Y);
+    }
+
+    public override bool Equals(object obj) {
+      return obj is Vec2 other && Equals(other);
+    }
+
+    public override int GetHashCode() {
+      return HashCode.Combine(X, Y);
+    }
+
     [Obsolete("Warning: Implicit cast from Vec2 to System.Numerics.Vector2. You are advised to change your code to expect Vector2.")]
     public static implicit operator Vector2(Vec2 src) => new Vector2(src.X, src.Y);
 

@@ -35,14 +35,17 @@ using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.Joints;
 
-namespace Box2D.NetStandard.Dynamics.Bodies {
+namespace Box2D.NetStandard.Dynamics.Bodies
+{
   /// <summary>
   /// A rigid body. These are created via World.CreateBody.
   /// </summary>
   [DebuggerDisplay("{m_userData}")]
-  public class Body {
+  public class Body
+  {
     // No public default constructor
-    private Body() { }
+    private Body()
+    { }
 
     // public
     /// <summary>
@@ -54,7 +57,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     /// </summary>
     /// <param name="def">the fixture definition.</param>
     /// <warning>This function is locked during callbacks.</warning>
-    public Fixture CreateFixture(in FixtureDef def) {
+    public Fixture CreateFixture(in FixtureDef def)
+    {
       //Debug.Assert(_world.IsLocked() == false);
       if (m_world.IsLocked()) {
         throw new
@@ -70,7 +74,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       }
 
       fixture.m_next = m_fixtureList;
-      m_fixtureList   = fixture;
+      m_fixtureList = fixture;
       ++m_fixtureCount;
 
       fixture.m_body = this;
@@ -96,34 +100,35 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     /// <param name="shape">the shape to be cloned.</param>
     /// <param name="density">the shape density (set to zero for static bodies).</param>
     /// <warning>This function is locked during callbacks.</warning>
-    public Fixture CreateFixture(in Shape shape, float density = 0f) {
+    public Fixture CreateFixture(in Shape shape, float density = 0f)
+    {
       FixtureDef def = new FixtureDef();
-      def.shape   = shape;
+      def.shape = shape;
       def.density = density;
 
       return CreateFixture(def);
     }
 
-    public void DestroyFixture(Fixture fixture) {
+    public void DestroyFixture(Fixture fixture)
+    {
       if (fixture == null) {
         return;
       }
 
       //Debug.Assert(_world.IsLocked() == false);
       if (m_world.IsLocked() == true) {
-        throw new Box2DException("Cannot destroy fixtures in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
+        throw new
+          Box2DException("Cannot destroy fixtures in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
       }
 
       //Debug.Assert(fixture.m_body == this);
 
       // Remove the fixture from this body's singly linked list.
       //Debug.Assert(_fixtureCount > 0);
-      Fixture node  = m_fixtureList;
-      bool    found = false;
+      Fixture node = m_fixtureList;
       while (node != null) {
-        if (node == fixture) {
-          node  = fixture.m_next;
-          found = true;
+        if (node.m_next == fixture) {
+          node.m_next = fixture.m_next;
           break;
         }
 
@@ -163,13 +168,14 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       ResetMassData();
     }
 
-    public void SetTransform(in Vector2 position, float angle) {
+    public void SetTransform(in Vector2 position, float angle)
+    {
       //Debug.Assert(_world.IsLocked() == false);
       if (m_world.IsLocked() == true) {
         return;
       }
 
-      m_xf.q = Matrex.CreateRotation(angle);//  Actually about twice as fast to use our own function
+      m_xf.q = Matrex.CreateRotation(angle); //  Actually about twice as fast to use our own function
       m_xf.p = position;
 
       m_sweep.c = Math.Mul(m_xf, m_sweep.localCenter);
@@ -200,7 +206,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public Vector2 GetLocalCenter() => m_sweep.localCenter;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetLinearVelocity(in Vector2 v) {
+    public void SetLinearVelocity(in Vector2 v)
+    {
       if (m_type == BodyType.Static) return;
       if (Vector2.Dot(v, v) > 0f) SetAwake(true);
       m_linearVelocity = v;
@@ -210,8 +217,9 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public Vector2 GetLinearVelocity() => m_linearVelocity;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetAngularVelocity(float omega) {
-      if (m_type         == BodyType.Static) return;
+    public void SetAngularVelocity(float omega)
+    {
+      if (m_type == BodyType.Static) return;
       if (omega * omega > 0f) SetAwake(true);
       m_angularVelocity = omega;
     }
@@ -220,17 +228,19 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public float GetAngularVelocity() => m_angularVelocity;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ApplyForce(in Vector2 force, in Vector2 point, bool wake = true) {
+    public void ApplyForce(in Vector2 force, in Vector2 point, bool wake = true)
+    {
       if (m_type != BodyType.Dynamic) return;
       if (wake && !HasFlag(BodyFlags.Awake)) SetAwake(true);
       if (HasFlag(BodyFlags.Awake)) {
-        m_force  += force;
+        m_force += force;
         m_torque += Vectex.Cross(point - m_sweep.c, force);
       }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ApplyForceToCenter(in Vector2 force, bool wake = true) {
+    public void ApplyForceToCenter(in Vector2 force, bool wake = true)
+    {
       if (m_type != BodyType.Dynamic) return;
       if (wake && !HasFlag(BodyFlags.Awake)) SetAwake(true);
       if (HasFlag(BodyFlags.Awake)) {
@@ -239,7 +249,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ApplyTorque(float torque, bool wake = true) {
+    public void ApplyTorque(float torque, bool wake = true)
+    {
       if (m_type != BodyType.Dynamic) return;
       if (wake && !HasFlag(BodyFlags.Awake)) SetAwake(true);
       if (HasFlag(BodyFlags.Awake)) {
@@ -248,17 +259,19 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ApplyLinearImpulse(in Vector2 impulse, in Vector2 point, bool wake = true) {
+    public void ApplyLinearImpulse(in Vector2 impulse, in Vector2 point, bool wake = true)
+    {
       if (m_type != BodyType.Dynamic) return;
       if (wake && !HasFlag(BodyFlags.Awake)) SetAwake(true);
       if (HasFlag(BodyFlags.Awake)) {
         m_linearVelocity += m_invMass * impulse;
-        m_torque         += m_invI    * Vectex.Cross(point - m_sweep.c, impulse);
+        m_torque += m_invI * Vectex.Cross(point - m_sweep.c, impulse);
       }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ApplyLinearImpulseToCenter(in Vector2 impulse, bool wake = true) {
+    public void ApplyLinearImpulseToCenter(in Vector2 impulse, bool wake = true)
+    {
       if (m_type != BodyType.Dynamic) return;
       if (wake && !HasFlag(BodyFlags.Awake)) SetAwake(true);
       if (HasFlag(BodyFlags.Awake)) {
@@ -267,7 +280,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ApplyAngularImpulse(float impulse, bool wake = true) {
+    public void ApplyAngularImpulse(float impulse, bool wake = true)
+    {
       if (m_type != BodyType.Dynamic) return;
       if (wake && !HasFlag(BodyFlags.Awake)) SetAwake(true);
       if (HasFlag(BodyFlags.Awake)) {
@@ -281,13 +295,15 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float GetInertia() => m_I + m_mass * Vector2.Dot(m_sweep.localCenter, m_sweep.localCenter);
 
-    public void GetMassData(out MassData data) {
-      data.mass   = m_mass;
-      data.I      = m_I + m_mass * Vector2.Dot(m_sweep.localCenter, m_sweep.localCenter);
+    public void GetMassData(out MassData data)
+    {
+      data.mass = m_mass;
+      data.I = m_I + m_mass * Vector2.Dot(m_sweep.localCenter, m_sweep.localCenter);
       data.center = m_sweep.localCenter;
     }
 
-    public void SetMassData(in MassData massData) {
+    public void SetMassData(in MassData massData)
+    {
       //Debug.Assert(_world.IsLocked() == false);
       if (m_world.IsLocked() == true) {
         return;
@@ -298,8 +314,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       }
 
       m_invMass = 0.0f;
-      m_I       = 0.0f;
-      m_invI    = 0.0f;
+      m_I = 0.0f;
+      m_invI = 0.0f;
 
       m_mass = massData.mass;
       if (m_mass <= 0.0f) {
@@ -317,24 +333,25 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       // Move center of mass.
       Vector2 oldCenter = m_sweep.c;
       m_sweep.localCenter = massData.center;
-      m_sweep.c0          = m_sweep.c = Math.Mul(m_xf, m_sweep.localCenter);
+      m_sweep.c0 = m_sweep.c = Math.Mul(m_xf, m_sweep.localCenter);
 
       // Update center of mass velocity.
       m_linearVelocity += Vectex.Cross(m_angularVelocity, m_sweep.c - oldCenter);
     }
 
-    public void ResetMassData() {
+    public void ResetMassData()
+    {
       // Compute mass data from shapes. Each shape has its own density.
-      m_mass              = 0.0f;
-      m_invMass           = 0.0f;
-      m_I                 = 0.0f;
-      m_invI              = 0.0f;
+      m_mass = 0.0f;
+      m_invMass = 0.0f;
+      m_I = 0.0f;
+      m_invI = 0.0f;
       m_sweep.localCenter = Vector2.Zero;
 
       // Static and kinematic bodies have zero mass.
       if (m_type == BodyType.Static || m_type == BodyType.Kinematic) {
         m_sweep.c0 = m_xf.p;
-        m_sweep.c  = m_xf.p;
+        m_sweep.c = m_xf.p;
         m_sweep.a0 = m_sweep.a;
         return;
       }
@@ -349,14 +366,14 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
         }
 
         f.GetMassData(out MassData massData);
-        m_mass       += massData.mass;
+        m_mass += massData.mass;
         localCenter += massData.mass * massData.center;
-        m_I          += massData.I;
+        m_I += massData.I;
       }
 
       // Compute center of mass.
       if (m_mass > 0.0f) {
-        m_invMass    =  1.0f / m_mass;
+        m_invMass = 1.0f / m_mass;
         localCenter *= m_invMass;
       }
 
@@ -367,14 +384,14 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
         m_invI = 1.0f / m_I;
       }
       else {
-        m_I    = 0.0f;
+        m_I = 0.0f;
         m_invI = 0.0f;
       }
 
       // Move center of mass.
       Vector2 oldCenter = m_sweep.c;
       m_sweep.localCenter = localCenter;
-      m_sweep.c0          = m_sweep.c = Math.Mul(m_xf, m_sweep.localCenter);
+      m_sweep.c0 = m_sweep.c = Math.Mul(m_xf, m_sweep.localCenter);
 
       // Update center of mass velocity.
       m_linearVelocity += Vectex.Cross(m_angularVelocity, m_sweep.c - oldCenter);
@@ -384,7 +401,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public Vector2 GetWorldPoint(in Vector2 localPoint) => Math.Mul(m_xf, localPoint);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Vector2 GetWorldVector(in Vector2 localVector) => Vector2.Transform(localVector, m_xf.q); //  Math.Mul(_xf.q, localVector);
+    public Vector2 GetWorldVector(in Vector2 localVector) =>
+      Vector2.Transform(localVector, m_xf.q); //  Math.Mul(_xf.q, localVector);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Vector2 GetLocalPoint(in Vector2 worldPoint) => Math.MulT(m_xf, worldPoint);
@@ -418,7 +436,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetGravityScale(float scale) => m_gravityScale = scale;
 
-    public void SetType(BodyType type) {
+    public void SetType(BodyType type)
+    {
       //Debug.Assert(_world.IsLocked() == false);
       if (m_world.IsLocked() == true) {
         return;
@@ -433,16 +452,17 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       ResetMassData();
 
       if (m_type == BodyType.Static) {
-        m_linearVelocity  = Vector2.Zero;
+        m_linearVelocity = Vector2.Zero;
         m_angularVelocity = 0.0f;
-        m_sweep.a0        = m_sweep.a;
-        m_sweep.c0        = m_sweep.c;
+        m_sweep.a0 = m_sweep.a;
+        m_sweep.c0 = m_sweep.c;
+        m_flags &= ~BodyFlags.Awake;
         SynchronizeFixtures();
       }
 
       SetAwake(true);
 
-      m_force  = Vector2.Zero;
+      m_force = Vector2.Zero;
       m_torque = 0.0f;
 
       // Delete the attached contacts.
@@ -475,7 +495,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     internal void UnsetFlag(BodyFlags flag) => m_flags &= ~flag;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetBullet(bool flag) {
+    public void SetBullet(bool flag)
+    {
       if (flag) {
         SetFlag(BodyFlags.Bullet);
       }
@@ -487,7 +508,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public bool IsBullet() => HasFlag(BodyFlags.Bullet);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetSleepingAllowed(bool flag) {
+    public void SetSleepingAllowed(bool flag)
+    {
       if (flag) {
         SetFlag(BodyFlags.AutoSleep);
       }
@@ -501,25 +523,28 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     public bool IsSleepingAllowed() => HasFlag(BodyFlags.AutoSleep);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetAwake(bool flag) {
+    public void SetAwake(bool flag)
+    {
+      if (m_type == BodyType.Static) return;
       if (flag) {
         SetFlag(BodyFlags.Awake);
         m_sleepTime = 0f;
       }
       else {
         UnsetFlag(BodyFlags.Awake);
-        m_sleepTime       = 0f;
-        m_linearVelocity  = Vector2.Zero;
+        m_sleepTime = 0f;
+        m_linearVelocity = Vector2.Zero;
         m_angularVelocity = 0f;
-        m_force           = Vector2.Zero;
-        m_torque          = 0f;
+        m_force = Vector2.Zero;
+        m_torque = 0f;
       }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsAwake() => HasFlag(BodyFlags.Awake);
 
-    public void SetEnabled(bool flag) {
+    public void SetEnabled(bool flag)
+    {
       //Debug.Assert(_world.IsLocked() == false);
 
       if (flag == IsEnabled()) {
@@ -562,7 +587,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsEnabled() => HasFlag(BodyFlags.Enabled);
 
-    public void SetFixedRotation(bool flag) {
+    public void SetFixedRotation(bool flag)
+    {
       if (flag == HasFlag(BodyFlags.FixedRotation)) {
         return;
       }
@@ -596,8 +622,9 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T GetUserData<T>() => (T) m_userData;
-    
-    public object UserData {
+
+    public object UserData
+    {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_userData;
     }
@@ -608,16 +635,19 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public World.World GetWorld() => m_world;
 
-    public void Dump() {
+    public void Dump()
+    {
       // Todo: Dump in some form. We could just serialize.
     }
 
 // private
 
-    private Body(in BodyDef bd, World.World world) { }
+    private Body(in BodyDef bd, World.World world)
+    { }
 
 
-    internal void SynchronizeFixtures() {
+    internal void SynchronizeFixtures()
+    {
       BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
 
       if (IsAwake()) {
@@ -637,12 +667,14 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void SynchronizeTransform() {
+    internal void SynchronizeTransform()
+    {
       m_xf.q = Matrex.CreateRotation(m_sweep.a); // Actually about twice as fast to use our own function
       m_xf.p = m_sweep.c - Vector2.Transform(m_sweep.localCenter, m_xf.q); // Math.Mul(_xf.q, _sweep.localCenter);
     }
 
-    internal bool ShouldCollide(in Body other) {
+    internal bool ShouldCollide(in Body other)
+    {
       // At least one body should be dynamic.
       if (m_type != BodyType.Dynamic && other.m_type != BodyType.Dynamic) {
         return false;
@@ -658,7 +690,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void Advance(float alpha) {
+    internal void Advance(float alpha)
+    {
       // Advance to the new safe time. This doesn't sync the broad-phase.
       m_sweep.Advance(alpha);
       m_sweep.c = m_sweep.c0;
@@ -667,8 +700,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       m_xf.p = m_sweep.c - Vector2.Transform(m_sweep.localCenter, m_xf.q); //Math.Mul(_xf.q, _sweep.localCenter);
     }
 
-    internal BodyType  m_type;
-    private  BodyFlags m_flags;
+    internal BodyType m_type;
+    private BodyFlags m_flags;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool HasFlag(BodyFlags flag) => (m_flags & flag) == flag;
@@ -680,24 +713,24 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     internal Sweep m_sweep; // the swept motion for CCD
 
     internal Vector2 m_linearVelocity;
-    internal float   m_angularVelocity;
+    internal float m_angularVelocity;
 
     internal Vector2 m_force;
-    internal float   m_torque;
+    internal float m_torque;
 
-    private  World.World m_world;
-    internal Body  m_prev;
-    internal Body  m_next;
+    private World.World m_world;
+    internal Body m_prev;
+    internal Body m_next;
 
     internal Fixture m_fixtureList;
-    internal int     m_fixtureCount;
+    internal int m_fixtureCount;
 
-    internal JointEdge   m_jointList;
+    internal JointEdge m_jointList;
     internal ContactEdge m_contactList;
 
     internal float m_mass;
     internal float m_invMass;
-    private  float m_I;
+    private float m_I;
     internal float m_invI;
 
     internal float m_linearDamping;
@@ -709,17 +742,18 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     private object m_userData;
 
 
-    internal Body(BodyDef bd, World.World world) {
+    internal Body(BodyDef bd, World.World world)
+    {
       //Debug.Assert(bd.position.IsValid());
       //Debug.Assert(bd.linearVelocity.IsValid());
 
       m_flags = 0;
 
-      if (bd.bullet)        SetFlag(BodyFlags.Bullet);
+      if (bd.bullet) SetFlag(BodyFlags.Bullet);
       if (bd.fixedRotation) SetFlag(BodyFlags.FixedRotation);
-      if (bd.allowSleep)    SetFlag(BodyFlags.AutoSleep);
-      if (bd.awake)         SetFlag(BodyFlags.Awake);
-      if (bd.enabled)       SetFlag(BodyFlags.Enabled);
+      if (bd.allowSleep) SetFlag(BodyFlags.AutoSleep);
+      if (bd.awake && bd.type != BodyType.Static) SetFlag(BodyFlags.Awake);
+      if (bd.enabled) SetFlag(BodyFlags.Enabled);
 
       m_world = world;
 
@@ -727,40 +761,40 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
       m_xf.q = Matrex.CreateRotation(bd.angle); // Actually about twice as fast to use our own function
 
       m_sweep.localCenter = Vector2.Zero;
-      m_sweep.c0          = m_xf.p;
-      m_sweep.c           = m_xf.p;
-      m_sweep.a0          = bd.angle;
-      m_sweep.a           = bd.angle;
-      m_sweep.alpha0      = 0.0f;
+      m_sweep.c0 = m_xf.p;
+      m_sweep.c = m_xf.p;
+      m_sweep.a0 = bd.angle;
+      m_sweep.a = bd.angle;
+      m_sweep.alpha0 = 0.0f;
 
-      m_jointList   = null;
+      m_jointList = null;
       m_contactList = null;
-      m_prev        = null;
-      m_next        = null;
+      m_prev = null;
+      m_next = null;
 
-      m_linearVelocity  = bd.linearVelocity;
+      m_linearVelocity = bd.linearVelocity;
       m_angularVelocity = bd.angularVelocity;
 
-      m_linearDamping  = bd.linearDamping;
+      m_linearDamping = bd.linearDamping;
       m_angularDamping = bd.angularDamping;
-      m_gravityScale   = bd.gravityScale;
+      m_gravityScale = bd.gravityScale;
 
-      m_force  = Vector2.Zero;
+      m_force = Vector2.Zero;
       m_torque = 0.0f;
 
       m_sleepTime = 0.0f;
 
       m_type = bd.type;
 
-      m_mass    = 0.0f;
+      m_mass = 0.0f;
       m_invMass = 0.0f;
 
-      m_I    = 0.0f;
+      m_I = 0.0f;
       m_invI = 0.0f;
 
       m_userData = bd.userData;
 
-      m_fixtureList  = null;
+      m_fixtureList = null;
       m_fixtureCount = 0;
     }
 
@@ -768,7 +802,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies {
     // This is used to prevent connected bodies from colliding.
     // It may lie, depending on the collideConnected flag.
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal bool IsConnected(Body other) {
+    internal bool IsConnected(Body other)
+    {
       for (JointEdge jn = m_jointList; jn != null; jn = jn.next) {
         if (jn.other == other)
           return jn.joint.m_collideConnected == false;

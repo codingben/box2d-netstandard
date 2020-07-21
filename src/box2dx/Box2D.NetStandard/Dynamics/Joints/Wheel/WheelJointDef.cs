@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using Box2D.NetStandard.Dynamics.Bodies;
 
@@ -16,6 +17,14 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
       localAxisA   = bodyA.GetLocalVector(axis);
     }
 
+    public float   stiffness;
+    public float   damping;
+
+    [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]
+    public float? frequencyHz;
+    [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]
+    public float? dampingRatio;
+    
     public Vector2 localAnchorA;
     public Vector2 localAnchorB;
     public Vector2 localAxisA;
@@ -25,7 +34,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
     public bool    enableMotor;
     public float   maxMotorTorque;
     public float   motorSpeed;
-    public float   stiffness;
-    public float   damping;
+    
   }
 }

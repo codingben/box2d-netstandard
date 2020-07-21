@@ -72,7 +72,7 @@ namespace Box2D.NetStandard.Collision.Shapes
     /// across junctions. This also makes the collision one-sided. The edge
     /// normal points to the right looking from v1 to v2.
     /// </summary>
-    void SetOneSided(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3) {
+    public void SetOneSided(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3) {
       m_vertex0 = v0;
       m_vertex1 = v1;
       m_vertex2 = v2;

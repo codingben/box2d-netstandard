@@ -1,6 +1,7 @@
 using System.Numerics;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
+using Vector2 = System.Numerics.Vector2;
 
 namespace Box2D.NetStandard.Collision {
   internal class PolygonAndPolygonCollider : Collider<PolygonShape, PolygonShape> {
