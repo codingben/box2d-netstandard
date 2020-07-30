@@ -31,7 +31,7 @@ using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Collision.Shapes;
 
 namespace Box2D.NetStandard.Collision {
-  internal struct DistanceProxy {
+  public struct DistanceProxy {
     internal Vector2[] _buffer;// = new Vector2[2];
     internal Vector2[] _vertices;
     internal int       _count;

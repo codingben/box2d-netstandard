@@ -25,6 +25,8 @@
 // SOFTWARE.
 */
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Collision;
@@ -364,14 +366,14 @@ namespace Box2D.NetStandard.Dynamics.Contacts
         if (touching && !wasTouching) {
           listener.BeginContact(this);
         }
+
         if (!touching && wasTouching) {
           listener.EndContact(this);
         }
+
         if (touching && !sensor) {
           listener.PreSolve(this, oldManifold);
         }
-
-        
       }
     }
 
@@ -526,6 +528,139 @@ namespace Box2D.NetStandard.Dynamics.Contacts
           output.distance = 0.0f;
         }
       }
+    }
+
+    public bool ShapeCast(out ShapeCastOutput output, in ShapeCastInput input)
+    {
+      output.iterations = 0;
+      output.lambda = 1.0f;
+      output.normal = Vector2.Zero;
+      output.point = Vector2.Zero;
+
+      DistanceProxy proxyA = input.proxyA;
+      DistanceProxy proxyB = input.proxyB;
+
+      float radiusA = MathF.Max(proxyA._radius, Settings.PolygonRadius);
+      float radiusB = MathF.Max(proxyB._radius, Settings.PolygonRadius);
+      float radius = radiusA + radiusB;
+
+      Transform xfA = input.transformA;
+      Transform xfB = input.transformB;
+
+      Vector2 r = input.translationB;
+      Vector2 n = Vector2.Zero;
+      float lambda = 0.0f;
+
+      // Initial simplex
+      Simplex simplex = new Simplex();
+      simplex.m_count = 0;
+
+      // Get simplex vertices as an array.
+      SimplexVertex[] vertices = simplex.m_v;
+
+      // Get support point in -r direction
+      int indexA = proxyA.GetSupport(Math.MulT(xfA.q, -r));
+      Vector2 wA = Math.Mul(xfA, proxyA.GetVertex(indexA));
+      int indexB = proxyB.GetSupport(Math.MulT(xfB.q, r));
+      Vector2 wB = Math.Mul(xfB, proxyB.GetVertex(indexB));
+      Vector2 v = wA - wB;
+
+      // Sigma is the target distance between polygons
+      float sigma = MathF.Max(Settings.PolygonRadius, radius - Settings.PolygonRadius);
+      const float tolerance = 0.5f * Settings.LinearSlop;
+
+      // Main iteration loop.
+      const int k_maxIters = 20;
+      int iter = 0;
+      while (iter < k_maxIters && MathF.Abs(v.Length() - sigma) > tolerance) {
+        Debug.Assert(simplex.m_count < 3);
+
+        output.iterations += 1;
+
+        // Support in direction -v (A - B)
+        indexA = proxyA.GetSupport(Math.MulT(xfA.q, -v));
+        wA = Math.Mul(xfA, proxyA.GetVertex(indexA));
+        indexB = proxyB.GetSupport(Math.MulT(xfB.q, v));
+        wB = Math.Mul(xfB, proxyB.GetVertex(indexB));
+        Vector2 p = wA - wB;
+
+        // -v is a normal at p
+        v = Vector2.Normalize(v);
+
+        // Intersect ray with plane
+        float vp = Vector2.Dot(v, p);
+        float vr = Vector2.Dot(v, r);
+        if (vp - sigma > lambda * vr) {
+          if (vr <= 0.0f) {
+            return false;
+          }
+
+          lambda = (vp - sigma) / vr;
+          if (lambda > 1.0f) {
+            return false;
+          }
+
+          n = -v;
+          simplex.m_count = 0;
+        }
+
+        // Reverse simplex since it works with B - A.
+        // Shift by lambda * r because we want the closest point to the current clip point.
+        // Note that the support point p is not shifted because we want the plane equation
+        // to be formed in unshifted space.
+        SimplexVertex vertex = vertices[simplex.m_count];
+        vertex.indexA = indexB;
+        vertex.wA = wB + lambda * r;
+        vertex.indexB = indexA;
+        vertex.wB = wA;
+        vertex.w = vertex.wB - vertex.wA;
+        vertex.a = 1.0f;
+        simplex.m_count += 1;
+
+        switch (simplex.m_count) {
+          case 1:
+            break;
+
+          case 2:
+            simplex.Solve2();
+            break;
+
+          case 3:
+            simplex.Solve3();
+            break;
+
+          default:
+            Debug.Assert(false);
+            break;
+          
+        }
+
+        // If we have 3 points, then the origin is in the corresponding triangle.
+        if (simplex.m_count == 3) {
+          // Overlap
+          return false;
+        }
+
+        // Get search direction.
+        v = simplex.GetClosestPoint();
+
+        // Iteration count is equated to the number of support point calls.
+        ++iter;
+      }
+
+      // Prepare output.
+      simplex.GetWitnessPoints(out Vector2 pointB, out Vector2 pointA);
+
+      if (v.LengthSquared() > 0.0f) {
+        n = -v;
+        n = Vector2.Normalize(n);
+      }
+
+      output.point = pointA + radiusA * n;
+      output.normal = n;
+      output.lambda = lambda;
+      output.iterations = iter;
+      return true;
     }
   }
 }
