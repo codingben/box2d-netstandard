@@ -69,8 +69,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
   public class GearJoint : Joint {
     private Joint     m_joint1;
     private Joint     m_joint2;
-    private readonly JointType m_typeA;
-    private readonly JointType m_typeB;
     private readonly Body      m_bodyC;
     private readonly Vector2   m_localAnchorC;
     private readonly Vector2   m_localAnchorA;
@@ -130,9 +128,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
       m_joint1 = def.Joint1;
       m_joint2 = def.Joint2;
 
-      m_typeA = m_joint1.Type;
-      m_typeB = m_joint2.Type;
-
       //Debug.Assert(_typeA == JointType.RevoluteJoint || _typeA == JointType.PrismaticJoint);
       //Debug.Assert(_typeB == JointType.RevoluteJoint || _typeB == JointType.PrismaticJoint);
 
@@ -149,11 +144,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
       Transform xfC = m_bodyC.m_xf;
       float     aC  = m_bodyC.m_sweep.a;
 
-      if (m_typeA == JointType.RevoluteJoint) {
-        RevoluteJoint revolute = (RevoluteJoint) def.Joint1;
-        m_localAnchorC    = revolute.m_localAnchorA;
-        m_localAnchorA    = revolute.m_localAnchorB;
-        m_referenceAngleA = revolute.m_referenceAngle;
+      if (m_joint1 is RevoluteJoint revolute1) {
+        m_localAnchorC    = revolute1.m_localAnchorA;
+        m_localAnchorA    = revolute1.m_localAnchorB;
+        m_referenceAngleA = revolute1.m_referenceAngle;
         m_localAxisC      = Vector2.Zero;
 
         coordinateA = aA - aC - m_referenceAngleA;
@@ -179,11 +173,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
       Transform xfD = m_bodyD.m_xf;
       float     aD  = m_bodyD.m_sweep.a;
 
-      if (m_typeB == JointType.RevoluteJoint) {
-        RevoluteJoint revolute = (RevoluteJoint) def.Joint2;
-        m_localAnchorD    = revolute.m_localAnchorA;
-        m_localAnchorB    = revolute.m_localAnchorB;
-        m_referenceAngleB = revolute.m_referenceAngle;
+      if (m_joint2 is RevoluteJoint revolute2) {
+        m_localAnchorD    = revolute2.m_localAnchorA;
+        m_localAnchorB    = revolute2.m_localAnchorB;
+        m_referenceAngleB = revolute2.m_referenceAngle;
         m_localAxisD      = Vector2.Zero;
 
         coordinateB = aB - aD - m_referenceAngleB;
@@ -245,7 +238,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
 
       m_mass = 0.0f;
 
-      if (m_typeA == JointType.RevoluteJoint) {
+      if (m_joint1 is RevoluteJoint) {
         m_jvAc =  Vector2.Zero;
         m_jwA  =  1.0f;
         m_jwC  =  1.0f;
@@ -261,7 +254,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
         m_mass += m_mC + m_mA + m_iC * m_jwC * m_jwC + m_iA * m_jwA * m_jwA;
       }
 
-      if (m_typeB == JointType.RevoluteJoint) {
+      if (m_joint2 is RevoluteJoint) {
         m_jvBd =  Vector2.Zero;
         m_jwB  =  m_ratio;
         m_jwD  =  m_ratio;
@@ -359,7 +352,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
       float  JwA,  JwB, JwC, JwD;
       float  mass = 0.0f;
 
-      if (m_typeA == JointType.RevoluteJoint) {
+      if (m_joint1 is RevoluteJoint) {
         JvAC=Vector2.Zero;
         JwA  =  1.0f;
         JwC  =  1.0f;
@@ -381,7 +374,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
         coordinateA = Vector2.Dot(pA - pC, m_localAxisC);
       }
 
-      if (m_typeB == JointType.RevoluteJoint) {
+      if (m_joint2 is RevoluteJoint) {
         JvBD = Vector2.Zero;
         JwB  =  m_ratio;
         JwD  =  m_ratio;

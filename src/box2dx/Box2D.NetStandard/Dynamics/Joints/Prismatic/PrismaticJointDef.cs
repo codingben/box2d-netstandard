@@ -12,17 +12,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
   /// </summary>
   public class PrismaticJointDef : JointDef {
     public PrismaticJointDef() {
-      Type             = JointType.PrismaticJoint;
-      localAnchorA     = Vector2.Zero;
-      localAnchorB     = Vector2.Zero;
       localAxisA       = new Vector2(1.0f, 0.0f);
-      referenceAngle   = 0.0f;
-      enableLimit      = false;
-      lowerTranslation = 0.0f;
-      upperTranslation = 0.0f;
-      enableMotor      = false;
-      maxMotorForce    = 0.0f;
-      motorSpeed       = 0.0f;
     }
 
     /// <summary>

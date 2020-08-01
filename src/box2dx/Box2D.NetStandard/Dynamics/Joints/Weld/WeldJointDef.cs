@@ -3,10 +3,6 @@ using System.Numerics;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Weld {
   public class WeldJointDef : JointDef {
-    public WeldJointDef()
-    {
-      Type = JointType.WeldJoint;
-    }
 
     [Obsolete("Use Joint.AngularStiffness to get stiffness & damping values",true)]
     public float frequencyHz;

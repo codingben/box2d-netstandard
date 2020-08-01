@@ -35,6 +35,8 @@ using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.Joints;
+using Box2D.NetStandard.Dynamics.Joints.Distance;
+using Box2D.NetStandard.Dynamics.Joints.Mouse;
 using Box2D.NetStandard.Dynamics.Joints.Pulley;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 using Math = Box2D.NetStandard.Common.Math;
@@ -1040,13 +1042,12 @@ namespace Box2D.NetStandard.Dynamics.World {
 
       Color color = new Color(0.5f, 0.8f, 0.8f);
 
-      switch (joint.Type) {
-        case JointType.DistanceJoint:
+      switch (joint) {
+        case DistanceJoint j:
           m_debugDraw.DrawSegment(p1, p2, color);
           break;
 
-        case JointType.PulleyJoint: {
-          PulleyJoint pulley = (PulleyJoint) joint;
+        case PulleyJoint pulley: {
           Vector2     s1     = pulley.GroundAnchorA;
           Vector2     s2     = pulley.GroundAnchorB;
           m_debugDraw.DrawSegment(s1, p1, color);
@@ -1055,7 +1056,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
           break;
 
-        case JointType.MouseJoint:
+        case MouseJoint j:
           // don't draw this
           break;
 
@@ -1068,10 +1069,8 @@ namespace Box2D.NetStandard.Dynamics.World {
     }
 
     private void DrawFixture(Fixture fixture, Transform xf, Color color) {
-      switch (fixture.Type) {
-        case ShapeType.Circle: {
-          CircleShape circle = (CircleShape) fixture.Shape;
-
+      switch (fixture.Shape) {
+        case CircleShape circle: {
           Vector2 center = Math.Mul(xf, circle.m_p);
           float   radius = circle.m_radius;
           Vector2 axis   = new Vector2(xf.q.M11, xf.q.M21);
@@ -1080,8 +1079,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
           break;
 
-        case ShapeType.Polygon: {
-          PolygonShape poly          = (PolygonShape) fixture.Shape;
+        case PolygonShape poly: {
           int          vertexCount   = poly.m_count;
           Vector2[]    localVertices = poly.m_vertices;
 
@@ -1096,9 +1094,8 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
           break;
 
-        case ShapeType.Edge: {
-          EdgeShape edge = (EdgeShape) fixture.Shape;
-
+        case EdgeShape edge: {
+          
           m_debugDraw.DrawSegment(Math.Mul(xf, edge.m_vertex1), Math.Mul(xf, edge.m_vertex2), color);
         }
           break;
@@ -1189,10 +1186,8 @@ namespace Box2D.NetStandard.Dynamics.World {
     }
 
     private void DrawShape(Fixture fixture, in Transform xf, in Color color) {
-      switch (fixture.Type) {
-        case ShapeType.Circle: {
-          CircleShape circle = (CircleShape) fixture.Shape;
-
+      switch (fixture.Shape) {
+        case CircleShape circle: {
           Vec2  center = Math.Mul(xf, circle.m_p);
           float radius = circle.m_radius;
           Vec2  axis   = Vector2.Transform(new Vector2(1.0f, 0.0f), xf.q); // Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
@@ -1201,8 +1196,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
           break;
 
-        case ShapeType.Edge: {
-          EdgeShape edge = (EdgeShape) fixture.Shape;
+        case EdgeShape edge: {
           Vector2   v1   = Math.Mul(xf, edge.m_vertex1);
           Vector2   v2   = Math.Mul(xf, edge.m_vertex2);
           m_debugDraw.DrawSegment(v1, v2, color);
@@ -1214,8 +1208,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
           break;
 
-        case ShapeType.Chain: {
-          ChainShape chain    = (ChainShape) fixture.Shape;
+        case ChainShape chain: {
           int        count    = chain.m_count;
           Vector2[]  vertices = chain.m_vertices;
           
@@ -1231,8 +1224,7 @@ namespace Box2D.NetStandard.Dynamics.World {
         }
           break;
 
-        case ShapeType.Polygon: {
-          PolygonShape poly        = (PolygonShape) fixture.Shape;
+        case PolygonShape poly: {
           int          vertexCount = poly.m_count;
           Vec2[]       vertices    = new Vec2[Settings.MaxPolygonVertices];
 

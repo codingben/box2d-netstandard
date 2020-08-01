@@ -48,7 +48,6 @@ namespace Box2D.NetStandard.Collision.Shapes
     internal bool m_oneSided;
 
     public EdgeShape() {
-      m_type = ShapeType.Edge;
       m_radius = Settings.PolygonRadius;
     }
 
@@ -93,6 +92,8 @@ namespace Box2D.NetStandard.Collision.Shapes
     }
 
 
+    internal const byte contactMatch = 1;
+    internal override byte ContactMatch => contactMatch;
     public override Shape Clone() {
       return (EdgeShape) MemberwiseClone();
     }

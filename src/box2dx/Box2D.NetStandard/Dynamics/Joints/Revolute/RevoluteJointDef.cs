@@ -16,18 +16,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute {
   ///    the joints will be broken.
   /// </summary>
   public class RevoluteJointDef : JointDef {
-    public RevoluteJointDef() {
-      Type           = JointType.RevoluteJoint;
-      localAnchorA   = Vector2.Zero;
-      localAnchorB   = Vector2.Zero;
-      referenceAngle = 0.0f;
-      lowerAngle     = 0.0f;
-      upperAngle     = 0.0f;
-      maxMotorTorque = 0.0f;
-      motorSpeed     = 0.0f;
-      enableLimit    = false;
-      enableMotor    = false;
-    }
 
     /// <summary>
     /// Initialize the bodies, anchors, and reference angle using the world

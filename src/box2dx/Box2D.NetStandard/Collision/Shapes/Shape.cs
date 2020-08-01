@@ -37,6 +37,8 @@ namespace Box2D.NetStandard.Collision.Shapes
   /// </summary>
   public abstract class Shape
   {
+    internal abstract byte ContactMatch { get; }
+    
     public abstract Shape Clone();
     public abstract int GetChildCount();
     public abstract bool TestPoint(in Transform xf, in Vector2 p);
@@ -47,15 +49,7 @@ namespace Box2D.NetStandard.Collision.Shapes
     public abstract void ComputeAABB(out AABB aabb, in Transform xf, int childIndex);
 
     public abstract void ComputeMass(out MassData massData, float density);
-
-    protected internal ShapeType m_type;
-
-    public ShapeType Type
-    {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => m_type;
-    }
-
+    
     internal float m_radius;
   }
 }

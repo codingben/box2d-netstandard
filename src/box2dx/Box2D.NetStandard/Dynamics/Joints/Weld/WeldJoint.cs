@@ -15,18 +15,18 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
     private float m_stiffness;
     private float m_damping;
 
-    private Vector2 m_localAnchorA;
-    private Vector2 m_localAnchorB;
+    private b2Vec2 m_localAnchorA;
+    private b2Vec2 m_localAnchorB;
     private float m_referenceAngle;
     private float m_gamma;
     private Vector3 m_impulse;
 
     private int m_indexA;
     private int m_indexB;
-    private Vector2 m_rA;
-    private Vector2 m_rB;
-    private Vector2 m_localCenterA;
-    private Vector2 m_localCenterB;
+    private b2Vec2 m_rA;
+    private b2Vec2 m_rB;
+    private b2Vec2 m_localCenterA;
+    private b2Vec2 m_localCenterB;
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -43,10 +43,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
       m_damping = def.damping;
     }
 
-    public override Vector2 GetAnchorA => m_bodyA.GetWorldPoint(m_localAnchorA);
-    public override Vector2 GetAnchorB => m_bodyB.GetWorldPoint(m_localAnchorB);
+    public override b2Vec2 GetAnchorA => m_bodyA.GetWorldPoint(m_localAnchorA);
+    public override b2Vec2 GetAnchorB => m_bodyB.GetWorldPoint(m_localAnchorB);
 
-    public override Vector2 GetReactionForce(float inv_dt) => inv_dt * new Vector2(m_impulse.X, m_impulse.Y);
+    public override b2Vec2 GetReactionForce(float inv_dt) => inv_dt * new b2Vec2(m_impulse.X, m_impulse.Y);
 
     public override float GetReactionTorque(float inv_dt) => inv_dt * m_impulse.Z;
 
@@ -67,7 +67,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
     }
 
 
-    public void Initialize(Body bA, Body bB, in Vector2 anchor)
+    public void Initialize(Body bA, Body bB, in b2Vec2 anchor)
     {
       m_bodyA = bA;
       m_bodyB = bB;
@@ -88,11 +88,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
       m_invIB = m_bodyB.m_invI;
 
       float aA = data.positions[m_indexA].a;
-      Vector2 vA = data.velocities[m_indexA].v;
+      b2Vec2 vA = data.velocities[m_indexA].v;
       float wA = data.velocities[m_indexA].w;
 
       float aB = data.positions[m_indexB].a;
-      Vector2 vB = data.velocities[m_indexB].v;
+      b2Vec2 vB = data.velocities[m_indexB].v;
       float wB = data.velocities[m_indexB].w;
 
       Rot qA = new Rot(aA), qB = new Rot(aB);
@@ -158,7 +158,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
         // Scale impulses to support a variable time step.
         m_impulse *= data.step.dtRatio;
 
-        Vector2 P = new Vector2(m_impulse.X, m_impulse.Y);
+        b2Vec2 P = new b2Vec2(m_impulse.X, m_impulse.Y);
 
         vA -= mA * P;
         wA -= iA * (Vectex.Cross(m_rA, P) + m_impulse.Z);
@@ -218,7 +218,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
         b2Vec3 impulse = -Math.Mul(m_mass, Cdot);
         m_impulse += impulse;
 
-        b2Vec2 P = new Vector2(impulse.X, impulse.Y);
+        b2Vec2 P = new b2Vec2(impulse.X, impulse.Y);
 
         vA -= mA * P;
         wA -= iA * (Vectex.Cross(m_rA, P) + impulse.Z);
@@ -293,7 +293,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
           impulse = new Vector3(impulse2.X, impulse2.Y, 0.0f);
         }
 
-        b2Vec2 P = new Vector2(impulse.X, impulse.Y);
+        b2Vec2 P = new b2Vec2(impulse.X, impulse.Y);
 
         cA -= mA * P;
         aA -= iA * (Vectex.Cross(rA, P) + impulse.Z);

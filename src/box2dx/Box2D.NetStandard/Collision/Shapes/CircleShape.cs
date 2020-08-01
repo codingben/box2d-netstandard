@@ -29,7 +29,6 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
-using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
@@ -40,7 +39,6 @@ namespace Box2D.NetStandard.Collision.Shapes
 		internal Vector2 m_p;
 
 		public CircleShape() {
-			m_type = ShapeType.Circle;
 			m_radius = 0;
 			m_p=Vector2.Zero;
 		}
@@ -57,6 +55,8 @@ namespace Box2D.NetStandard.Collision.Shapes
 			set => m_radius = value;
 		}
 
+		internal const byte contactMatch = 0;
+		internal override byte ContactMatch => contactMatch;
 		public override Shape Clone() {
 			return (CircleShape) MemberwiseClone();
 		}

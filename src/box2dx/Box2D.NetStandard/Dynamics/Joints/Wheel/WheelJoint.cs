@@ -314,7 +314,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
       Rot qA = new Rot(aA), qB = new Rot(aB);
 
       // Compute the effective masses.
-      Vector2 rA = Math.Mul((Rot) qA, m_localAnchorA - m_localCenterA);
+      Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
       Vector2 rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
       Vector2 d = cB + rB - cA - rA;
 

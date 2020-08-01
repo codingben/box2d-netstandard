@@ -37,7 +37,7 @@ namespace Box2D.NetStandard.Common
 		public static Vector2 Solve(this Matrix3x2 m, Vector2 b) {
 			float det = 1f/m.GetDeterminant();
 			return new Vector2(det * (m.M22 * b.X - m.M12 * b.Y),
-			                   det * (m.M11 * b.Y - m.M21 * b.X));
+			                                   det * (m.M11 * b.Y - m.M21 * b.X));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -58,10 +58,10 @@ namespace Box2D.NetStandard.Common
 		public static void Invert(in Matrix3x2 matrix, out Matrix3x2 result) {
 			float x   = (matrix.M11 * matrix.M22 - matrix.M21 * matrix.M12);
 			float num = 1f / x;
-			result.M11 = matrix.M22  * (float)num;
-			result.M12 = -matrix.M12 * (float)num;
-			result.M21 = -matrix.M21 * (float)num;
-			result.M22 = matrix.M11  * (float)num;
+			result.M11 = matrix.M22  * num;
+			result.M12 = -matrix.M12 * num;
+			result.M21 = -matrix.M21 * num;
+			result.M22 = matrix.M11  * num;
 			result.M31 = result.M32 = 0;
 		}
 	}

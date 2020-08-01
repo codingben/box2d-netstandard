@@ -4,9 +4,6 @@ using Box2D.NetStandard.Dynamics.Bodies;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Wheel {
   public class WheelJointDef : JointDef {
-    public WheelJointDef() {
-      Type = JointType.WheelJoint;
-    }
     
     public void Initialize(Body bA,Body bB, in Vector2 anchor, in Vector2 axis)
     {

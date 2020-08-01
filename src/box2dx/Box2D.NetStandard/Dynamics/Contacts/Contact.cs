@@ -46,22 +46,22 @@ namespace Box2D.NetStandard.Dynamics.Contacts
   /// </summary>
   public abstract class Contact
   {
-    private const byte CircleCircle = ((byte) ShapeType.Circle << 2) + (byte) ShapeType.Circle;
-    private const byte CircleEdge = ((byte) ShapeType.Circle << 2) + (byte) ShapeType.Edge;
-    private const byte CirclePolygon = ((byte) ShapeType.Circle << 2) + (byte) ShapeType.Polygon;
-    private const byte CircleChain = ((byte) ShapeType.Circle << 2) + (byte) ShapeType.Chain;
-    private const byte EdgeCircle = ((byte) ShapeType.Edge << 2) + (byte) ShapeType.Circle;
-    private const byte EdgeEdge = ((byte) ShapeType.Edge << 2) + (byte) ShapeType.Edge;
-    private const byte EdgePolygon = ((byte) ShapeType.Edge << 2) + (byte) ShapeType.Polygon;
-    private const byte EdgeChain = ((byte) ShapeType.Edge << 2) + (byte) ShapeType.Chain;
-    private const byte PolygonCircle = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Circle;
-    private const byte PolygonEdge = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Edge;
-    private const byte PolygonPolygon = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Polygon;
-    private const byte PolygonChain = ((byte) ShapeType.Polygon << 2) + (byte) ShapeType.Chain;
-    private const byte ChainCircle = ((byte) ShapeType.Chain << 2) + (byte) ShapeType.Circle;
-    private const byte ChainEdge = ((byte) ShapeType.Chain << 2) + (byte) ShapeType.Edge;
-    private const byte ChainPolygon = ((byte) ShapeType.Chain << 2) + (byte) ShapeType.Polygon;
-    private const byte ChainChain = ((byte) ShapeType.Chain << 2) + (byte) ShapeType.Chain;
+    private const byte CircleCircle = (CircleShape.contactMatch << 2) + CircleShape.contactMatch;
+    private const byte CircleEdge =    (CircleShape.contactMatch << 2) + EdgeShape.contactMatch;
+    private const byte CirclePolygon = (CircleShape.contactMatch << 2) + PolygonShape.contactMatch;
+    private const byte CircleChain =   (CircleShape.contactMatch << 2) + ChainShape.contactMatch;
+    private const byte EdgeCircle =  (EdgeShape.contactMatch << 2) + CircleShape.contactMatch;
+    private const byte EdgeEdge =    (EdgeShape.contactMatch << 2) + EdgeShape.contactMatch;
+    private const byte EdgePolygon = (EdgeShape.contactMatch << 2) + PolygonShape.contactMatch;
+    private const byte EdgeChain =   (EdgeShape.contactMatch << 2) + ChainShape.contactMatch;
+    private const byte PolygonCircle =  (PolygonShape.contactMatch << 2) + CircleShape.contactMatch;
+    private const byte PolygonEdge =    (PolygonShape.contactMatch << 2) + EdgeShape.contactMatch;
+    private const byte PolygonPolygon = (PolygonShape.contactMatch << 2) + PolygonShape.contactMatch;
+    private const byte PolygonChain =   (PolygonShape.contactMatch << 2) + ChainShape.contactMatch;
+    private const byte ChainCircle =  (ChainShape.contactMatch << 2) + CircleShape.contactMatch;
+    private const byte ChainEdge =    (ChainShape.contactMatch << 2) + EdgeShape.contactMatch;
+    private const byte ChainPolygon = (ChainShape.contactMatch << 2) + PolygonShape.contactMatch;
+    private const byte ChainChain =   (ChainShape.contactMatch << 2) + ChainShape.contactMatch;
 
     internal CollisionFlags m_flags;
 
@@ -276,7 +276,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Contact Create(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB)
     {
-      int match = ((byte) fixtureA.Type << 2) + (byte) fixtureB.Type;
+      int match = (fixtureA.Shape.ContactMatch << 2) + fixtureB.Shape.ContactMatch;
       return (match switch {
                              CircleCircle   => new CircleContact(fixtureA, indexA, fixtureB, indexB),
                              CircleEdge     => new EdgeAndCircleContact(fixtureB, indexB, fixtureA, indexA),
