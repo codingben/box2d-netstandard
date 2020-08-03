@@ -19,7 +19,6 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ChainShape() {
-      m_type   = ShapeType.Chain;
       m_radius = Settings.PolygonRadius;
     }
 
@@ -58,6 +57,10 @@ namespace Box2D.NetStandard.Collision.Shapes {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => m_vertices;
     }
+
+    internal const byte contactMatch = 3;
+
+    internal override byte ContactMatch => contactMatch;
 
     public override Shape Clone() {
       return (ChainShape) MemberwiseClone();

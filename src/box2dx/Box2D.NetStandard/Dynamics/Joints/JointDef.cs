@@ -8,17 +8,11 @@ namespace Box2D.NetStandard.Dynamics.Joints {
   {
     public JointDef()
     {
-      Type             = JointType.UnknownJoint;
       UserData         = null;
       bodyA            = null;
       bodyB            = null;
       collideConnected = false;
     }
-
-    /// <summary>
-    /// The joint type is set automatically for concrete joint types.
-    /// </summary>
-    public JointType Type;
 
     /// <summary>
     /// Use this to attach application specific data to your joints.

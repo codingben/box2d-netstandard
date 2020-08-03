@@ -7,11 +7,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction {
     public Vector2 localAnchorB;
     public float   maxForce;
     public float   maxTorque;
-
-    public FrictionJointDef() {
-      Type = JointType.FrictionJoint;
-    }
-
+    
     public void Initialize(Body bA, Body bB, in Vector2 anchor) {
       bodyA        = bA;
       bodyB        = bB;

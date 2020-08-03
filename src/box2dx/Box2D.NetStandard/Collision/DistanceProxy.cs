@@ -31,7 +31,7 @@ using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Collision.Shapes;
 
 namespace Box2D.NetStandard.Collision {
-  internal struct DistanceProxy {
+  public struct DistanceProxy {
     internal Vector2[] _buffer;// = new Vector2[2];
     internal Vector2[] _vertices;
     internal int       _count;
@@ -44,22 +44,19 @@ namespace Box2D.NetStandard.Collision {
     }
 
     internal void Set(in Shape shape, in int index) {
-      switch (shape.Type) {
-        case ShapeType.Circle:
-          CircleShape circle = (CircleShape) shape;
+      switch (shape) {
+        case CircleShape circle:
           _vertices = new[] {circle.m_p};
           _count    = 1;
           _radius   = circle.m_radius;
           break;
-        case ShapeType.Polygon:
-          PolygonShape polygon = (PolygonShape) shape;
+        case PolygonShape polygon:
           _vertices = polygon.m_vertices;
           _count    = polygon.m_count;
           _radius   = polygon.m_radius;
           break;
-				case ShapeType.Chain:
-					ChainShape chain = (ChainShape) shape;
-          _buffer = new Vector2[2];
+				case ChainShape chain:
+					_buffer = new Vector2[2];
 					_buffer[0] = chain.m_vertices[index];
 					if (index + 1 < chain.m_count) {
 						_buffer[1] = chain.m_vertices[index + 1];
@@ -73,8 +70,7 @@ namespace Box2D.NetStandard.Collision {
 					_radius = chain.m_radius;
 					
 					break;
-        case ShapeType.Edge:
-          EdgeShape edge = (EdgeShape) shape;
+        case EdgeShape edge:
           _vertices = new[] {edge.m_vertex1, edge.m_vertex2};
           _count    = 2;
           _radius   = edge.m_radius;

@@ -9,13 +9,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Pulley {
   /// </summary>
   public class PulleyJointDef : JointDef {
     public PulleyJointDef() {
-      Type             = JointType.PulleyJoint;
       GroundAnchorA    = new Vector2(-1.0f, 1.0f);
       GroundAnchorB    = new Vector2(1.0f,  1.0f);
       LocalAnchorA     = new Vector2(-1.0f, 0.0f);
       LocalAnchorB     = new Vector2(1.0f,  0.0f);
-      LengthA          = 0.0f;
-      LengthB          = 0.0f;
       Ratio            = 1.0f;
       collideConnected = true;
     }

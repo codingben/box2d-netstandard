@@ -212,7 +212,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor {
 
         if (m_linearImpulse.LengthSquared() > maxImpulse * maxImpulse) {
           m_linearImpulse =  Vector2.Normalize(m_linearImpulse);
-          m_linearImpulse *= (float)maxImpulse;
+          m_linearImpulse *= maxImpulse;
         }
 
         impulse = m_linearImpulse - oldImpulse;

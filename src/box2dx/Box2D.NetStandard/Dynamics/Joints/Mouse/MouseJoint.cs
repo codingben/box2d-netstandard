@@ -187,7 +187,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 
 			// Cdot = v + cross(w, r)
 			Vector2 Cdot    = vB + Vectex.Cross(wB, m_rB);
-			Vector2 impulse = Vector2.Transform(-(Cdot + m_C + (float)m_gamma * m_impulse),m_mass); //Math.Mul(_mass, -(Cdot + _C + _gamma * _impulse));
+			Vector2 impulse = Vector2.Transform(-(Cdot + m_C + m_gamma * m_impulse),m_mass); //Math.Mul(_mass, -(Cdot + _C + _gamma * _impulse));
 
 			Vector2 oldImpulse = m_impulse;
 			m_impulse += impulse;

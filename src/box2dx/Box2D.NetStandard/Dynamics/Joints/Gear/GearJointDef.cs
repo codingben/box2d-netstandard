@@ -9,9 +9,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear {
   /// </summary>
   public class GearJointDef : JointDef {
     public GearJointDef() {
-      Type   = JointType.GearJoint;
-      Joint1 = null;
-      Joint2 = null;
       Ratio  = 1.0f;
     }
 

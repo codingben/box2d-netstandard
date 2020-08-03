@@ -79,7 +79,7 @@ namespace Box2D.NetStandard.Common {
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Random() {
-      float r = (float) (s_rnd.Next() & RAND_LIMIT);
+      float r = s_rnd.Next() & RAND_LIMIT;
       r /= RAND_LIMIT;
       r =  2.0f * r - 1.0f;
       return r;
@@ -177,12 +177,12 @@ namespace Box2D.NetStandard.Common {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 Mul(Rot q, Vector2 v) =>
       new Vector2(q.c * v.X - q.s * v.Y,
-                  q.s * v.X + q.c * v.Y);
+                                  q.s * v.X + q.c * v.Y);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector2 MulT(Rot q, Vector2 v) =>
       new Vector2(q.c  * v.X + q.s * v.Y,
-                  -q.s * v.X + q.c * v.Y);
+                                  -q.s * v.X + q.c * v.Y);
 
 
     // v2 = A.q.Rot(B.q.Rot(v1) + B.p) + A.p

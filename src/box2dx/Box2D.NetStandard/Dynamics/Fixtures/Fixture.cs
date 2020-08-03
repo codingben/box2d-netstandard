@@ -193,12 +193,6 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
       }
     }
 
-    public ShapeType Type
-    {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      get => m_shape.m_type;
-    }
-
     public Shape Shape
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]

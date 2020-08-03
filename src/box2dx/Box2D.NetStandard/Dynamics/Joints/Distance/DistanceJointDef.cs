@@ -16,12 +16,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
   {
     public DistanceJointDef()
     {
-      Type = JointType.DistanceJoint;
-      localAnchorA = new Vector2(0.0f, 0.0f);
-      localAnchorB = new Vector2(0.0f, 0.0f);
       length = 1.0f;
-      stiffness = 0.0f;
-      damping = 0.0f;
     }
 
     [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]

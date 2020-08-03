@@ -9,9 +9,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse {
   {
     public MouseJointDef()
     {
-      Type         = JointType.MouseJoint;
-      Target       = Vector2.Zero;
-      MaxForce     = 0.0f;
       FrequencyHz  = 5.0f;
       DampingRatio = 0.7f;
     }

@@ -55,6 +55,12 @@ namespace Box2D.NetStandard.Collision {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get => upperBound;
     }
+
+    public Vector2 Size
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => upperBound - lowerBound;
+    }
     
     /// Get the center of the AABB.
     public Vector2 GetCenter() {

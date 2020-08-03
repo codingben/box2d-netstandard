@@ -44,7 +44,6 @@ namespace Box2D.NetStandard.Collision.Shapes {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public PolygonShape() {
-      m_type     = ShapeType.Polygon;
       m_radius   = Settings.PolygonRadius;
       m_count    = 0;
       m_centroid = Vector2.Zero;
@@ -58,6 +57,8 @@ namespace Box2D.NetStandard.Collision.Shapes {
       SetAsBox(hX,hY);
     }
 
+    internal const byte contactMatch = 2;
+    internal override byte ContactMatch => contactMatch;
     public override Shape Clone() => (Shape) MemberwiseClone();
 
 

@@ -4,8 +4,6 @@ using Box2D.NetStandard.Dynamics.Bodies;
 namespace Box2D.NetStandard.Dynamics.Joints.Motor {
   public class MotorJointDef : JointDef {
     MotorJointDef() {
-      Type             = JointType.MotorJoint;
-      angularOffset    = 0.0f;
       maxForce         = 1.0f;
       maxTorque        = 1.0f;
       correctionFactor = 0.3f;
