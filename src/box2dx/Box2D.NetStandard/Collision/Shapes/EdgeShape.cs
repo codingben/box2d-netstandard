@@ -85,7 +85,7 @@ namespace Box2D.NetStandard.Collision.Shapes
       m_oneSided = false;
     }
     
-    [Obsolete("Use SetTwoSided instead",true)]
+    [Obsolete("Use SetTwoSided instead")]
     public void Set(in Vector2 v1, in Vector2 v2) {
       m_vertex1    = v1;
       m_vertex2    = v2;
