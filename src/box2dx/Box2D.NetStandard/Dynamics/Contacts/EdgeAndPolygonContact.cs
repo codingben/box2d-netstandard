@@ -32,22 +32,20 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
-	internal class EdgeAndPolygonContact : Contact
-	{
-		private static readonly Collider<EdgeShape,PolygonShape> collider = new EdgeAndPolygonCollider();
+    internal class EdgeAndPolygonContact : Contact
+    {
+        private static readonly Collider<EdgeShape, PolygonShape> collider = new EdgeAndPolygonCollider();
 
+        internal static void Destroy(ref Contact contact)
+        {
+            contact = null;
+        }
 
+        internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB)
+        {
+            collider.Collide(out manifold, (EdgeShape)m_fixtureA.Shape, in xfA, (PolygonShape)m_fixtureB.Shape, in xfB);
+        }
 
-		internal static void Destroy(ref Contact contact)
-		{
-			contact = null;
-		}
-
-		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
-			collider.Collide(out manifold, (EdgeShape) m_fixtureA.Shape, in xfA,
-			                                          (PolygonShape) m_fixtureB.Shape, in xfB);
-		}
-
-		public EdgeAndPolygonContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB) { }
-	}
+        public EdgeAndPolygonContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB) { }
+    }
 }

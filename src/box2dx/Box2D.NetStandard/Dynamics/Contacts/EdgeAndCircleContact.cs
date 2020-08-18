@@ -32,25 +32,24 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
-	internal class EdgeAndCircleContact : Contact
-	{
-		private static Collider<EdgeShape,CircleShape> collider = new EdgeAndCircleCollider();
+    internal class EdgeAndCircleContact : Contact
+    {
+        private static Collider<EdgeShape, CircleShape> collider = new EdgeAndCircleCollider();
 
-		internal EdgeAndCircleContact(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB)
-			: base(fixtureA,0, fixtureB,0)
-		{
-			//Debug.Assert(fixtureA.Type == ShapeType.Edge);
-			//Debug.Assert(fixtureB.Type == ShapeType.Circle);
-			m_manifold.pointCount = 0;
-			m_manifold.points[0]=new ManifoldPoint();
-			m_manifold.points[0].normalImpulse = 0.0f;
-			m_manifold.points[0].tangentImpulse = 0.0f;
-		}
+        internal EdgeAndCircleContact(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB)
+            : base(fixtureA, 0, fixtureB, 0)
+        {
+            // Debug.Assert(fixtureA.Type == ShapeType.Edge);
+            // Debug.Assert(fixtureB.Type == ShapeType.Circle);
+            m_manifold.pointCount = 0;
+            m_manifold.points[0] = new ManifoldPoint();
+            m_manifold.points[0].normalImpulse = 0.0f;
+            m_manifold.points[0].tangentImpulse = 0.0f;
+        }
 
-		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
-			collider.Collide(out manifold,
-			                                         (EdgeShape)m_fixtureA.Shape,   xfA,
-			                                         (CircleShape)m_fixtureB.Shape, xfB);
-		}
-	}
+        internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB)
+        {
+            collider.Collide(out manifold, (EdgeShape)m_fixtureA.Shape, xfA, (CircleShape)m_fixtureB.Shape, xfB);
+        }
+    }
 }
