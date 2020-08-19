@@ -42,10 +42,8 @@ namespace Box2D.NetStandard.Collision.Shapes
     {
         internal Vector2 m_vertex1;
         internal Vector2 m_vertex2;
-
         internal Vector2? m_vertex0;
         internal Vector2? m_vertex3;
-
         internal bool m_oneSided;
 
         public EdgeShape()
@@ -99,9 +97,9 @@ namespace Box2D.NetStandard.Collision.Shapes
             m_vertex2 = v2;
         }
 
-
         internal const byte contactMatch = 1;
         internal override byte ContactMatch => contactMatch;
+
         public override Shape Clone()
         {
             return (EdgeShape)MemberwiseClone();
