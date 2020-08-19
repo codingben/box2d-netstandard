@@ -27,30 +27,23 @@
 
 using System;
 
-namespace Box2D.NetStandard.Collision {
-  class TreeNode
-  {
-    internal bool IsLeaf() 
+namespace Box2D.NetStandard.Collision
+{
+    class TreeNode
     {
-      return child1 == -1;
-    }
+        internal bool IsLeaf()
+        {
+            return child1 == -1;
+        }
 
-    /// Enlarged AABB
-    
-    
-    internal pnUnion pn;
-
-    internal AABB aabb;
-
-    internal Int32 child1;
-    internal Int32 child2;
-
-    // leaf = 0, free node = -1
-    internal Int32 height;
-
-    internal bool moved;
-    
-    internal object userData;
-
-  };
+        /// Enlarged AABB
+        internal pnUnion pn;
+        internal AABB aabb;
+        internal Int32 child1;
+        internal Int32 child2;
+        // leaf = 0, free node = -1
+        internal Int32 height;
+        internal bool moved;
+        internal object userData;
+    };
 }

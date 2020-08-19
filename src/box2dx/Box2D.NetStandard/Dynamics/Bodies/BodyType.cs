@@ -25,12 +25,13 @@
 // SOFTWARE.
 */
 
-namespace Box2D.NetStandard.Dynamics.Bodies {
-  public enum BodyType
-  {
-    Static,
-    Kinematic,
-    Dynamic,
-    MaxTypes
-  }
+namespace Box2D.NetStandard.Dynamics.Bodies
+{
+    public enum BodyType
+    {
+        Static,
+        Kinematic,
+        Dynamic,
+        MaxTypes
+    }
 }

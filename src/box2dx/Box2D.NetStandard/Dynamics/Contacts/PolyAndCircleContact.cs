@@ -32,16 +32,15 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
-	internal class PolyAndCircleContact : Contact
-	{
-		private static Collider<PolygonShape,CircleShape> collider = new PolygonAndCircleCollider();
+    internal class PolyAndCircleContact : Contact
+    {
+        private static Collider<PolygonShape, CircleShape> collider = new PolygonAndCircleCollider();
 
-		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB) {
-			collider.Collide(out manifold,
-			                                         (PolygonShape) m_fixtureA.Shape, xfA,
-			                                         (CircleShape) m_fixtureB.Shape,  xfB);
-		}
+        internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB)
+        {
+            collider.Collide(out manifold, (PolygonShape)m_fixtureA.Shape, xfA, (CircleShape)m_fixtureB.Shape, xfB);
+        }
 
-		public PolyAndCircleContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB) { }
-	}
+        public PolyAndCircleContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB) { }
+    }
 }
