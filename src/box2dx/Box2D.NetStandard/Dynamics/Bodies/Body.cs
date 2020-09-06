@@ -188,6 +188,21 @@ namespace Box2D.NetStandard.Dynamics.Bodies
       for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
         f.Synchronize(broadPhase, m_xf, m_xf);
       }
+
+      m_world.m_newContacts = true;
+    }
+
+    
+    public Transform Transform
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_xf;
+    }
+
+    public Vector2 Position
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      get => m_xf.p;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -409,8 +409,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
           float vn1 = Vector2.Dot(dv1, normal);
           float vn2 = Vector2.Dot(dv2, normal);
 
-          Vector2 b = new Vector2((float) (vn1 - cp1.velocityBias),
-                                  (float) (vn2 - cp2.velocityBias));
+          Vector2 b = new Vector2(vn1 - cp1.velocityBias,
+                                  vn2 - cp2.velocityBias);
 
           // Compute b'
           b -= Vector2.Transform(a, vc.K); // Common.Math.Mul(vc.K, a);

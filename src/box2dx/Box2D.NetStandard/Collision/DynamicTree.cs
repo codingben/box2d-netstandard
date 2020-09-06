@@ -47,12 +47,13 @@ namespace Box2D.NetStandard.Collision
     {
       m_root = -1;
 
-      m_nodeCapacity = 16;
+      m_nodeCapacity = 2048;
       m_nodeCount = 0;
       m_nodes = new TreeNode[m_nodeCapacity];
 
       // Build a linked list for the free list.
-      for (int i = 0; i < m_nodeCapacity; ++i) {
+      for (int i = 0; i < m_nodeCapacity; ++i)
+      {
         m_nodes[i] = new TreeNode();
         m_nodes[i].pn.next = i + 1;
         m_nodes[i].height = -1;
@@ -66,18 +67,25 @@ namespace Box2D.NetStandard.Collision
     public int AllocateNode()
     {
       // Expand the node pool as needed.
-      if (m_freeList == -1) {
+      if (m_freeList == -1)
+      {
         //Debug.Assert(m_nodeCount == m_nodeCapacity);
 
         // The free list is empty. Rebuild a bigger pool.
-        TreeNode[] oldNodes = m_nodes;
         m_nodeCapacity *= 2;
+        TreeNode[] oldNodes = m_nodes;
         m_nodes = new TreeNode[m_nodeCapacity];
         Array.Copy(oldNodes, m_nodes, m_nodeCount);
 
+        // TreeNode[] newArray = new TreeNode[m_nodeCapacity];
+        // Buffer.BlockCopy(m_nodes,0,newArray,0,m_nodes.Length*sizeof(TreeNode));
+        // m_nodes = newArray;
+
+
         // Build a linked list for the free list. The parent
         // pointer becomes the "next" pointer.
-        for (int i = m_nodeCount; i < m_nodeCapacity; ++i) {
+        for (int i = m_nodeCount; i < m_nodeCapacity; ++i)
+        {
           m_nodes[i] = new TreeNode();
           m_nodes[i].pn.next = i + 1;
           m_nodes[i].height = -1;
@@ -101,7 +109,8 @@ namespace Box2D.NetStandard.Collision
       return nodeId;
     }
 
-    public void FreeNode(int nodeId)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FreeNode(in int nodeId)
     {
       //Debug.Assert(0 <= nodeId && nodeId < m_nodeCapacity);
       //Debug.Assert(0 < m_nodeCount);
@@ -111,13 +120,14 @@ namespace Box2D.NetStandard.Collision
       --m_nodeCount;
     }
 
+    private static Vector2 r = new Vector2(Settings.AABBExtension);
 
     public int CreateProxy(in AABB aabb, object userData)
     {
       int proxyId = AllocateNode();
 
       // Fatten the aabb.
-      Vector2 r = new Vector2(Settings.AABBExtension, Settings.AABBExtension);
+
       m_nodes[proxyId].aabb.lowerBound = aabb.lowerBound - r;
       m_nodes[proxyId].aabb.upperBound = aabb.upperBound + r;
       m_nodes[proxyId].userData = userData;
@@ -129,7 +139,7 @@ namespace Box2D.NetStandard.Collision
       return proxyId;
     }
 
-    public void DestroyProxy(int proxyId)
+    public void DestroyProxy(in int proxyId)
     {
       //Debug.Assert(0 <= proxyId && proxyId < m_nodeCapacity);
       //Debug.Assert(m_nodes[proxyId].IsLeaf());
@@ -138,45 +148,46 @@ namespace Box2D.NetStandard.Collision
       FreeNode(proxyId);
     }
 
-    public bool MoveProxy(Int32 proxyId, in AABB aabb, in Vector2 displacement)
+    public bool MoveProxy(in Int32 proxyId, in AABB aabb, in Vector2 displacement)
     {
       //Debug.Assert(0 <= proxyId && proxyId < m_nodeCapacity);
 
       //Debug.Assert(m_nodes[proxyId].IsLeaf());
 
       // Extend AABB
-      AABB fatAABB;
-      Vector2 r = new Vector2(Settings.AABBExtension, Settings.AABBExtension);
-      fatAABB.lowerBound = aabb.lowerBound - r;
-      fatAABB.upperBound = aabb.upperBound + r;
+      AABB fatAABB = new AABB(aabb.lowerBound - r, aabb.UpperBound + r);
 
       // Predict AABB movement
       Vector2 d = Settings.AABBMultiplier * displacement;
 
-      if (d.X < 0.0f) {
+      if (d.X < 0.0f)
+      {
         fatAABB.lowerBound.X += d.X;
       }
-      else {
+      else
+      {
         fatAABB.upperBound.X += d.X;
       }
 
-      if (d.Y < 0.0f) {
+      if (d.Y < 0.0f)
+      {
         fatAABB.lowerBound.Y += d.Y;
       }
-      else {
+      else
+      {
         fatAABB.upperBound.Y += d.Y;
       }
 
       AABB treeAABB = m_nodes[proxyId].aabb;
-      if (treeAABB.Contains(aabb)) {
+      if (treeAABB.Contains(aabb))
+      {
         // The tree AABB still contains the object, but it might be too large.
         // Perhaps the object was moving fast but has since gone to sleep.
         // The huge AABB is larger than the new fat AABB.
-        AABB hugeAABB;
-        hugeAABB.lowerBound = fatAABB.lowerBound - 4.0f * r;
-        hugeAABB.upperBound = fatAABB.upperBound + 4.0f * r;
+        AABB hugeAABB = new AABB(fatAABB.lowerBound - 4 * r, fatAABB.upperBound + 4 * r);
 
-        if (hugeAABB.Contains(treeAABB)) {
+        if (hugeAABB.Contains(treeAABB))
+        {
           // The tree AABB contains the object AABB and the tree AABB is
           // not too large. No tree update needed.
           return false;
@@ -196,9 +207,10 @@ namespace Box2D.NetStandard.Collision
       return true;
     }
 
-    public void InsertLeaf(Int32 leaf)
+    public void InsertLeaf(in Int32 leaf)
     {
-      if (m_root == -1) {
+      if (m_root == -1)
+      {
         m_root = leaf;
         m_nodes[m_root].pn.parent = -1;
         return;
@@ -207,7 +219,8 @@ namespace Box2D.NetStandard.Collision
       // Find the best sibling for this node
       AABB leafAABB = m_nodes[leaf].aabb;
       Int32 index = m_root;
-      while (m_nodes[index].IsLeaf() == false) {
+      while (!m_nodes[index].IsLeaf())
+      {
         Int32 child1 = m_nodes[index].child1;
         Int32 child2 = m_nodes[index].child2;
 
@@ -223,48 +236,12 @@ namespace Box2D.NetStandard.Collision
         // Minimum cost of pushing the leaf further down the tree
         float inheritanceCost = 2.0f * (combinedArea - area);
 
-        // Cost of descending into child1
-        float cost1;
-        if (m_nodes[child1].IsLeaf()) {
-          AABB aabb = new AABB();
-          aabb.Combine(leafAABB, m_nodes[child1].aabb);
-          cost1 = aabb.GetPerimeter() + inheritanceCost;
-        }
-        else {
-          AABB aabb = new AABB();
-          aabb.Combine(leafAABB, m_nodes[child1].aabb);
-          float oldArea = m_nodes[child1].aabb.GetPerimeter();
-          float newArea = aabb.GetPerimeter();
-          cost1 = (newArea - oldArea) + inheritanceCost;
-        }
+        float cost1 = GetChildDescentCost(leafAABB, child1) + inheritanceCost;
+        float cost2 = GetChildDescentCost(leafAABB, child2) + inheritanceCost;
 
-        // Cost of descending into child2
-        float cost2;
-        if (m_nodes[child2].IsLeaf()) {
-          AABB aabb = new AABB();
-          aabb.Combine(leafAABB, m_nodes[child2].aabb);
-          cost2 = aabb.GetPerimeter() + inheritanceCost;
-        }
-        else {
-          AABB aabb = new AABB();
-          aabb.Combine(leafAABB, m_nodes[child2].aabb);
-          float oldArea = m_nodes[child2].aabb.GetPerimeter();
-          float newArea = aabb.GetPerimeter();
-          cost2 = newArea - oldArea + inheritanceCost;
-        }
+        if (cost < cost1 && cost < cost2) break;
 
-        // Descend according to the minimum cost.
-        if (cost < cost1 && cost < cost2) {
-          break;
-        }
-
-        // Descend
-        if (cost1 < cost2) {
-          index = child1;
-        }
-        else {
-          index = child2;
-        }
+        index = cost1 < cost2 ? child1 : child2;
       }
 
       Int32 sibling = index;
@@ -276,48 +253,31 @@ namespace Box2D.NetStandard.Collision
       m_nodes[newParent].userData = null;
       m_nodes[newParent].aabb.Combine(leafAABB, m_nodes[sibling].aabb);
       m_nodes[newParent].height = m_nodes[sibling].height + 1;
+      m_nodes[newParent].child1 = sibling;
+      m_nodes[newParent].child2 = leaf;
+      m_nodes[sibling].pn.parent = newParent;
+      m_nodes[leaf].pn.parent = newParent;
 
-      if (oldParent != -1) {
+      if (oldParent != -1)
+      {
         // The sibling was not the root.
-        if (m_nodes[oldParent].child1 == sibling) {
+        if (m_nodes[oldParent].child1 == sibling)
+        {
           m_nodes[oldParent].child1 = newParent;
         }
-        else {
+        else
+        {
           m_nodes[oldParent].child2 = newParent;
         }
-
-        m_nodes[newParent].child1 = sibling;
-        m_nodes[newParent].child2 = leaf;
-        m_nodes[sibling].pn.parent = newParent;
-        m_nodes[leaf].pn.parent = newParent;
       }
-      else {
+      else
+      {
         // The sibling was the root.
-        m_nodes[newParent].child1 = sibling;
-        m_nodes[newParent].child2 = leaf;
-        m_nodes[sibling].pn.parent = newParent;
-        m_nodes[leaf].pn.parent = newParent;
         m_root = newParent;
       }
 
       // Walk back up the tree fixing heights and AABBs
-      index = m_nodes[leaf].pn.parent;
-      while (index != -1) {
-        index = Balance(index);
-
-        Int32 child1 = m_nodes[index].child1;
-        Int32 child2 = m_nodes[index].child2;
-
-        //Debug.Assert(child1 != -1);
-        //Debug.Assert(child2 != -1);
-
-        m_nodes[index].height = 1 + System.Math.Max(m_nodes[child1].height, m_nodes[child2].height);
-        m_nodes[index].aabb.Combine(m_nodes[child1].aabb, m_nodes[child2].aabb);
-
-        index = m_nodes[index].pn.parent;
-
-        //VisualiseTree();
-      }
+      AdjustBounds(m_nodes[leaf].pn.parent);
 
       //Validate();
     }
@@ -330,65 +290,90 @@ namespace Box2D.NetStandard.Collision
     //     Console.WriteLine($"Node: {i} Parent: {node.pn.parent} Child1: {node.child1} Child2: {node.child2}");
     //   }
     // }
-
-    public void RemoveLeaf(Int32 leaf)
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private float GetChildDescentCost(in AABB leafAABB, in int child)
     {
-      if (leaf == m_root) {
+      float cost;
+      AABB aabb = default;
+      aabb.Combine(leafAABB, m_nodes[child].aabb);
+      if (m_nodes[child].IsLeaf())
+      {
+        cost = aabb.GetPerimeter();
+      }
+      else
+      {
+        float oldArea = m_nodes[child].aabb.GetPerimeter();
+        float newArea = aabb.GetPerimeter();
+        cost = (newArea - oldArea);
+      }
+
+      return cost;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void AdjustBounds(in int idx)
+    {
+      int index = idx;
+      while (index != -1)
+      {
+        index = Balance(index);
+
+        int child1 = m_nodes[index].child1;
+        int child2 = m_nodes[index].child2;
+
+        m_nodes[index].height = 1 + System.Math.Max(m_nodes[child1].height, m_nodes[child2].height);
+        m_nodes[index].aabb.Combine(m_nodes[child1].aabb, m_nodes[child2].aabb);
+
+        index = m_nodes[index].pn.parent;
+      }
+    }
+
+    public void RemoveLeaf(in Int32 leaf)
+    {
+      if (leaf == m_root)
+      {
         m_root = -1;
         return;
       }
 
       Int32 parent = m_nodes[leaf].pn.parent;
       Int32 grandParent = m_nodes[parent].pn.parent;
-      Int32 sibling;
-      if (m_nodes[parent].child1 == leaf) {
-        sibling = m_nodes[parent].child2;
-      }
-      else {
-        sibling = m_nodes[parent].child1;
-      }
+      int sibling = m_nodes[parent].child1 == leaf ? m_nodes[parent].child2 : m_nodes[parent].child1;
 
-      if (grandParent != -1) {
-        // Destroy parent and connect sibling to grandParent.
-        if (m_nodes[grandParent].child1 == parent) {
-          m_nodes[grandParent].child1 = sibling;
-        }
-        else {
-          m_nodes[grandParent].child2 = sibling;
-        }
-
-        m_nodes[sibling].pn.parent = grandParent;
-        FreeNode(parent);
-
-        // Adjust ancestor bounds.
-        Int32 index = grandParent;
-        while (index != -1) {
-          index = Balance(index);
-
-          Int32 child1 = m_nodes[index].child1;
-          Int32 child2 = m_nodes[index].child2;
-
-          m_nodes[index].aabb.Combine(m_nodes[child1].aabb, m_nodes[child2].aabb);
-          m_nodes[index].height = 1 + System.Math.Max(m_nodes[child1].height, m_nodes[child2].height);
-
-          index = m_nodes[index].pn.parent;
-        }
-      }
-      else {
+      if (grandParent == -1)
+      {
         m_root = sibling;
         m_nodes[sibling].pn.parent = -1;
         FreeNode(parent);
+        return;
       }
+
+      // Destroy parent and connect sibling to grandParent.
+      if (m_nodes[grandParent].child1 == parent)
+      {
+        m_nodes[grandParent].child1 = sibling;
+      }
+      else
+      {
+        m_nodes[grandParent].child2 = sibling;
+      }
+
+      m_nodes[sibling].pn.parent = grandParent;
+      FreeNode(parent);
+
+      AdjustBounds(grandParent);
 
       //Validate();
     }
 
-    public Int32 Balance(Int32 iA)
+    public Int32 Balance(in Int32 iA)
     {
       //Debug.Assert(iA != -1);
 
       TreeNode A = m_nodes[iA];
-      if (A.IsLeaf() || A.height < 2) {
+      if (A.IsLeaf() || A.height < 2)
+      {
         return iA;
       }
 
@@ -403,7 +388,8 @@ namespace Box2D.NetStandard.Collision
       Int32 balance = C.height - B.height;
 
       // Rotate C up
-      if (balance > 1) {
+      if (balance > 1)
+      {
         Int32 iF = C.child1;
         Int32 iG = C.child2;
         TreeNode F = m_nodes[iF];
@@ -417,21 +403,26 @@ namespace Box2D.NetStandard.Collision
         A.pn.parent = iC;
 
         // A's old parent should point to C
-        if (C.pn.parent != -1) {
-          if (m_nodes[C.pn.parent].child1 == iA) {
+        if (C.pn.parent != -1)
+        {
+          if (m_nodes[C.pn.parent].child1 == iA)
+          {
             m_nodes[C.pn.parent].child1 = iC;
           }
-          else {
+          else
+          {
             //Debug.Assert(m_nodes[C.pn.parent].child2 == iA);
             m_nodes[C.pn.parent].child2 = iC;
           }
         }
-        else {
+        else
+        {
           m_root = iC;
         }
 
         // Rotate
-        if (F.height > G.height) {
+        if (F.height > G.height)
+        {
           C.child2 = iF;
           A.child2 = iG;
           G.pn.parent = iA;
@@ -441,7 +432,8 @@ namespace Box2D.NetStandard.Collision
           A.height = 1 + System.Math.Max(B.height, G.height);
           C.height = 1 + System.Math.Max(A.height, F.height);
         }
-        else {
+        else
+        {
           C.child2 = iG;
           A.child2 = iF;
           F.pn.parent = iA;
@@ -456,7 +448,8 @@ namespace Box2D.NetStandard.Collision
       }
 
       // Rotate B up
-      if (balance < -1) {
+      if (balance < -1)
+      {
         Int32 iD = B.child1;
         Int32 iE = B.child2;
         TreeNode D = m_nodes[iD];
@@ -470,21 +463,26 @@ namespace Box2D.NetStandard.Collision
         A.pn.parent = iB;
 
         // A's old parent should point to B
-        if (B.pn.parent != -1) {
-          if (m_nodes[B.pn.parent].child1 == iA) {
+        if (B.pn.parent != -1)
+        {
+          if (m_nodes[B.pn.parent].child1 == iA)
+          {
             m_nodes[B.pn.parent].child1 = iB;
           }
-          else {
+          else
+          {
             //Debug.Assert(m_nodes[B.pn.parent].child2 == iA);
             m_nodes[B.pn.parent].child2 = iB;
           }
         }
-        else {
+        else
+        {
           m_root = iB;
         }
 
         // Rotate
-        if (D.height > E.height) {
+        if (D.height > E.height)
+        {
           B.child2 = iD;
           A.child1 = iE;
           E.pn.parent = iA;
@@ -494,7 +492,8 @@ namespace Box2D.NetStandard.Collision
           A.height = 1 + System.Math.Max(C.height, E.height);
           B.height = 1 + System.Math.Max(A.height, D.height);
         }
-        else {
+        else
+        {
           B.child2 = iE;
           A.child1 = iD;
           D.pn.parent = iA;
@@ -511,18 +510,13 @@ namespace Box2D.NetStandard.Collision
       return iA;
     }
 
-    public Int32 GetHeight()
-    {
-      if (m_root == -1) {
-        return 0;
-      }
-
-      return m_nodes[m_root].height;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Int32 GetHeight() => m_root == -1 ? 0 : m_nodes[m_root].height;
 
     public float GetAreaRatio()
     {
-      if (m_root == -1) {
+      if (m_root == -1)
+      {
         return 0.0f;
       }
 
@@ -530,9 +524,11 @@ namespace Box2D.NetStandard.Collision
       float rootArea = root.aabb.GetPerimeter();
 
       float totalArea = 0.0f;
-      for (Int32 i = 0; i < m_nodeCapacity; ++i) {
+      for (Int32 i = 0; i < m_nodeCapacity; ++i)
+      {
         TreeNode node = m_nodes[i];
-        if (node.height < 0) {
+        if (node.height < 0)
+        {
           // Free node in pool
           continue;
         }
@@ -543,12 +539,14 @@ namespace Box2D.NetStandard.Collision
       return totalArea / rootArea;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ComputeHeight(Int32 nodeId)
     {
       //Debug.Assert(0 <= nodeId && nodeId < m_nodeCapacity);
       TreeNode node = m_nodes[nodeId];
 
-      if (node.IsLeaf()) {
+      if (node.IsLeaf())
+      {
         return 0;
       }
 
@@ -560,22 +558,26 @@ namespace Box2D.NetStandard.Collision
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ComputeHeight() => ComputeHeight(m_root);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ValidateStructure(Int32 index)
     {
-      if (index == -1) {
+      if (index == -1)
+      {
         return;
       }
 
-      if (index == m_root) {
-        //Debug.Assert(m_nodes[index].pn.parent == -1);
-      }
+      // if (index == m_root)
+      // {
+      //   //Debug.Assert(m_nodes[index].pn.parent == -1);
+      // }
 
       TreeNode node = m_nodes[index];
 
       Int32 child1 = node.child1;
       Int32 child2 = node.child2;
 
-      if (node.IsLeaf()) {
+      if (node.IsLeaf())
+      {
         //Debug.Assert(child1      == -1);
         //Debug.Assert(child2      == -1);
         //Debug.Assert(node.height == 0);
@@ -591,9 +593,11 @@ namespace Box2D.NetStandard.Collision
       ValidateStructure(child2);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ValidateMetrics(Int32 index)
     {
-      if (index == -1) {
+      if (index == -1)
+      {
         return;
       }
 
@@ -602,7 +606,8 @@ namespace Box2D.NetStandard.Collision
       Int32 child1 = node.child1;
       Int32 child2 = node.child2;
 
-      if (node.IsLeaf()) {
+      if (node.IsLeaf())
+      {
         //Debug.Assert(child1      == -1);
         //Debug.Assert(child2      == -1);
         //Debug.Assert(node.height == 0);
@@ -631,9 +636,11 @@ namespace Box2D.NetStandard.Collision
     public int GetMaxBalance()
     {
       Int32 maxBalance = 0;
-      for (Int32 i = 0; i < m_nodeCapacity; ++i) {
+      for (Int32 i = 0; i < m_nodeCapacity; ++i)
+      {
         TreeNode node = m_nodes[i];
-        if (node.height <= 1) {
+        if (node.height <= 1)
+        {
           continue;
         }
 
@@ -654,34 +661,42 @@ namespace Box2D.NetStandard.Collision
       Int32 count = 0;
 
       // Build array of leaves. Free the rest.
-      for (Int32 i = 0; i < m_nodeCapacity; ++i) {
-        if (m_nodes[i].height < 0) {
+      for (Int32 i = 0; i < m_nodeCapacity; ++i)
+      {
+        if (m_nodes[i].height < 0)
+        {
           // free node in pool
           continue;
         }
 
-        if (m_nodes[i].IsLeaf()) {
+        if (m_nodes[i].IsLeaf())
+        {
           m_nodes[i].pn.parent = -1;
           nodes[count] = i;
           ++count;
         }
-        else {
+        else
+        {
           FreeNode(i);
         }
       }
 
-      while (count > 1) {
+      while (count > 1)
+      {
         float minCost = float.MaxValue;
         Int32 iMin = -1, jMin = -1;
-        for (Int32 i = 0; i < count; ++i) {
+        for (Int32 i = 0; i < count; ++i)
+        {
           AABB aabbi = m_nodes[nodes[i]].aabb;
 
-          for (Int32 j = i + 1; j < count; ++j) {
+          for (Int32 j = i + 1; j < count; ++j)
+          {
             AABB aabbj = m_nodes[nodes[j]].aabb;
             AABB b = new AABB();
             b.Combine(in aabbi, in aabbj);
             float cost = b.GetPerimeter();
-            if (cost < minCost) {
+            if (cost < minCost)
+            {
               iMin = i;
               jMin = j;
               minCost = cost;
@@ -718,16 +733,23 @@ namespace Box2D.NetStandard.Collision
     public void ShiftOrigin(in Vector2 newOrigin)
     {
       // Build array of leaves. Free the rest.
-      for (Int32 i = 0; i < m_nodeCapacity; ++i) {
+      for (Int32 i = 0; i < m_nodeCapacity; ++i)
+      {
         m_nodes[i].aabb.lowerBound -= newOrigin;
         m_nodes[i].aabb.upperBound -= newOrigin;
       }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public object GetUserData(int proxyId) => m_nodes[proxyId].userData;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool WasMoved(int proxyId) => m_nodes[proxyId].moved;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearMoved(int proxyId) => m_nodes[proxyId].moved = false;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public AABB GetFatAABB(int proxyId) => m_nodes[proxyId].aabb;
 
     public void Query(Func<int, bool> queryCallback, in AABB aabb)
@@ -735,22 +757,28 @@ namespace Box2D.NetStandard.Collision
       Stack<int> stack = new Stack<int>(256);
       stack.Push(m_root);
 
-      while (stack.Count > 0) {
+      while (stack.Count > 0)
+      {
         int nodeId = stack.Pop();
-        if (nodeId == -1) {
+        if (nodeId == -1)
+        {
           continue;
         }
 
         TreeNode node = m_nodes[nodeId];
 
-        if (Collision.TestOverlap(node.aabb, aabb)) {
-          if (node.IsLeaf()) {
+        if (Collision.TestOverlap(node.aabb, aabb))
+        {
+          if (node.IsLeaf())
+          {
             bool proceed = queryCallback(nodeId);
-            if (proceed == false) {
+            if (proceed == false)
+            {
               return;
             }
           }
-          else {
+          else
+          {
             stack.Push(node.child1);
             stack.Push(node.child2);
           }
@@ -786,15 +814,18 @@ namespace Box2D.NetStandard.Collision
       Stack<int> stack = new Stack<int>(256);
       stack.Push(m_root);
 
-      while (stack.Count > 0) {
+      while (stack.Count > 0)
+      {
         int nodeId = stack.Pop();
-        if (nodeId == -1) {
+        if (nodeId == -1)
+        {
           continue;
         }
 
         TreeNode node = m_nodes[nodeId];
 
-        if (Collision.TestOverlap(node.aabb, segmentAABB) == false) {
+        if (Collision.TestOverlap(node.aabb, segmentAABB) == false)
+        {
           continue;
         }
 
@@ -803,11 +834,13 @@ namespace Box2D.NetStandard.Collision
         Vector2 c = node.aabb.GetCenter();
         Vector2 h = node.aabb.GetExtents();
         float separation = MathF.Abs(Vector2.Dot(v, p1 - c)) - Vector2.Dot(abs_v, h);
-        if (separation > 0.0f) {
+        if (separation > 0.0f)
+        {
           continue;
         }
 
-        if (node.IsLeaf()) {
+        if (node.IsLeaf())
+        {
           RayCastInput subInput;
           subInput.p1 = input.p1;
           subInput.p2 = input.p2;
@@ -815,12 +848,14 @@ namespace Box2D.NetStandard.Collision
 
           float value = RayCastCallback(subInput, nodeId);
 
-          if (value == 0.0f) {
+          if (value == 0.0f)
+          {
             // The client has terminated the ray cast.
             return;
           }
 
-          if (value > 0.0f) {
+          if (value > 0.0f)
+          {
             // Update segment bounding box.
             maxFraction = value;
             Vector2 t = p1 + maxFraction * (p2 - p1);
@@ -828,7 +863,8 @@ namespace Box2D.NetStandard.Collision
             segmentAABB.upperBound = Vector2.Max(p1, t);
           }
         }
-        else {
+        else
+        {
           stack.Push(node.child1);
           stack.Push(node.child2);
         }

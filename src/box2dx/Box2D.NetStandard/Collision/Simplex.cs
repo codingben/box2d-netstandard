@@ -33,8 +33,9 @@ namespace Box2D.NetStandard.Collision {
   internal class Simplex {
     internal readonly SimplexVertex[] m_v;
 
-    public Simplex() {
-      m_v = new[] {new SimplexVertex(), new SimplexVertex(), new SimplexVertex()};
+    public Simplex()
+    {
+      m_v = new SimplexVertex[3];// {new SimplexVertex(), new SimplexVertex(), new SimplexVertex()};
     }
 
     private SimplexVertex m_v1 {
@@ -99,7 +100,7 @@ namespace Box2D.NetStandard.Collision {
         m_count = 1;
       }
     }
-
+    
     internal void WriteCache(SimplexCache cache) {
       cache.metric = GetMetric();
       cache.count  = (ushort) m_count;
@@ -110,6 +111,7 @@ namespace Box2D.NetStandard.Collision {
       }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Vector2 GetSearchDirection() {
       switch (m_count) {
         case 1:
@@ -128,6 +130,7 @@ namespace Box2D.NetStandard.Collision {
       }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Vector2 GetClosestPoint() {
       switch (m_count) {
         case 0:
@@ -145,6 +148,7 @@ namespace Box2D.NetStandard.Collision {
       }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void GetWitnessPoints(out Vector2 pA, out Vector2 pB) {
       switch (m_count) {
         case 1:
@@ -210,6 +214,7 @@ namespace Box2D.NetStandard.Collision {
     // Solution
     // a1 = d12_1 / d12
     // a2 = d12_2 / d12
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Solve2() {
       Vector2 w1  = m_v1.w;
       Vector2 w2  = m_v2.w;
@@ -246,6 +251,7 @@ namespace Box2D.NetStandard.Collision {
     // - edge points[0]-points[2]
     // - edge points[1]-points[2]
     // - inside the triangle
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Solve3() {
       Vector2 w1 = m_v1.w;
       Vector2 w2 = m_v2.w;

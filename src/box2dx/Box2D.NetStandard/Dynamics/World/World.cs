@@ -918,8 +918,8 @@ namespace Box2D.NetStandard.Dynamics.World {
     /// and constraint solution.
     /// </summary>
     /// <param name="dt">The amount of time to simulate, this should not vary.</param>
-    /// <param name="iterations">For the velocity constraint solver.</param>
-    /// <param name="iterations">For the positionconstraint solver.</param>
+    /// <param name="velocityIterations">Iterations for the velocity constraint solver.</param>
+    /// <param name="positionIterations">Iterations for the position constraint solver.</param>
     public void Step(float dt, int velocityIterations, int positionIterations) {
       if (m_newContacts) {
         m_contactManager.FindNewContacts();

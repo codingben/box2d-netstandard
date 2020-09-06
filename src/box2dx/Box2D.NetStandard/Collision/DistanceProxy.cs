@@ -81,7 +81,6 @@ namespace Box2D.NetStandard.Collision {
       }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetSupport(Vector2 d) {
       int   bestIndex = 0;
       float bestValue = Vector2.Dot(_vertices[0], d);

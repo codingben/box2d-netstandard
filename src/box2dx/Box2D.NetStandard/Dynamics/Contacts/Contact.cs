@@ -314,8 +314,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 
       Body bodyA = m_fixtureA.Body;
       Body bodyB = m_fixtureB.Body;
-      Transform xfA = bodyA.GetTransform();
-      Transform xfB = bodyB.GetTransform();
+      Transform xfA = bodyA.Transform;
+      Transform xfB = bodyB.Transform;
 
       // Is this contact a sensor?
       if (sensor) {

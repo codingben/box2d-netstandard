@@ -63,16 +63,19 @@ namespace Box2D.NetStandard.Collision {
     }
     
     /// Get the center of the AABB.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Vector2 GetCenter() {
       return 0.5f * (lowerBound + upperBound);
     }
 
     /// Get the extents of the AABB (half-widths).
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Vector2 GetExtents() {
       return 0.5f * (upperBound - lowerBound);
     }
 
     /// Get the perimeter length
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal float GetPerimeter() {
       float wx = upperBound.X - lowerBound.X;
       float wy = upperBound.Y - lowerBound.Y;
@@ -80,18 +83,21 @@ namespace Box2D.NetStandard.Collision {
     }
 
     /// Combine an AABB into this one.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void Combine(in AABB aabb) {
       lowerBound = Vector2.Min(lowerBound, aabb.lowerBound);
       upperBound = Vector2.Max(upperBound, aabb.upperBound);
     }
 
     /// Combine two AABBs into this one.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Combine(in AABB aabb1, in AABB aabb2) {
       lowerBound = Vector2.Min(aabb1.lowerBound, aabb2.lowerBound);
       upperBound = Vector2.Max(aabb1.upperBound, aabb2.upperBound);
     }
 
     /// Does this aabb contain the provided AABB.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal bool Contains(in AABB aabb) {
       bool result = true;
       result = result && lowerBound.X      <= aabb.lowerBound.X;

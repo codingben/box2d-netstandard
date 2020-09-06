@@ -384,7 +384,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
           // For bodies with fixed rotation.
           k22 = 1.0f;
         }
-        m_k = new Matrix3x2((float)k11, (float)k12, (float)k12, (float)k22,0,0);
+        m_k = new Matrix3x2(k11, k12, k12, k22,0,0);
       }
 
       if (m_enableLimit) {
@@ -600,7 +600,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic {
         Vector3 C = new Vector3();
         C.X = C1.X;
         C.Y = C1.Y;
-        C.Z = (float)C2;
+        C.Z = C2;
 
         impulse = K.Solve33(-C);
       }

@@ -154,7 +154,7 @@ using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 
 namespace Box2D.NetStandard.Dynamics.World {
-  public class Island : IDisposable {
+  public class Island {
     private readonly ContactListener m_listener;
 
     internal Body[]    m_bodies;
@@ -185,15 +185,6 @@ namespace Box2D.NetStandard.Dynamics.World {
       m_positions  = new Position[m_bodyCapacity];
     }
 
-    public void Dispose() {
-      // Warning: the order should reverse the constructor order.
-      m_positions  = null;
-      m_velocities = null;
-      m_joints     = null;
-      m_contacts   = null;
-      m_bodies     = null;
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Clear() {
       m_bodyCount    = 0;
@@ -204,21 +195,23 @@ namespace Box2D.NetStandard.Dynamics.World {
     internal void Solve(in TimeStep step, in Vector2 gravity, bool allowSleep) {
       float h = step.dt;
       // Integrate velocities and apply damping.
-      for (int i = 0; i < m_bodyCount; ++i) {
+      for (int i = 0; i < m_bodyCount; ++i)
+      {
         Body b = m_bodies[i];
 
         Vector2 c = b.m_sweep.c;
-        float   a = b.m_sweep.a;
+        float a = b.m_sweep.a;
         Vector2 v = b.m_linearVelocity;
-        float   w = b.m_angularVelocity;
+        float w = b.m_angularVelocity;
 
         b.m_sweep.c0 = b.m_sweep.c;
         b.m_sweep.a0 = b.m_sweep.a;
 
-        if (b.m_type == BodyType.Dynamic) {
+        if (b.m_type == BodyType.Dynamic)
+        {
           // Integrate velocities.
           v += h * b.m_invMass * (b.m_gravityScale * b.m_mass * gravity + b.m_force);
-          w += h * b.m_invI    * b.m_torque;
+          w += h * b.m_invI * b.m_torque;
 
           // Apply damping.
           // ODE: dv/dt + c * v = 0
@@ -232,12 +225,11 @@ namespace Box2D.NetStandard.Dynamics.World {
           w *= 1.0f / (1.0f + h * b.m_angularDamping);
         }
 
-        m_positions[i].c  = c;
-        m_positions[i].a  = a;
+        m_positions[i].c = c;
+        m_positions[i].a = a;
         m_velocities[i].v = v;
         m_velocities[i].w = w;
       }
-
 
       // Solver data
       SolverData solverData = new SolverData();

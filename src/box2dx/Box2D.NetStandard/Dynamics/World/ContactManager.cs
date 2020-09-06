@@ -193,10 +193,10 @@ namespace Box2D.NetStandard.Dynamics.World {
       ContactEdge edge = bodyB.GetContactList();
       while (edge != null) {
         if (edge.other == bodyA) {
-          Fixture fA = edge.contact.GetFixtureA();
-          Fixture fB = edge.contact.GetFixtureB();
-          int     iA = edge.contact.GetChildIndexA();
-          int     iB = edge.contact.GetChildIndexB();
+          Fixture fA = edge.contact.FixtureA;
+          Fixture fB = edge.contact.FixtureB;
+          int     iA = edge.contact.ChildIndexA;
+          int     iB = edge.contact.ChildIndexB;
 
           if (fA == fixtureA && fB == fixtureB && iA == indexA && iB == indexB) {
             // A contact already exists.
@@ -229,12 +229,12 @@ namespace Box2D.NetStandard.Dynamics.World {
       }
 
       // Contact creation may swap fixtures.
-      fixtureA = c.GetFixtureA();
-      fixtureB = c.GetFixtureB();
-      indexA   = c.GetChildIndexA();
-      indexB   = c.GetChildIndexB();
-      bodyA    = fixtureA.GetBody();
-      bodyB    = fixtureB.GetBody();
+      fixtureA = c.FixtureA;
+      fixtureB = c.FixtureB;
+      indexA   = c.ChildIndexA;
+      indexB   = c.ChildIndexB;
+      bodyA    = fixtureA.Body;
+      bodyB    = fixtureB.Body;
 
       // Insert into the world.
       c.m_prev = null;

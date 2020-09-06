@@ -26,10 +26,12 @@
 */
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Collision {
   class TreeNode
   {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal bool IsLeaf() 
     {
       return child1 == -1;
