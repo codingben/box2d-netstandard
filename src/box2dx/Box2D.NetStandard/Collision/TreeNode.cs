@@ -25,34 +25,27 @@
 // SOFTWARE.
 */
 
-using System;
 using System.Runtime.CompilerServices;
 
-namespace Box2D.NetStandard.Collision {
-  class TreeNode
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal bool IsLeaf() 
-    {
-      return child1 == -1;
-    }
+namespace Box2D.NetStandard.Collision
+{
+	internal class TreeNode
+	{
+		internal AABB aabb;
+		internal int child1;
 
-    /// Enlarged AABB
-    
-    
-    internal pnUnion pn;
+		internal int child2;
 
-    internal AABB aabb;
+		// leaf = 0, free node = -1
+		internal int height;
+		internal bool moved;
 
-    internal Int32 child1;
-    internal Int32 child2;
+		/// Enlarged AABB
+		internal pnUnion pn;
 
-    // leaf = 0, free node = -1
-    internal Int32 height;
+		internal object userData;
 
-    internal bool moved;
-    
-    internal object userData;
-
-  };
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal bool IsLeaf() => child1 == -1;
+	}
 }

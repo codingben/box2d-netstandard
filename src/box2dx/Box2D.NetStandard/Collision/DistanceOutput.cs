@@ -27,26 +27,28 @@
 
 using System.Numerics;
 
-namespace Box2D.NetStandard.Collision {
+namespace Box2D.NetStandard.Collision
+{
   /// <summary>
-  /// Output for Distance.
+  ///  Output for Distance.
   /// </summary>
-  public struct DistanceOutput {
+  public struct DistanceOutput
+	{
     /// <summary>
-    /// Closest point on shapeA.
+    ///  Closest point on shapeA.
     /// </summary>
     public Vector2 pointA;
 
     /// <summary>
-    /// Closest point on shapeB.
+    ///  Closest point on shapeB.
     /// </summary>
     public Vector2 pointB;
 
-    public float distance;
+		public float distance;
 
     /// <summary>
-    /// Number of GJK iterations used.
+    ///  Number of GJK iterations used.
     /// </summary>
     public int iterations;
-  }
+	}
 }
