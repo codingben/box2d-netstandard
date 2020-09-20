@@ -29,18 +29,20 @@ using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision
 {
-    /// <summary>
-    /// Inpute parameters for TimeOfImpact
-    /// </summary>
-    internal struct TOIInput
-    {
-        internal Sweep sweepA;
-        internal Sweep sweepB;
-        // internal float         sweepRadiusA;
-        // internal float         sweepRadiusB;
-        // internal float         tolerance;
-        internal DistanceProxy proxyA;
-        internal DistanceProxy proxyB;
-        internal float tMax;
-    }
+	/// <summary>
+	///  Inpute parameters for TimeOfImpact
+	/// </summary>
+	internal struct TOIInput
+	{
+		internal Sweep sweepA;
+
+		internal Sweep sweepB;
+
+		// internal float         sweepRadiusA;
+		// internal float         sweepRadiusB;
+		// internal float         tolerance;
+		internal DistanceProxy proxyA;
+		internal DistanceProxy proxyB;
+		internal float tMax;
+	}
 }

@@ -26,33 +26,31 @@
 */
 
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
-    /// <summary>
-    /// A shape is used for collision detection. You can create a shape however you like.
-    /// Shapes used for simulation in World are created automatically when a Fixture is created.
-    /// </summary>
-    public abstract class Shape
-    {
-        internal abstract byte ContactMatch { get; }
+	/// <summary>
+	///  A shape is used for collision detection. You can create a shape however you like.
+	///  Shapes used for simulation in World are created automatically when a Fixture is created.
+	/// </summary>
+	public abstract class Shape
+	{
+		internal float m_radius;
+		internal abstract byte ContactMatch { get; }
 
-        public abstract Shape Clone();
-        public abstract int GetChildCount();
-        public abstract bool TestPoint(in Transform xf, in Vector2 p);
+		public abstract Shape Clone();
+		public abstract int GetChildCount();
+		public abstract bool TestPoint(in Transform xf, in Vector2 p);
 
-        public abstract bool RayCast(
-          out RayCastOutput output,
-          in RayCastInput input,
-          in Transform transform,
-          int childIndex);
+		public abstract bool RayCast(
+			out RayCastOutput output,
+			in RayCastInput input,
+			in Transform transform,
+			int childIndex);
 
-        public abstract void ComputeAABB(out AABB aabb, in Transform xf, int childIndex);
+		public abstract void ComputeAABB(out AABB aabb, in Transform xf, int childIndex);
 
-        public abstract void ComputeMass(out MassData massData, float density);
-
-        internal float m_radius;
-    }
+		public abstract void ComputeMass(out MassData massData, float density);
+	}
 }

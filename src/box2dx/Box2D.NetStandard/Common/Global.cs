@@ -29,55 +29,55 @@ using Box2D.NetStandard.Collision;
 
 namespace Box2D.NetStandard.Common
 {
-    public class Global
-    {
-        public static void GetPointStates(
-          out PointState[] state1,
-          out PointState[] state2,
-          in Manifold manifold1,
-          in Manifold manifold2)
-        {
-            state1 = new PointState[Settings.MaxManifoldPoints];
-            state2 = new PointState[Settings.MaxManifoldPoints];
-            for (int i = 0; i < Settings.MaxManifoldPoints; ++i)
-            {
-                state1[i] = PointState.Null;
-                state2[i] = PointState.Null;
-            }
+	public class Global
+	{
+		public static void GetPointStates(
+			out PointState[] state1,
+			out PointState[] state2,
+			in Manifold manifold1,
+			in Manifold manifold2)
+		{
+			state1 = new PointState[Settings.MaxManifoldPoints];
+			state2 = new PointState[Settings.MaxManifoldPoints];
+			for (var i = 0; i < Settings.MaxManifoldPoints; ++i)
+			{
+				state1[i] = PointState.Null;
+				state2[i] = PointState.Null;
+			}
 
-            // Detect persists and removes.
-            for (int i = 0; i < manifold1.pointCount; ++i)
-            {
-                ContactID id = manifold1.points[i].id;
+			// Detect persists and removes.
+			for (var i = 0; i < manifold1.pointCount; ++i)
+			{
+				ContactID id = manifold1.points[i].id;
 
-                state1[i] = PointState.Remove;
+				state1[i] = PointState.Remove;
 
-                for (int j = 0; j < manifold2.pointCount; ++j)
-                {
-                    if (manifold2.points[j].id.key == id.key)
-                    {
-                        state1[i] = PointState.Persist;
-                        break;
-                    }
-                }
-            }
+				for (var j = 0; j < manifold2.pointCount; ++j)
+				{
+					if (manifold2.points[j].id.key == id.key)
+					{
+						state1[i] = PointState.Persist;
+						break;
+					}
+				}
+			}
 
-            // Detect persists and adds.
-            for (int i = 0; i < manifold2.pointCount; ++i)
-            {
-                ContactID id = manifold2.points[i].id;
+			// Detect persists and adds.
+			for (var i = 0; i < manifold2.pointCount; ++i)
+			{
+				ContactID id = manifold2.points[i].id;
 
-                state2[i] = PointState.Add;
+				state2[i] = PointState.Add;
 
-                for (int j = 0; j < manifold1.pointCount; ++j)
-                {
-                    if (manifold1.points[j].id.key == id.key)
-                    {
-                        state2[i] = PointState.Persist;
-                        break;
-                    }
-                }
-            }
-        }
-    }
+				for (var j = 0; j < manifold1.pointCount; ++j)
+				{
+					if (manifold1.points[j].id.key == id.key)
+					{
+						state2[i] = PointState.Persist;
+						break;
+					}
+				}
+			}
+		}
+	}
 }

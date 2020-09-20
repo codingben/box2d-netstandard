@@ -31,44 +31,44 @@ using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Common
 {
-    public struct Sweep
-    {
-        public Vector2 localCenter; //local center of mass position
-        public Vector2 c0, c; //local center of mass position
-        public float a0, a; //world angles
-        public float alpha0;
+	public struct Sweep
+	{
+		public Vector2 localCenter; //local center of mass position
+		public Vector2 c0, c;       //local center of mass position
+		public float a0, a;         //world angles
+		public float alpha0;
 
-        /// <summary>
-        /// Get the interpolated transform at a specific time.
-        /// </summary>
-        /// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void GetTransform(out Transform xf, in float beta)
-        {
-            xf.p = c0 + beta * (c - c0);
-            float angle = a0 + beta * (a - a0);
-            xf.q = Matrex.CreateRotation(angle);
-            xf.p -= Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
-        }
+		/// <summary>
+		///  Get the interpolated transform at a specific time.
+		/// </summary>
+		/// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void GetTransform(out Transform xf, in float beta)
+		{
+			xf.p = c0 + beta * (c - c0);
+			float angle = a0 + beta * (a - a0);
+			xf.q = Matrex.CreateRotation(angle);
+			xf.p -= Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
+		}
 
-        /// <summary>
-        /// Advance the sweep forward, yielding a new initial state.
-        /// </summary>
-        /// <param name="t">The new initial time.</param>
-        public void Advance(float alpha)
-        {
-            //Debug.Assert(alpha0 < 1.0f);
-            float beta = (alpha - alpha0) / (1.0f - alpha0);
-            c0 += beta * (c - c0);
-            a0 += beta * (a - a0);
-            alpha0 = alpha;
-        }
+		/// <summary>
+		///  Advance the sweep forward, yielding a new initial state.
+		/// </summary>
+		/// <param name="t">The new initial time.</param>
+		public void Advance(float alpha)
+		{
+			//Debug.Assert(alpha0 < 1.0f);
+			float beta = (alpha - alpha0) / (1.0f - alpha0);
+			c0 += beta * (c - c0);
+			a0 += beta * (a - a0);
+			alpha0 = alpha;
+		}
 
-        public void Normalize()
-        {
-            float d = Settings.Tau * MathF.Floor(a0 / Settings.Tau);
-            a0 -= d;
-            a -= d;
-        }
-    }
+		public void Normalize()
+		{
+			float d = Settings.Tau * MathF.Floor(a0 / Settings.Tau);
+			a0 -= d;
+			a -= d;
+		}
+	}
 }

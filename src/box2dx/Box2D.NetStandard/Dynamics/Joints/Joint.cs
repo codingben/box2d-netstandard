@@ -41,226 +41,222 @@ using Box2D.NetStandard.Dynamics.World.Callbacks;
 
 namespace Box2D.NetStandard.Dynamics.Joints
 {
-    /// <summary>
-    /// The base joint class. Joints are used to constraint two bodies together in
-    /// various fashions. Some joints also feature limits and motors.
-    /// </summary>
-    public abstract class Joint
-    {
-        internal Joint m_prev;
-        internal Joint m_next;
-        internal readonly JointEdge m_edgeA = new JointEdge();
-        internal readonly JointEdge m_edgeB = new JointEdge();
-        internal Body m_bodyA;
-        internal Body m_bodyB;
+	/// <summary>
+	///  The base joint class. Joints are used to constraint two bodies together in
+	///  various fashions. Some joints also feature limits and motors.
+	/// </summary>
+	public abstract class Joint
+	{
+		internal readonly bool m_collideConnected;
+		internal readonly JointEdge m_edgeA = new JointEdge();
+		internal readonly JointEdge m_edgeB = new JointEdge();
+		internal Body m_bodyA;
+		internal Body m_bodyB;
+		protected float m_invMass1, m_invI1;
+		protected float m_invMass2, m_invI2;
 
-        internal bool m_islandFlag;
-        internal readonly bool m_collideConnected;
+		internal bool m_islandFlag;
 
-        // Cache here per time step to reduce cache misses.
-        protected Vector2 m_localCenter1, m_localCenter2;
-        protected float m_invMass1, m_invI1;
-        protected float m_invMass2, m_invI2;
+		// Cache here per time step to reduce cache misses.
+		protected Vector2 m_localCenter1, m_localCenter2;
+		internal Joint m_next;
+		internal Joint m_prev;
 
-        private object m_userData;
+		protected Joint(JointDef def)
+		{
+			m_prev = null;
+			m_next = null;
+			m_bodyA = def.bodyA;
+			m_bodyB = def.bodyB;
+			m_collideConnected = def.collideConnected;
+			m_islandFlag = false;
+			UserData = def.UserData;
+		}
 
-        public static void LinearStiffness(
-          out float stiffness,
-          out float damping,
-          in float frequencyHz,
-          in float dampingRatio,
-          in Body bodyA,
-          in Body bodyB)
-        {
-            float massA = bodyA.GetMass();
-            float massB = bodyB.GetMass();
-            float mass;
+		/// <summary>
+		///  Get the anchor point on body1 in world coordinates.
+		/// </summary>
+		/// <returns></returns>
+		public abstract Vector2 GetAnchorA { get; }
 
-            if (massA > 0.0f && massB > 0.0f)
-            {
-                mass = massA * massB / (massA + massB);
-            }
-            else if (massA > 0.0f)
-            {
-                mass = massA;
-            }
-            else
-            {
-                mass = massB;
-            }
+		/// <summary>
+		///  Get the anchor point on body2 in world coordinates.
+		/// </summary>
+		/// <returns></returns>
+		public abstract Vector2 GetAnchorB { get; }
 
-            float omega = 2.0f * Settings.Pi * frequencyHz;
-            stiffness = mass * omega * omega;
-            damping = 2.0f * mass * dampingRatio * omega;
-        }
+		/// <summary>
+		///  Get/Set the user data pointer.
+		/// </summary>
+		/// <returns></returns>
+		public object UserData
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set;
+		}
 
-        public static void AngularStiffness(
-          out float stiffness,
-          out float damping,
-          in float frequencyHz,
-          in float dampingRatio,
-          in Body bodyA,
-          in Body bodyB)
-        {
-            float IA = bodyA.GetInertia();
-            float IB = bodyB.GetInertia();
-            float I;
+		public static void LinearStiffness(
+			out float stiffness,
+			out float damping,
+			in float frequencyHz,
+			in float dampingRatio,
+			in Body bodyA,
+			in Body bodyB)
+		{
+			float massA = bodyA.GetMass();
+			float massB = bodyB.GetMass();
+			float mass;
 
-            if (IA > 0.0f && IB > 0.0f)
-            {
-                I = IA * IB / (IA + IB);
-            }
-            else if (IA > 0.0f)
-            {
-                I = IA;
-            }
-            else
-            {
-                I = IB;
-            }
+			if (massA > 0.0f && massB > 0.0f)
+			{
+				mass = massA * massB / (massA + massB);
+			}
+			else if (massA > 0.0f)
+			{
+				mass = massA;
+			}
+			else
+			{
+				mass = massB;
+			}
 
-            float omega = 2.0f * Settings.Pi * frequencyHz;
-            stiffness = I * omega * omega;
-            damping = 2.0f * I * dampingRatio * omega;
-        }
+			float omega = 2.0f * Settings.Pi * frequencyHz;
+			stiffness = mass * omega * omega;
+			damping = 2.0f * mass * dampingRatio * omega;
+		}
 
-        /// <summary>
-        /// Get the first body attached to this joint.
-        /// </summary>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Body GetBodyA() => m_bodyA;
+		public static void AngularStiffness(
+			out float stiffness,
+			out float damping,
+			in float frequencyHz,
+			in float dampingRatio,
+			in Body bodyA,
+			in Body bodyB)
+		{
+			float IA = bodyA.GetInertia();
+			float IB = bodyB.GetInertia();
+			float I;
 
-        /// <summary>
-        /// Get the second body attached to this joint.
-        /// </summary>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Body GetBodyB() => m_bodyB;
+			if (IA > 0.0f && IB > 0.0f)
+			{
+				I = IA * IB / (IA + IB);
+			}
+			else if (IA > 0.0f)
+			{
+				I = IA;
+			}
+			else
+			{
+				I = IB;
+			}
 
-        /// <summary>
-        /// Get the anchor point on body1 in world coordinates.
-        /// </summary>
-        /// <returns></returns>
-        public abstract Vector2 GetAnchorA { get; }
+			float omega = 2.0f * Settings.Pi * frequencyHz;
+			stiffness = I * omega * omega;
+			damping = 2.0f * I * dampingRatio * omega;
+		}
 
-        /// <summary>
-        /// Get the anchor point on body2 in world coordinates.
-        /// </summary>
-        /// <returns></returns>
-        public abstract Vector2 GetAnchorB { get; }
+		/// <summary>
+		///  Get the first body attached to this joint.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Body GetBodyA() => m_bodyA;
 
-        /// <summary>
-        /// Get the reaction force on body2 at the joint anchor.
-        /// </summary>		
-        public abstract Vector2 GetReactionForce(float inv_dt);
+		/// <summary>
+		///  Get the second body attached to this joint.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Body GetBodyB() => m_bodyB;
 
-        /// <summary>
-        /// Get the reaction torque on body2.
-        /// </summary>		
-        public abstract float GetReactionTorque(float inv_dt);
+		/// <summary>
+		///  Get the reaction force on body2 at the joint anchor.
+		/// </summary>
+		public abstract Vector2 GetReactionForce(float inv_dt);
 
-        /// <summary>
-        /// Get the next joint the world joint list.
-        /// </summary>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Joint GetNext() => m_next;
+		/// <summary>
+		///  Get the reaction torque on body2.
+		/// </summary>
+		public abstract float GetReactionTorque(float inv_dt);
 
-        /// <summary>
-        /// Get/Set the user data pointer.
-        /// </summary>
-        /// <returns></returns>
-        public object UserData
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => m_userData;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => m_userData = value;
-        }
+		/// <summary>
+		///  Get the next joint the world joint list.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Joint GetNext() => m_next;
 
-        protected Joint(JointDef def)
-        {
-            m_prev = null;
-            m_next = null;
-            m_bodyA = def.bodyA;
-            m_bodyB = def.bodyB;
-            m_collideConnected = def.collideConnected;
-            m_islandFlag = false;
-            m_userData = def.UserData;
-        }
+		internal static Joint Create(JointDef def)
+		{
+			return def switch
+			       {
+				       DistanceJointDef d  => new DistanceJoint(d),
+				       MouseJointDef d     => new MouseJoint(d),
+				       PrismaticJointDef d => new PrismaticJoint(d),
+				       RevoluteJointDef d  => new RevoluteJoint(d),
+				       PulleyJointDef d    => new PulleyJoint(d),
+				       GearJointDef d      => new GearJoint(d),
+				       WheelJointDef d     => new WheelJoint(d)
+			       };
+		}
 
-        internal static Joint Create(JointDef def)
-        {
-            return def switch
-            {
-                DistanceJointDef d => new DistanceJoint(d),
-                MouseJointDef d => new MouseJoint(d),
-                PrismaticJointDef d => new PrismaticJoint(d),
-                RevoluteJointDef d => new RevoluteJoint(d),
-                PulleyJointDef d => new PulleyJoint(d),
-                GearJointDef d => new GearJoint(d),
-                WheelJointDef d => new WheelJoint(d),
-            };
-        }
+		internal abstract void InitVelocityConstraints(in SolverData data);
+		internal abstract void SolveVelocityConstraints(in SolverData data);
 
-        internal abstract void InitVelocityConstraints(in SolverData data);
-        internal abstract void SolveVelocityConstraints(in SolverData data);
+		// This returns true if the position errors are within tolerance.
+		internal abstract bool SolvePositionConstraints(in SolverData data);
 
-        // This returns true if the position errors are within tolerance.
-        internal abstract bool SolvePositionConstraints(in SolverData data);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void ComputeXForm(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
+		{
+			xf.q = Matrex.CreateRotation(angle);                  // Actually about twice as fast to use our own function
+			xf.p = center - Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
+		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void ComputeXForm(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
-        {
-            xf.q = Matrex.CreateRotation(angle);                  // Actually about twice as fast to use our own function
-            xf.p = center - Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
-        }
+		public void Draw(DebugDraw draw)
+		{
+			Transform xf1 = m_bodyA.GetTransform();
+			Transform xf2 = m_bodyB.GetTransform();
+			Vector2 x1 = xf1.p;
+			Vector2 x2 = xf2.p;
+			Vector2 p1 = GetAnchorA;
+			Vector2 p2 = GetAnchorB;
 
-        public void Draw(DebugDraw draw)
-        {
-            Transform xf1 = m_bodyA.GetTransform();
-            Transform xf2 = m_bodyB.GetTransform();
-            Vector2 x1 = xf1.p;
-            Vector2 x2 = xf2.p;
-            Vector2 p1 = GetAnchorA;
-            Vector2 p2 = GetAnchorB;
+			var color = new Color(0.5f, 0.8f, 0.8f);
 
-            Color color = new Color(0.5f, 0.8f, 0.8f);
+			switch (this)
+			{
+				case DistanceJoint j:
+					draw.DrawSegment(p1, p2, color);
+					break;
+				case PulleyJoint pulley: {
+					Vector2 s1 = pulley.GroundAnchorA;
+					Vector2 s2 = pulley.GroundAnchorB;
+					draw.DrawSegment(s1, p1, color);
+					draw.DrawSegment(s2, p2, color);
+					draw.DrawSegment(s1, s2, color);
+				}
+					break;
 
-            switch (this)
-            {
-                case DistanceJoint j:
-                    draw.DrawSegment(p1, p2, color);
-                    break;
-                case PulleyJoint pulley:
-                    {
-                        Vector2 s1 = pulley.GroundAnchorA;
-                        Vector2 s2 = pulley.GroundAnchorB;
-                        draw.DrawSegment(s1, p1, color);
-                        draw.DrawSegment(s2, p2, color);
-                        draw.DrawSegment(s1, s2, color);
-                    }
-                    break;
+				case MouseJoint j: {
+					var c = new Color();
+					c.Set(0.0f, 1.0f, 0.0f);
+					draw.DrawPoint(p1, 4.0f, c);
+					draw.DrawPoint(p2, 4.0f, c);
 
-                case MouseJoint j:
-                    {
-                        Color c = new Color();
-                        c.Set(0.0f, 1.0f, 0.0f);
-                        draw.DrawPoint(p1, 4.0f, c);
-                        draw.DrawPoint(p2, 4.0f, c);
+					c.Set(0.8f, 0.8f, 0.8f);
+					draw.DrawSegment(p1, p2, c);
+				}
+					break;
 
-                        c.Set(0.8f, 0.8f, 0.8f);
-                        draw.DrawSegment(p1, p2, c);
-                    }
-                    break;
-
-                default:
-                    draw.DrawSegment(x1, p1, color);
-                    draw.DrawSegment(p1, p2, color);
-                    draw.DrawSegment(x2, p2, color);
-                    break;
-            }
-        }
-    }
+				default:
+					draw.DrawSegment(x1, p1, color);
+					draw.DrawSegment(p1, p2, color);
+					draw.DrawSegment(x2, p2, color);
+					break;
+			}
+		}
+	}
 }

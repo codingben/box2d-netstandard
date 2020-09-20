@@ -32,108 +32,106 @@ using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
-    /// <summary>
-    /// A circle shape.
-    /// </summary>
-    public class CircleShape : Shape
-    {
-        internal Vector2 m_p;
+	/// <summary>
+	///  A circle shape.
+	/// </summary>
+	public class CircleShape : Shape
+	{
+		internal const byte contactMatch = 0;
+		internal Vector2 m_p;
 
-        public CircleShape()
-        {
-            m_radius = 0;
-            m_p = Vector2.Zero;
-        }
+		public CircleShape()
+		{
+			m_radius = 0;
+			m_p = Vector2.Zero;
+		}
 
-        public Vector2 Center
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => m_p;
-            set => m_p = value;
-        }
+		public Vector2 Center
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => m_p;
+			set => m_p = value;
+		}
 
-        public float Radius
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => m_radius;
-            set => m_radius = value;
-        }
+		public float Radius
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => m_radius;
+			set => m_radius = value;
+		}
 
-        internal const byte contactMatch = 0;
-        internal override byte ContactMatch => contactMatch;
-        public override Shape Clone()
-        {
-            return (CircleShape)MemberwiseClone();
-        }
+		internal override byte ContactMatch => contactMatch;
 
-        public override int GetChildCount() => 1;
+		public override Shape Clone() => (CircleShape) MemberwiseClone();
 
-        public override bool TestPoint(in Transform transform, in Vector2 p)
-        {
-            Vector2 center = transform.p + Vector2.Transform(m_p, transform.q);//   Math.Mul(transform.q, m_p);
-            Vector2 d = p - center;
-            return Vector2.Dot(d, d) <= m_radius * m_radius;
-        }
+		public override int GetChildCount() => 1;
 
-        public override bool RayCast(
-            out RayCastOutput output,
-            in RayCastInput input,
-            in Transform transform,
-            int childIndex)
-        {
-            output = default;
+		public override bool TestPoint(in Transform transform, in Vector2 p)
+		{
+			Vector2 center = transform.p + Vector2.Transform(m_p, transform.q); //   Math.Mul(transform.q, m_p);
+			Vector2 d = p - center;
+			return Vector2.Dot(d, d) <= m_radius * m_radius;
+		}
 
-            Vector2 position = transform.p + Vector2.Transform(m_p, transform.q); // Math.Mul(transform.q, m_p);
-            Vector2 s = input.p1 - position;
-            float b = Vector2.Dot(s, s) - m_radius * m_radius;
+		public override bool RayCast(
+			out RayCastOutput output,
+			in RayCastInput input,
+			in Transform transform,
+			int childIndex)
+		{
+			output = default;
 
-            // Solve quadratic equation.
-            Vector2 r = input.p2 - input.p1;
-            float c = Vector2.Dot(s, r);
-            float rr = Vector2.Dot(r, r);
-            float sigma = c * c - rr * b;
+			Vector2 position = transform.p + Vector2.Transform(m_p, transform.q); // Math.Mul(transform.q, m_p);
+			Vector2 s = input.p1 - position;
+			float b = Vector2.Dot(s, s) - m_radius * m_radius;
 
-            // Check for negative discriminant and short segment.
-            if (sigma < 0.0f || rr < Settings.FLT_EPSILON)
-            {
-                return false;
-            }
+			// Solve quadratic equation.
+			Vector2 r = input.p2 - input.p1;
+			float c = Vector2.Dot(s, r);
+			float rr = Vector2.Dot(r, r);
+			float sigma = c * c - rr * b;
 
-            // Find the point of intersection of the line with the circle.
-            float a = -(c + MathF.Sqrt(sigma));
+			// Check for negative discriminant and short segment.
+			if (sigma < 0.0f || rr < Settings.FLT_EPSILON)
+			{
+				return false;
+			}
 
-            // Is the intersection point on the segment?
-            if (0.0f <= a && a <= input.maxFraction * rr)
-            {
-                a /= rr;
-                output.fraction = a;
-                output.normal = Vector2.Normalize(s + a * r);
-                return true;
-            }
+			// Find the point of intersection of the line with the circle.
+			float a = -(c + MathF.Sqrt(sigma));
 
-            return false;
-        }
+			// Is the intersection point on the segment?
+			if (0.0f <= a && a <= input.maxFraction * rr)
+			{
+				a /= rr;
+				output.fraction = a;
+				output.normal = Vector2.Normalize(s + a * r);
+				return true;
+			}
 
-        public override void ComputeAABB(out AABB aabb, in Transform transform, int childIndex)
-        {
-            Vector2 p = transform.p + Vector2.Transform(m_p, transform.q); // Math.Mul(transform.q, m_p);
-            aabb.lowerBound = new Vector2(p.X - m_radius, p.Y - m_radius);
-            aabb.upperBound = new Vector2(p.X + m_radius, p.Y + m_radius);
-        }
+			return false;
+		}
 
-        public override void ComputeMass(out MassData massData, float density)
-        {
-            massData.mass = density * Settings.Pi * m_radius * m_radius;
-            massData.center = m_p;
+		public override void ComputeAABB(out AABB aabb, in Transform transform, int childIndex)
+		{
+			Vector2 p = transform.p + Vector2.Transform(m_p, transform.q); // Math.Mul(transform.q, m_p);
+			aabb.lowerBound = new Vector2(p.X - m_radius, p.Y - m_radius);
+			aabb.upperBound = new Vector2(p.X + m_radius, p.Y + m_radius);
+		}
 
-            // inertia about the local origin
-            massData.I = massData.mass * (0.5f * m_radius * m_radius + Vector2.Dot(m_p, m_p));
-        }
+		public override void ComputeMass(out MassData massData, float density)
+		{
+			massData.mass = density * Settings.Pi * m_radius * m_radius;
+			massData.center = m_p;
 
-        public void Set(in Vector2 center, in float radius)
-        {
-            m_p = center;
-            m_radius = radius;
-        }
-    }
+			// inertia about the local origin
+			massData.I = massData.mass * (0.5f * m_radius * m_radius + Vector2.Dot(m_p, m_p));
+		}
+
+		public void Set(in Vector2 center, in float radius)
+		{
+			m_p = center;
+			m_radius = radius;
+		}
+	}
 }

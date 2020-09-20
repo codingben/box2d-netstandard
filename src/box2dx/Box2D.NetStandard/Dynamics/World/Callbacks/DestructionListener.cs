@@ -33,23 +33,23 @@ using Box2D.NetStandard.Dynamics.Joints;
 
 namespace Box2D.NetStandard.Dynamics.World.Callbacks
 {
-    /// <summary>
-    /// Joints and shapes are destroyed when their associated
-    /// body is destroyed. Implement this listener so that you
-    /// may nullify references to these joints and shapes.
-    /// </summary>
-    public abstract class DestructionListener
-    {
-        /// <summary>
-        /// Called when any joint is about to be destroyed due
-        /// to the destruction of one of its attached bodies.
-        /// </summary>
-        public abstract void SayGoodbye(Joint joint);
+	/// <summary>
+	///  Joints and shapes are destroyed when their associated
+	///  body is destroyed. Implement this listener so that you
+	///  may nullify references to these joints and shapes.
+	/// </summary>
+	public abstract class DestructionListener
+	{
+		/// <summary>
+		///  Called when any joint is about to be destroyed due
+		///  to the destruction of one of its attached bodies.
+		/// </summary>
+		public abstract void SayGoodbye(Joint joint);
 
-        /// <summary>
-        /// Called when any shape is about to be destroyed due
-        /// to the destruction of its parent body.
-        /// </summary>
-        public abstract void SayGoodbye(Fixture fixture);
-    }
+		/// <summary>
+		///  Called when any shape is about to be destroyed due
+		///  to the destruction of its parent body.
+		/// </summary>
+		public abstract void SayGoodbye(Fixture fixture);
+	}
 }

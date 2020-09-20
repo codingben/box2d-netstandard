@@ -1,3 +1,4 @@
 Todo:
 
-Rope
+Rope - now called Cloth
+Updates since Box2D 2.4 Release

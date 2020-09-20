@@ -25,6 +25,7 @@
 // SOFTWARE.
 */
 
+using System.Numerics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Common;
@@ -32,15 +33,43 @@ using Box2D.NetStandard.Dynamics.Fixtures;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
-    public class CircleContact : Contact
-    {
-        private static Collider<CircleShape, CircleShape> collider = new CircleAndCircleCollider();
+	public class CircleContact : Contact
+	{
+		private readonly CircleShape circleA;
 
-        internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB)
-        {
-            collider.Collide(out manifold, (CircleShape)m_fixtureA.Shape, xfA, (CircleShape)m_fixtureB.Shape, xfB);
-        }
+		private readonly CircleShape circleB;
 
-        public CircleContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB) { }
-    }
+		public CircleContact(Fixture fA, int indexA, Fixture fB, int indexB) : base(fA, indexA, fB, indexB)
+		{
+			circleB = (CircleShape) m_fixtureB.Shape;
+			circleA = (CircleShape) m_fixtureA.Shape;
+		}
+
+		internal override void Evaluate(out Manifold manifold, in Transform xfA, in Transform xfB)
+		{
+			manifold = new Manifold();
+			//manifold.pointCount = 0;
+
+			Vector2 pA = Math.Mul(xfA, circleA.m_p);
+			Vector2 pB = Math.Mul(xfB, circleB.m_p);
+
+			Vector2 d = pB - pA;
+			float distSqr = Vector2.Dot(d, d);
+			float rA = circleA.m_radius, rB = circleB.m_radius;
+			float radius = rA + rB;
+			if (distSqr > radius * radius)
+			{
+				return;
+			}
+
+			manifold.type = ManifoldType.Circles;
+			manifold.localPoint = circleA.m_p;
+			manifold.localNormal = Vector2.Zero;
+			manifold.pointCount = 1;
+
+			manifold.points[0] = new ManifoldPoint();
+			manifold.points[0].localPoint = circleB.m_p;
+			manifold.points[0].id.key = 0;
+		}
+	}
 }

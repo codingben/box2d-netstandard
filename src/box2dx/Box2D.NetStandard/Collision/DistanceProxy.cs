@@ -32,129 +32,128 @@ using Box2D.NetStandard.Collision.Shapes;
 
 namespace Box2D.NetStandard.Collision
 {
-    public struct DistanceProxy
-    {
-        internal Vector2[] _buffer;// = new Vector2[2];
-        internal Vector2[] _vertices;
-        internal int _count;
-        internal float _radius;
+	public struct DistanceProxy
+	{
+		internal Vector2[] _buffer; // = new Vector2[2];
+		internal Vector2[] _vertices;
+		internal int _count;
+		internal float _radius;
 
-        void Set(in Vector2[] vertices, int count, float radius)
-        {
-            _vertices = vertices;
-            _count = count;
-            _radius = radius;
-        }
+		private void Set(in Vector2[] vertices, int count, float radius)
+		{
+			_vertices = vertices;
+			_count = count;
+			_radius = radius;
+		}
 
-        internal void Set(in Shape shape, in int index)
-        {
-            switch (shape)
-            {
-                case CircleShape circle:
-                    _vertices = new[] { circle.m_p };
-                    _count = 1;
-                    _radius = circle.m_radius;
-                    break;
-                case PolygonShape polygon:
-                    _vertices = polygon.m_vertices;
-                    _count = polygon.m_count;
-                    _radius = polygon.m_radius;
-                    break;
-                case ChainShape chain:
-                    _buffer = new Vector2[2];
-                    _buffer[0] = chain.m_vertices[index];
-                    if (index + 1 < chain.m_count)
-                    {
-                        _buffer[1] = chain.m_vertices[index + 1];
-                    }
-                    else
-                    {
-                        _buffer[1] = chain.m_vertices[0];
-                    }
+		internal void Set(in Shape shape, in int index)
+		{
+			switch (shape)
+			{
+				case CircleShape circle:
+					_vertices = new[] {circle.m_p};
+					_count = 1;
+					_radius = circle.m_radius;
+					break;
+				case PolygonShape polygon:
+					_vertices = polygon.m_vertices;
+					_count = polygon.m_count;
+					_radius = polygon.m_radius;
+					break;
+				case ChainShape chain:
+					_buffer = new Vector2[2];
+					_buffer[0] = chain.m_vertices[index];
+					if (index + 1 < chain.m_count)
+					{
+						_buffer[1] = chain.m_vertices[index + 1];
+					}
+					else
+					{
+						_buffer[1] = chain.m_vertices[0];
+					}
 
-                    _vertices = _buffer;
-                    _count = 2;
-                    _radius = chain.m_radius;
+					_vertices = _buffer;
+					_count = 2;
+					_radius = chain.m_radius;
 
-                    break;
-                case EdgeShape edge:
-                    _vertices = new[] { edge.m_vertex1, edge.m_vertex2 };
-                    _count = 2;
-                    _radius = edge.m_radius;
-                    break;
+					break;
+				case EdgeShape edge:
+					_vertices = new[] {edge.m_vertex1, edge.m_vertex2};
+					_count = 2;
+					_radius = edge.m_radius;
+					break;
 
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetSupport(Vector2 d)
-        {
-            int bestIndex = 0;
-            float bestValue = Vector2.Dot(_vertices[0], d);
+		public int GetSupport(Vector2 d)
+		{
+			var bestIndex = 0;
+			float bestValue = Vector2.Dot(_vertices[0], d);
 
-            for (int i = 1; i < _count; ++i)
-            {
-                float value = Vector2.Dot(_vertices[i], d);
-                if (value > bestValue)
-                {
-                    bestIndex = i;
-                    bestValue = value;
-                }
-            }
+			for (var i = 1; i < _count; ++i)
+			{
+				float value = Vector2.Dot(_vertices[i], d);
+				if (value > bestValue)
+				{
+					bestIndex = i;
+					bestValue = value;
+				}
+			}
 
-            return bestIndex;
-        }
+			return bestIndex;
+		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetVertexCount() => _count;
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetVertexCount() => _count;
 
-        public int VertexCount
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _count;
-        }
+		public int VertexCount
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _count;
+		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Vector2 GetVertex(int index) => _vertices[index];
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetVertex(int index) => _vertices[index];
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetSupport(in Vector2 d)
-        {
-            int bestIndex = 0;
-            float bestValue = Vector2.Dot(_vertices[0], d);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int GetSupport(in Vector2 d)
+		{
+			var bestIndex = 0;
+			float bestValue = Vector2.Dot(_vertices[0], d);
 
-            for (int i = 1; i < _count; ++i)
-            {
-                float value = Vector2.Dot(_vertices[i], d);
-                if (value > bestValue)
-                {
-                    bestIndex = i;
-                    bestValue = value;
-                }
-            }
+			for (var i = 1; i < _count; ++i)
+			{
+				float value = Vector2.Dot(_vertices[i], d);
+				if (value > bestValue)
+				{
+					bestIndex = i;
+					bestValue = value;
+				}
+			}
 
-            return bestIndex;
-        }
+			return bestIndex;
+		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Vector2 GetSupportVertex(in Vector2 d)
-        {
-            int bestIndex = 0;
-            float bestValue = Vector2.Dot(_vertices[0], d);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Vector2 GetSupportVertex(in Vector2 d)
+		{
+			var bestIndex = 0;
+			float bestValue = Vector2.Dot(_vertices[0], d);
 
-            for (int i = 1; i < _count; ++i)
-            {
-                float value = Vector2.Dot(_vertices[i], d);
-                if (value > bestValue)
-                {
-                    bestIndex = i;
-                    bestValue = value;
-                }
-            }
+			for (var i = 1; i < _count; ++i)
+			{
+				float value = Vector2.Dot(_vertices[i], d);
+				if (value > bestValue)
+				{
+					bestIndex = i;
+					bestValue = value;
+				}
+			}
 
-            return _vertices[bestIndex];
-        }
-    }
+			return _vertices[bestIndex];
+		}
+	}
 }

@@ -29,42 +29,42 @@ using Box2D.NetStandard.Collision.Shapes;
 
 namespace Box2D.NetStandard.Dynamics.Fixtures
 {
-    /// <summary>
-    /// A fixture definition is used to create a fixture. This class defines an
-    /// abstract fixture definition. You can reuse fixture definitions safely.
-    /// </summary>
-    public class FixtureDef
-    {
-        /// <summary>
-        /// Use this to store application specific fixture data.
-        /// </summary>
-        public object userData;
+	/// <summary>
+	///  A fixture definition is used to create a fixture. This class defines an
+	///  abstract fixture definition. You can reuse fixture definitions safely.
+	/// </summary>
+	public class FixtureDef
+	{
+		/// <summary>
+		///  The density, usually in kg/m^2.
+		/// </summary>
+		public float density;
 
-        /// <summary>
-        /// The friction coefficient, usually in the range [0,1].
-        /// </summary>
-        public float friction = 0.2f;
+		/// <summary>
+		///  Contact filtering data.
+		/// </summary>
+		public Filter filter = new Filter();
 
-        /// <summary>
-        /// The restitution (elasticity) usually in the range [0,1].
-        /// </summary>
-        public float restitution;
+		/// <summary>
+		///  The friction coefficient, usually in the range [0,1].
+		/// </summary>
+		public float friction = 0.2f;
 
-        /// <summary>
-        /// The density, usually in kg/m^2.
-        /// </summary>
-        public float density;
+		/// <summary>
+		///  A sensor shape collects contact information but never generates a collision response.
+		/// </summary>
+		public bool isSensor;
 
-        /// <summary>
-        /// A sensor shape collects contact information but never generates a collision response.
-        /// </summary>
-        public bool isSensor;
+		/// <summary>
+		///  The restitution (elasticity) usually in the range [0,1].
+		/// </summary>
+		public float restitution;
 
-        /// <summary>
-        /// Contact filtering data.
-        /// </summary>
-        public Filter filter = new Filter();
+		public Shape shape;
 
-        public Shape shape;
-    }
+		/// <summary>
+		///  Use this to store application specific fixture data.
+		/// </summary>
+		public object userData;
+	}
 }

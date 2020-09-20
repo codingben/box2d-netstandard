@@ -850,8 +850,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1146,8 +1146,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1169,8 +1169,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1192,8 +1192,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1278,8 +1278,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1301,8 +1301,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1450,9 +1450,9 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
-                    
+
+
                     fd.shape = shape;
 
                     bodies[18].CreateFixture(fd);
@@ -1473,8 +1473,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1706,8 +1706,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1729,8 +1729,8 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
+
 
                     fd.shape = shape;
 
@@ -1815,9 +1815,9 @@ namespace Box2D.WorldTests
 
                     vs[2] = new Vector2(4.565430396770254e-41f, 0.000000000000000e+00f);
                     vs[3] = new Vector2(0.000000000000000e+00f, 1.216642260551453e-01f);
-
                     shape.SetTwoSided(vs[0], vs[1]);
-                    
+
+
                     fd.shape = shape;
 
                     bodies[18].CreateFixture(fd);
