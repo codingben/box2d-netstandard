@@ -32,20 +32,20 @@ using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision
 {
-  /// <summary>
-  ///  An axis aligned bounding box.
-  /// </summary>
-  public struct AABB
+	/// <summary>
+	///  An axis aligned bounding box.
+	/// </summary>
+	public struct AABB
 	{
-    /// <summary>
-    ///  The lower vertex
-    /// </summary>
-    internal Vector2 lowerBound;
+		/// <summary>
+		///  The lower vertex
+		/// </summary>
+		internal Vector2 lowerBound;
 
-    /// <summary>
-    ///  The upper vertex
-    /// </summary>
-    internal Vector2 upperBound;
+		/// <summary>
+		///  The upper vertex
+		/// </summary>
+		internal Vector2 upperBound;
 
 		public Vector2 LowerBound
 		{

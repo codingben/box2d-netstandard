@@ -33,10 +33,10 @@ using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
-  /// <summary>
-  ///  A convex polygon. It is assumed that the interior of the polygon is to the left of each edge.
-  /// </summary>
-  public class PolygonShape : Shape
+	/// <summary>
+	///  A convex polygon. It is assumed that the interior of the polygon is to the left of each edge.
+	/// </summary>
+	public class PolygonShape : Shape
 	{
 		internal const byte contactMatch = 2;
 		internal Vector2 m_centroid;

@@ -34,10 +34,10 @@ using Box2D.NetStandard.Dynamics.World.Callbacks;
 
 namespace Box2D.NetStandard.Dynamics.World
 {
-  /// <summary>
-  ///  Delegate of World.
-  /// </summary>
-  internal class ContactManager
+	/// <summary>
+	///  Delegate of World.
+	/// </summary>
+	internal class ContactManager
 	{
 		internal BroadPhase m_broadPhase;
 		internal int m_contactCount;

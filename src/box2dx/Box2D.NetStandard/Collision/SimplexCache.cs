@@ -30,11 +30,11 @@
 
 namespace Box2D.NetStandard.Collision
 {
-  /// <summary>
-  ///  Used to warm start Distance.
-  ///  Set count to zero on first call.
-  /// </summary>
-  public class SimplexCache
+	/// <summary>
+	///  Used to warm start Distance.
+	///  Set count to zero on first call.
+	/// </summary>
+	public class SimplexCache
 	{
 		///< length or area
 		internal ushort count;

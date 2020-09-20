@@ -41,11 +41,11 @@ using Box2D.NetStandard.Dynamics.World.Callbacks;
 
 namespace Box2D.NetStandard.Dynamics.Joints
 {
-  /// <summary>
-  ///  The base joint class. Joints are used to constraint two bodies together in
-  ///  various fashions. Some joints also feature limits and motors.
-  /// </summary>
-  public abstract class Joint
+	/// <summary>
+	///  The base joint class. Joints are used to constraint two bodies together in
+	///  various fashions. Some joints also feature limits and motors.
+	/// </summary>
+	public abstract class Joint
 	{
 		internal readonly bool m_collideConnected;
 		internal readonly JointEdge m_edgeA = new JointEdge();
@@ -73,23 +73,23 @@ namespace Box2D.NetStandard.Dynamics.Joints
 			UserData = def.UserData;
 		}
 
-    /// <summary>
-    ///  Get the anchor point on body1 in world coordinates.
-    /// </summary>
-    /// <returns></returns>
-    public abstract Vector2 GetAnchorA { get; }
+		/// <summary>
+		///  Get the anchor point on body1 in world coordinates.
+		/// </summary>
+		/// <returns></returns>
+		public abstract Vector2 GetAnchorA { get; }
 
-    /// <summary>
-    ///  Get the anchor point on body2 in world coordinates.
-    /// </summary>
-    /// <returns></returns>
-    public abstract Vector2 GetAnchorB { get; }
+		/// <summary>
+		///  Get the anchor point on body2 in world coordinates.
+		/// </summary>
+		/// <returns></returns>
+		public abstract Vector2 GetAnchorB { get; }
 
-    /// <summary>
-    ///  Get/Set the user data pointer.
-    /// </summary>
-    /// <returns></returns>
-    public object UserData
+		/// <summary>
+		///  Get/Set the user data pointer.
+		/// </summary>
+		/// <returns></returns>
+		public object UserData
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
@@ -157,35 +157,35 @@ namespace Box2D.NetStandard.Dynamics.Joints
 			damping = 2.0f * I * dampingRatio * omega;
 		}
 
-    /// <summary>
-    ///  Get the first body attached to this joint.
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the first body attached to this joint.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Body GetBodyA() => m_bodyA;
 
-    /// <summary>
-    ///  Get the second body attached to this joint.
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the second body attached to this joint.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Body GetBodyB() => m_bodyB;
 
-    /// <summary>
-    ///  Get the reaction force on body2 at the joint anchor.
-    /// </summary>
-    public abstract Vector2 GetReactionForce(float inv_dt);
+		/// <summary>
+		///  Get the reaction force on body2 at the joint anchor.
+		/// </summary>
+		public abstract Vector2 GetReactionForce(float inv_dt);
 
-    /// <summary>
-    ///  Get the reaction torque on body2.
-    /// </summary>
-    public abstract float GetReactionTorque(float inv_dt);
+		/// <summary>
+		///  Get the reaction torque on body2.
+		/// </summary>
+		public abstract float GetReactionTorque(float inv_dt);
 
-    /// <summary>
-    ///  Get the next joint the world joint list.
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the next joint the world joint list.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Joint GetNext() => m_next;
 
 		internal static Joint Create(JointDef def)

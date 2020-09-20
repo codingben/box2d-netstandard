@@ -39,12 +39,12 @@ using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
-  /// <summary>
-  ///  The class manages contact between two shapes. A contact exists for each overlapping
-  ///  AABB in the broad-phase (except if filtered). Therefore a contact object may exist
-  ///  that has no contact points.
-  /// </summary>
-  public abstract class Contact
+	/// <summary>
+	///  The class manages contact between two shapes. A contact exists for each overlapping
+	///  AABB in the broad-phase (except if filtered). Therefore a contact object may exist
+	///  that has no contact points.
+	/// </summary>
+	public abstract class Contact
 	{
 		private const byte CircleCircle = (CircleShape.contactMatch << 2) + CircleShape.contactMatch;
 		private const byte CircleEdge = (CircleShape.contactMatch << 2) + EdgeShape.contactMatch;
@@ -141,19 +141,19 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 			get => GetNext();
 		}
 
-    /// <summary>
-    ///  Get the first fixture in this contact.
-    /// </summary>
-    public Fixture FixtureA
+		/// <summary>
+		///  Get the first fixture in this contact.
+		/// </summary>
+		public Fixture FixtureA
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => m_fixtureA;
 		}
 
-    /// <summary>
-    ///  Get the second fixture in this contact.
-    /// </summary>
-    public Fixture FixtureB
+		/// <summary>
+		///  Get the second fixture in this contact.
+		/// </summary>
+		public Fixture FixtureB
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => m_fixtureB;

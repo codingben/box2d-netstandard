@@ -103,13 +103,13 @@ using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 {
-  /// <summary>
-  ///  A prismatic joint. This joint provides one degree of freedom: translation
-  ///  along an axis fixed in body1. Relative rotation is prevented. You can
-  ///  use a joint limit to restrict the range of motion and a joint motor to
-  ///  drive the motion or to model joint friction.
-  /// </summary>
-  public class PrismaticJoint : Joint, IMotorisedJoint
+	/// <summary>
+	///  A prismatic joint. This joint provides one degree of freedom: translation
+	///  along an axis fixed in body1. Relative rotation is prevented. You can
+	///  use a joint limit to restrict the range of motion and a joint motor to
+	///  drive the motion or to model joint friction.
+	/// </summary>
+	public class PrismaticJoint : Joint, IMotorisedJoint
 	{
 		private readonly Vector2 m_localYAxisA;
 		internal readonly float m_referenceAngle;
@@ -170,50 +170,50 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 
 		public override Vector2 GetAnchorB => m_bodyB.GetWorldPoint(m_localAnchorB);
 
-    /// <summary>
-    ///  Is the joint limit enabled?
-    /// </summary>
-    public bool IsLimitEnabled
+		/// <summary>
+		///  Is the joint limit enabled?
+		/// </summary>
+		public bool IsLimitEnabled
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 			private set;
 		}
 
-    /// <summary>
-    ///  Get the lower joint limit, usually in meters.
-    /// </summary>
-    public float LowerLimit
+		/// <summary>
+		///  Get the lower joint limit, usually in meters.
+		/// </summary>
+		public float LowerLimit
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 			private set;
 		}
 
-    /// <summary>
-    ///  Get the upper joint limit, usually in meters.
-    /// </summary>
-    public float UpperLimit
+		/// <summary>
+		///  Get the upper joint limit, usually in meters.
+		/// </summary>
+		public float UpperLimit
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 			private set;
 		}
 
-    /// <summary>
-    ///  Is the joint motor enabled?
-    /// </summary>
-    public bool IsMotorEnabled
+		/// <summary>
+		///  Is the joint motor enabled?
+		/// </summary>
+		public bool IsMotorEnabled
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 			private set;
 		}
 
-    /// <summary>
-    ///  Get the current motor force, usually in N.
-    /// </summary>
-    public float MotorForce
+		/// <summary>
+		///  Get the current motor force, usually in N.
+		/// </summary>
+		public float MotorForce
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
@@ -231,10 +231,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public float GetMotorSpeed() => m_motorSpeed;
 
-    /// <summary>
-    ///  Get\Set the motor speed, usually in meters per second.
-    /// </summary>
-    public float MotorSpeed
+		/// <summary>
+		///  Get\Set the motor speed, usually in meters per second.
+		/// </summary>
+		public float MotorSpeed
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => m_motorSpeed;
@@ -247,10 +247,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 
 		public override float GetReactionTorque(float invDt) => invDt * m_impulse.Y;
 
-    /// <summary>
-    ///  Get the current joint translation, usually in meters.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the current joint translation, usually in meters.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public float GetJointTranslation()
 		{
 			Body b1 = m_bodyA;
@@ -264,10 +264,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 			return Vector2.Dot(d, axis);
 		}
 
-    /// <summary>
-    ///  Get the current joint translation speed, usually in meters per second.
-    /// </summary>
-    public float JointSpeed()
+		/// <summary>
+		///  Get the current joint translation speed, usually in meters per second.
+		/// </summary>
+		public float JointSpeed()
 		{
 			Body b1 = m_bodyA;
 			Body b2 = m_bodyB;
@@ -288,10 +288,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 			       Vector2.Dot(axis, v2 + Vectex.Cross(w2, r2) - v1 - Vectex.Cross(w1, r1));
 		}
 
-    /// <summary>
-    ///  Enable/disable the joint limit.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Enable/disable the joint limit.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnableLimit(bool flag)
 		{
 			m_bodyA.SetAwake(true);
@@ -299,10 +299,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 			IsLimitEnabled = flag;
 		}
 
-    /// <summary>
-    ///  Set the joint limits, usually in meters.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Set the joint limits, usually in meters.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetLimits(float lower, float upper)
 		{
 			//Debug.Assert(lower <= upper);
@@ -312,10 +312,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 			UpperLimit = upper;
 		}
 
-    /// <summary>
-    ///  Enable/disable the joint motor.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Enable/disable the joint motor.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnableMotor(bool flag)
 		{
 			m_bodyA.SetAwake(true);
@@ -323,10 +323,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 			IsMotorEnabled = flag;
 		}
 
-    /// <summary>
-    ///  Set the maximum motor force, usually in N.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Set the maximum motor force, usually in N.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetMaxMotorForce(float force)
 		{
 			m_bodyA.SetAwake(true);

@@ -29,10 +29,10 @@ using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision
 {
-  /// <summary>
-  ///  Inpute parameters for TimeOfImpact
-  /// </summary>
-  internal struct TOIInput
+	/// <summary>
+	///  Inpute parameters for TimeOfImpact
+	/// </summary>
+	internal struct TOIInput
 	{
 		internal Sweep sweepA;
 

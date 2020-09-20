@@ -37,10 +37,10 @@ using Box2D.NetStandard.Dynamics.Joints;
 
 namespace Box2D.NetStandard.Dynamics.Bodies
 {
-  /// <summary>
-  ///  A rigid body. These are created via World.CreateBody.
-  /// </summary>
-  [DebuggerDisplay("{UserData}")]
+	/// <summary>
+	///  A rigid body. These are created via World.CreateBody.
+	/// </summary>
+	[DebuggerDisplay("{UserData}")]
 	public class Body
 	{
 		private readonly World.World m_world;
@@ -185,16 +185,16 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 		}
 
 		// public
-    /// <summary>
-    ///  Creates a fixture and attaches it to this body. Use this function if you need
-    ///  to set some fixture parameters, like friction. Otherwise you can create the
-    ///  fixture directly from a shape.
-    ///  If the density is non-zero, this function automatically updates the mass of the body.
-    ///  Contacts are not created until the next time step.
-    /// </summary>
-    /// <param name="def">the fixture definition.</param>
-    /// <warning>This function is locked during callbacks.</warning>
-    public Fixture CreateFixture(in FixtureDef def)
+		/// <summary>
+		///  Creates a fixture and attaches it to this body. Use this function if you need
+		///  to set some fixture parameters, like friction. Otherwise you can create the
+		///  fixture directly from a shape.
+		///  If the density is non-zero, this function automatically updates the mass of the body.
+		///  Contacts are not created until the next time step.
+		/// </summary>
+		/// <param name="def">the fixture definition.</param>
+		/// <warning>This function is locked during callbacks.</warning>
+		public Fixture CreateFixture(in FixtureDef def)
 		{
 			//Debug.Assert(_world.IsLocked() == false);
 			if (m_world.IsLocked())
@@ -231,16 +231,16 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 			return fixture;
 		}
 
-    /// <summary>
-    ///  Creates a fixture from a shape and attach it to this body.
-    ///  This is a convenience function. Use b2FixtureDef if you need to set parameters
-    ///  like friction, restitution, user data, or filtering.
-    ///  If the density is non-zero, this function automatically updates the mass of the body.
-    /// </summary>
-    /// <param name="shape">the shape to be cloned.</param>
-    /// <param name="density">the shape density (set to zero for static bodies).</param>
-    /// <warning>This function is locked during callbacks.</warning>
-    public Fixture CreateFixture(in Shape shape, float density = 0f)
+		/// <summary>
+		///  Creates a fixture from a shape and attach it to this body.
+		///  This is a convenience function. Use b2FixtureDef if you need to set parameters
+		///  like friction, restitution, user data, or filtering.
+		///  If the density is non-zero, this function automatically updates the mass of the body.
+		/// </summary>
+		/// <param name="shape">the shape to be cloned.</param>
+		/// <param name="density">the shape density (set to zero for static bodies).</param>
+		/// <warning>This function is locked during callbacks.</warning>
+		public Fixture CreateFixture(in Shape shape, float density = 0f)
 		{
 			var def = new FixtureDef();
 			def.shape = shape;

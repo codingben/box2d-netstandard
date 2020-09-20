@@ -25,16 +25,16 @@ using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Common
 {
-  /// <summary>
-  ///  Matrix extension methods
-  /// </summary>
-  public static class Matrex
+	/// <summary>
+	///  Matrix extension methods
+	/// </summary>
+	public static class Matrex
 	{
-    /// <summary>
-    ///  Solve A * x = b, where b is a column vector. This is more efficient
-    ///  than computing the inverse in one-shot cases.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Solve A * x = b, where b is a column vector. This is more efficient
+		///  than computing the inverse in one-shot cases.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 Solve(this Matrix3x2 m, Vector2 b)
 		{
 			float det = 1f / m.GetDeterminant();

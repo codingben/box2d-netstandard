@@ -39,13 +39,13 @@ using Box2D.NetStandard.Dynamics.World;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 {
-  /// <summary>
-  ///  A mouse joint is used to make a point on a body track a
-  ///  specified world point. This a soft constraint with a maximum
-  ///  force. This allows the constraint to stretch and without
-  ///  applying huge forces.
-  /// </summary>
-  public class MouseJoint : Joint
+	/// <summary>
+	///  A mouse joint is used to make a point on a body track a
+	///  specified world point. This a soft constraint with a maximum
+	///  force. This allows the constraint to stretch and without
+	///  applying huge forces.
+	/// </summary>
+	public class MouseJoint : Joint
 	{
 		private readonly float m_dampingRatio;
 		private readonly float m_frequencyHz;
@@ -87,10 +87,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
 
 		public override float GetReactionTorque(float inv_dt) => inv_dt * 0.0f;
 
-    /// <summary>
-    ///  Use this to update the target point.
-    /// </summary>
-    public void SetTarget(Vector2 target)
+		/// <summary>
+		///  Use this to update the target point.
+		/// </summary>
+		public void SetTarget(Vector2 target)
 		{
 			if (!m_bodyB.IsAwake())
 			{

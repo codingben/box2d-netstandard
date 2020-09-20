@@ -31,28 +31,28 @@ using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision
 {
-  /// <summary>
-  ///  A manifold for two touching convex shapes.
-  /// </summary>
-  [DebuggerDisplay("localNormal = {" + nameof(localNormal) + "}")]
+	/// <summary>
+	///  A manifold for two touching convex shapes.
+	/// </summary>
+	[DebuggerDisplay("localNormal = {" + nameof(localNormal) + "}")]
 	public class Manifold
 	{
 		internal Vector2 localNormal;
 
-    /// <summary>
-    ///  Usage depends on manifold type.
-    /// </summary>
-    internal Vector2 localPoint;
+		/// <summary>
+		///  Usage depends on manifold type.
+		/// </summary>
+		internal Vector2 localPoint;
 
-    /// <summary>
-    ///  The number of manifold points.
-    /// </summary>
-    internal int pointCount;
+		/// <summary>
+		///  The number of manifold points.
+		/// </summary>
+		internal int pointCount;
 
-    /// <summary>
-    ///  The points of contact.
-    /// </summary>
-    internal ManifoldPoint[ /*Settings.MaxManifoldPoints*/] points = new ManifoldPoint[Settings.MaxManifoldPoints];
+		/// <summary>
+		///  The points of contact.
+		/// </summary>
+		internal ManifoldPoint[ /*Settings.MaxManifoldPoints*/] points = new ManifoldPoint[Settings.MaxManifoldPoints];
 
 		internal ManifoldType type;
 

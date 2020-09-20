@@ -33,12 +33,12 @@ using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
-  /// <summary>
-  ///  A line segment (edge) shape. These can be connected in chains or loops
-  ///  to other edge shapes. Edges created independently are two-sided and do
-  ///  no provide smooth movement across junctions.
-  /// </summary>
-  public class EdgeShape : Shape
+	/// <summary>
+	///  A line segment (edge) shape. These can be connected in chains or loops
+	///  to other edge shapes. Edges created independently are two-sided and do
+	///  no provide smooth movement across junctions.
+	/// </summary>
+	public class EdgeShape : Shape
 	{
 		internal const byte contactMatch = 1;
 		internal bool m_oneSided;
@@ -68,13 +68,13 @@ namespace Box2D.NetStandard.Collision.Shapes
 
 		internal override byte ContactMatch => contactMatch;
 
-    /// <summary>
-    ///  Set this as a part of a sequence. Vertex v0 precedes the edge and vertex v3
-    ///  follows. These extra vertices are used to provide smooth movement
-    ///  across junctions. This also makes the collision one-sided. The edge
-    ///  normal points to the right looking from v1 to v2.
-    /// </summary>
-    public void SetOneSided(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3)
+		/// <summary>
+		///  Set this as a part of a sequence. Vertex v0 precedes the edge and vertex v3
+		///  follows. These extra vertices are used to provide smooth movement
+		///  across junctions. This also makes the collision one-sided. The edge
+		///  normal points to the right looking from v1 to v2.
+		/// </summary>
+		public void SetOneSided(in Vector2 v0, in Vector2 v1, in Vector2 v2, in Vector2 v3)
 		{
 			m_vertex0 = v0;
 			m_vertex1 = v1;

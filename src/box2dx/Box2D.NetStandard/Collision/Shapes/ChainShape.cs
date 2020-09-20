@@ -6,13 +6,13 @@ using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
-  /// <summary>
-  ///  /// The chain has one-sided collision, with the surface normal pointing to the right of the edge.
-  ///  This provides a counter-clockwise winding like the polygon shape.
-  ///  Connectivity information is used to create smooth collisions.
-  /// </summary>
-  /// <warning>The chain will not collide properly if there are self-intersections.</warning>
-  public class ChainShape : Shape
+	/// <summary>
+	///  /// The chain has one-sided collision, with the surface normal pointing to the right of the edge.
+	///  This provides a counter-clockwise winding like the polygon shape.
+	///  Connectivity information is used to create smooth collisions.
+	/// </summary>
+	/// <warning>The chain will not collide properly if there are self-intersections.</warning>
+	public class ChainShape : Shape
 	{
 		internal const byte contactMatch = 3;
 		internal int m_count;
@@ -30,11 +30,11 @@ namespace Box2D.NetStandard.Collision.Shapes
 
 		internal override byte ContactMatch => contactMatch;
 
-    /// <summary>
-    ///  Create a loop. This automatically adjusts connectivity.
-    /// </summary>
-    /// <param name="vertices">An array of vertices. These are copied</param>
-    public void CreateLoop(in Vector2[] vertices)
+		/// <summary>
+		///  Create a loop. This automatically adjusts connectivity.
+		/// </summary>
+		/// <param name="vertices">An array of vertices. These are copied</param>
+		public void CreateLoop(in Vector2[] vertices)
 		{
 			int count = vertices.Length;
 			if (count < 3)
@@ -50,11 +50,11 @@ namespace Box2D.NetStandard.Collision.Shapes
 			m_nextVertex = m_vertices[1];
 		}
 
-    /// <summary>
-    ///  Create a chain with ghost vertices to connect multiple chains together.
-    /// </summary>
-    /// <param name="vertices">An array of vertices. These are copied</param>
-    public void CreateChain(in Vector2[] vertices, in Vector2 prevVertex, in Vector2 nextVertex)
+		/// <summary>
+		///  Create a chain with ghost vertices to connect multiple chains together.
+		/// </summary>
+		/// <param name="vertices">An array of vertices. These are copied</param>
+		public void CreateChain(in Vector2[] vertices, in Vector2 prevVertex, in Vector2 nextVertex)
 		{
 			int count = vertices.Length;
 

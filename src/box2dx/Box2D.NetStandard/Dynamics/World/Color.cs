@@ -1,9 +1,9 @@
 namespace Box2D.NetStandard.Dynamics.World
 {
-  /// <summary>
-  ///  Color for debug drawing. Each value has the range [0,1].
-  /// </summary>
-  public struct Color
+	/// <summary>
+	///  Color for debug drawing. Each value has the range [0,1].
+	/// </summary>
+	public struct Color
 	{
 		public float R, G, B, A;
 

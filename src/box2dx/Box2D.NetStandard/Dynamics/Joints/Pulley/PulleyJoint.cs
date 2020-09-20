@@ -54,15 +54,15 @@ using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Pulley
 {
-  /// <summary>
-  ///  The pulley joint is connected to two bodies and two fixed ground points.
-  ///  The pulley supports a ratio such that:
-  ///  length1 + ratio * length2 <= constant
-  ///  Yes, the force transmitted is scaled by the ratio.
-  ///  The pulley also enforces a maximum length limit on both sides. This is
-  ///  useful to prevent one side of the pulley hitting the top.
-  /// </summary>
-  public class PulleyJoint : Joint
+	/// <summary>
+	///  The pulley joint is connected to two bodies and two fixed ground points.
+	///  The pulley supports a ratio such that:
+	///  length1 + ratio * length2 <= constant
+	///  Yes, the force transmitted is scaled by the ratio.
+	///  The pulley also enforces a maximum length limit on both sides. This is
+	///  useful to prevent one side of the pulley hitting the top.
+	/// </summary>
+	public class PulleyJoint : Joint
 	{
 		public static readonly float MinPulleyLength = 2.0f;
 		private readonly float m_constant;
@@ -108,46 +108,46 @@ namespace Box2D.NetStandard.Dynamics.Joints.Pulley
 
 		public override Vector2 GetAnchorB => m_bodyB.GetWorldPoint(m_localAnchorB);
 
-    /// <summary>
-    ///  Get the first ground anchor.
-    /// </summary>
-    public Vector2 GroundAnchorA
+		/// <summary>
+		///  Get the first ground anchor.
+		/// </summary>
+		public Vector2 GroundAnchorA
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 		}
 
-    /// <summary>
-    ///  Get the second ground anchor.
-    /// </summary>
-    public Vector2 GroundAnchorB
+		/// <summary>
+		///  Get the second ground anchor.
+		/// </summary>
+		public Vector2 GroundAnchorB
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 		}
 
-    /// <summary>
-    ///  Get the current length of the segment attached to body1.
-    /// </summary>
-    public float LengthA
+		/// <summary>
+		///  Get the current length of the segment attached to body1.
+		/// </summary>
+		public float LengthA
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 		}
 
-    /// <summary>
-    ///  Get the current length of the segment attached to body2.
-    /// </summary>
-    public float LengthB
+		/// <summary>
+		///  Get the current length of the segment attached to body2.
+		/// </summary>
+		public float LengthB
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 		}
 
-    /// <summary>
-    ///  Get the pulley ratio.
-    /// </summary>
-    public float Ratio
+		/// <summary>
+		///  Get the pulley ratio.
+		/// </summary>
+		public float Ratio
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;

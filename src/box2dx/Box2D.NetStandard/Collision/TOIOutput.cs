@@ -27,10 +27,10 @@
 
 namespace Box2D.NetStandard.Collision
 {
-  /// <summary>
-  ///  Output parameters for b2TimeOfImpact.
-  /// </summary>
-  internal struct TOIOutput
+	/// <summary>
+	///  Output parameters for b2TimeOfImpact.
+	/// </summary>
+	internal struct TOIOutput
 	{
 		internal TOIOutputState state;
 		internal float t;

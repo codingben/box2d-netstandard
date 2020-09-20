@@ -49,15 +49,15 @@ using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 {
-  /// <summary>
-  ///  A revolute joint constrains to bodies to share a common point while they
-  ///  are free to rotate about the point. The relative rotation about the shared
-  ///  point is the joint angle. You can limit the relative rotation with
-  ///  a joint limit that specifies a lower and upper angle. You can use a motor
-  ///  to drive the relative rotation about the shared point. A maximum motor torque
-  ///  is provided so that infinite forces are not generated.
-  /// </summary>
-  public class RevoluteJoint : Joint, IMotorisedJoint
+	/// <summary>
+	///  A revolute joint constrains to bodies to share a common point while they
+	///  are free to rotate about the point. The relative rotation about the shared
+	///  point is the joint angle. You can limit the relative rotation with
+	///  a joint limit that specifies a lower and upper angle. You can use a motor
+	///  to drive the relative rotation about the shared point. A maximum motor torque
+	///  is provided so that infinite forces are not generated.
+	/// </summary>
+	public class RevoluteJoint : Joint, IMotorisedJoint
 	{
 		internal readonly float m_referenceAngle;
 		private float m_angle;
@@ -110,10 +110,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 
 		public override Vector2 GetAnchorB => m_bodyB.GetWorldPoint(m_localAnchorB);
 
-    /// <summary>
-    ///  Get the current joint angle in radians.
-    /// </summary>
-    public float JointAngle
+		/// <summary>
+		///  Get the current joint angle in radians.
+		/// </summary>
+		public float JointAngle
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get {
@@ -124,10 +124,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 		}
 
 
-    /// <summary>
-    ///  Get the current joint angle speed in radians per second.
-    /// </summary>
-    public float JointSpeed
+		/// <summary>
+		///  Get the current joint angle speed in radians per second.
+		/// </summary>
+		public float JointSpeed
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get {
@@ -137,50 +137,50 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 			}
 		}
 
-    /// <summary>
-    ///  Is the joint limit enabled?
-    /// </summary>
-    public bool IsLimitEnabled
+		/// <summary>
+		///  Is the joint limit enabled?
+		/// </summary>
+		public bool IsLimitEnabled
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 			private set;
 		}
 
-    /// <summary>
-    ///  Get the lower joint limit in radians.
-    /// </summary>
-    public float LowerLimit
+		/// <summary>
+		///  Get the lower joint limit in radians.
+		/// </summary>
+		public float LowerLimit
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 			private set;
 		}
 
-    /// <summary>
-    ///  Get the upper joint limit in radians.
-    /// </summary>
-    public float UpperLimit
+		/// <summary>
+		///  Get the upper joint limit in radians.
+		/// </summary>
+		public float UpperLimit
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 			private set;
 		}
 
-    /// <summary>
-    ///  Is the joint motor enabled?
-    /// </summary>
-    public bool IsMotorEnabled
+		/// <summary>
+		///  Is the joint motor enabled?
+		/// </summary>
+		public bool IsMotorEnabled
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
 			private set;
 		}
 
-    /// <summary>
-    ///  Get the current motor torque, usually in N-m.
-    /// </summary>
-    public float MotorTorque
+		/// <summary>
+		///  Get the current motor torque, usually in N-m.
+		/// </summary>
+		public float MotorTorque
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
@@ -190,10 +190,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public float GetMotorSpeed() => m_motorSpeed;
 
-    /// <summary>
-    ///  Get/Set the motor speed in radians per second.
-    /// </summary>
-    public float MotorSpeed
+		/// <summary>
+		///  Get/Set the motor speed in radians per second.
+		/// </summary>
+		public float MotorSpeed
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => m_motorSpeed;
@@ -214,10 +214,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 
 		public override float GetReactionTorque(float inv_dt) => inv_dt * (m_lowerImpulse + m_upperImpulse);
 
-    /// <summary>
-    ///  Enable/disable the joint limit.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Enable/disable the joint limit.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnableLimit(bool flag)
 		{
 			m_bodyA.SetAwake(true);
@@ -225,10 +225,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 			IsLimitEnabled = flag;
 		}
 
-    /// <summary>
-    ///  Set the joint limits in radians.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Set the joint limits in radians.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetLimits(float lower, float upper)
 		{
 			//Debug.Assert(lower <= upper);
@@ -238,10 +238,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 			UpperLimit = upper;
 		}
 
-    /// <summary>
-    ///  Enable/disable the joint motor.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Enable/disable the joint motor.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnableMotor(bool flag)
 		{
 			m_bodyA.SetAwake(true);
@@ -249,10 +249,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
 			IsMotorEnabled = flag;
 		}
 
-    /// <summary>
-    ///  Set the maximum motor torque, usually in N-m.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Set the maximum motor torque, usually in N-m.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetMaxMotorTorque(float torque)
 		{
 			m_bodyA.SetAwake(true);

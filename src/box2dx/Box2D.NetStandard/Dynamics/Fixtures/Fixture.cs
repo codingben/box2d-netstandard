@@ -37,14 +37,14 @@ using Box2D.NetStandard.Dynamics.Contacts;
 
 namespace Box2D.NetStandard.Dynamics.Fixtures
 {
-  /// <summary>
-  ///  A fixture is used to attach a shape to a body for collision detection. A fixture
-  ///  inherits its transform from its parent. Fixtures hold additional non-geometric data
-  ///  such as friction, collision filters, etc.
-  ///  Fixtures are created via Body.CreateFixture.
-  ///  @warning you cannot reuse fixtures.
-  /// </summary>
-  [DebuggerDisplay("Fixture of {m_body.m_userData}")]
+	/// <summary>
+	///  A fixture is used to attach a shape to a body for collision detection. A fixture
+	///  inherits its transform from its parent. Fixtures hold additional non-geometric data
+	///  such as friction, collision filters, etc.
+	///  Fixtures are created via Body.CreateFixture.
+	///  @warning you cannot reuse fixtures.
+	/// </summary>
+	[DebuggerDisplay("Fixture of {m_body.m_userData}")]
 	public class Fixture
 	{
 		internal Body m_body;

@@ -29,38 +29,38 @@ using System.Numerics;
 
 namespace Box2D.NetStandard.Common
 {
-  /// <summary>
-  ///  A 3-by-3 matrix. Stored in column-major order.
-  /// </summary>
-  internal struct Mat33
+	/// <summary>
+	///  A 3-by-3 matrix. Stored in column-major order.
+	/// </summary>
+	internal struct Mat33
 	{
 		internal Vector3 ex, ey, ez;
 
-    /// <summary>
-    ///  Construct this matrix using columns.
-    /// </summary>
-    internal Mat33(Vector3 c1, Vector3 c2, Vector3 c3)
+		/// <summary>
+		///  Construct this matrix using columns.
+		/// </summary>
+		internal Mat33(Vector3 c1, Vector3 c2, Vector3 c3)
 		{
 			ex = c1;
 			ey = c2;
 			ez = c3;
 		}
 
-    /// <summary>
-    ///  Set this matrix to all zeros.
-    /// </summary>
-    internal void SetZero()
+		/// <summary>
+		///  Set this matrix to all zeros.
+		/// </summary>
+		internal void SetZero()
 		{
 			ex = Vector3.Zero;
 			ey = Vector3.Zero;
 			ez = Vector3.Zero;
 		}
 
-    /// <summary>
-    ///  Solve A * x = b, where b is a column vector. This is more efficient
-    ///  than computing the inverse in one-shot cases.
-    /// </summary>
-    internal Vector3 Solve33(Vector3 b)
+		/// <summary>
+		///  Solve A * x = b, where b is a column vector. This is more efficient
+		///  than computing the inverse in one-shot cases.
+		/// </summary>
+		internal Vector3 Solve33(Vector3 b)
 		{
 			float det = Vector3.Dot(ex, Vector3.Cross(ey, ez));
 			//Debug.Assert(det != 0.0f);
@@ -72,12 +72,12 @@ namespace Box2D.NetStandard.Common
 			return x;
 		}
 
-    /// <summary>
-    ///  Solve A * x = b, where b is a column vector. This is more efficient
-    ///  than computing the inverse in one-shot cases. Solve only the upper
-    ///  2-by-2 matrix equation.
-    /// </summary>
-    internal Vector2 Solve22(Vector2 b)
+		/// <summary>
+		///  Solve A * x = b, where b is a column vector. This is more efficient
+		///  than computing the inverse in one-shot cases. Solve only the upper
+		///  2-by-2 matrix equation.
+		/// </summary>
+		internal Vector2 Solve22(Vector2 b)
 		{
 			float a11 = ex.X, a12 = ey.X, a21 = ex.Y, a22 = ey.Y;
 			float det = a11 * a22 - a12 * a21;

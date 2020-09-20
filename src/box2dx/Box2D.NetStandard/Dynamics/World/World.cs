@@ -43,11 +43,11 @@ using Math = Box2D.NetStandard.Common.Math;
 
 namespace Box2D.NetStandard.Dynamics.World
 {
-  /// <summary>
-  ///  The world class manages all physics entities, dynamic simulation,
-  ///  and asynchronous queries.
-  /// </summary>
-  public class World
+	/// <summary>
+	///  The world class manages all physics entities, dynamic simulation,
+	///  and asynchronous queries.
+	/// </summary>
+	public class World
 	{
 		public delegate bool QueryCallback(Fixture fixture);
 
@@ -87,13 +87,13 @@ namespace Box2D.NetStandard.Dynamics.World
 		public World() : this(new Vector2(0, -10))
 		{ }
 
-    /// <summary>
-    ///  Construct a world object.
-    /// </summary>
-    /// <param name="worldAABB">A bounding box that completely encompasses all your shapes.</param>
-    /// <param name="gravity">The world gravity vector.</param>
-    /// <param name="doSleep">Improve performance by not simulating inactive bodies.</param>
-    public World(Vector2 gravity)
+		/// <summary>
+		///  Construct a world object.
+		/// </summary>
+		/// <param name="worldAABB">A bounding box that completely encompasses all your shapes.</param>
+		/// <param name="gravity">The world gravity vector.</param>
+		/// <param name="doSleep">Improve performance by not simulating inactive bodies.</param>
+		public World(Vector2 gravity)
 		{
 			m_destructionListener = null;
 			m_debugDraw = null;
@@ -121,10 +121,10 @@ namespace Box2D.NetStandard.Dynamics.World
 			m_contactManager = new ContactManager();
 		}
 
-    /// <summary>
-    ///  Get\Set global gravity vector.
-    /// </summary>
-    public Vector2 Gravity
+		/// <summary>
+		///  Get\Set global gravity vector.
+		/// </summary>
+		public Vector2 Gravity
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => m_gravity;
@@ -132,44 +132,44 @@ namespace Box2D.NetStandard.Dynamics.World
 			set => m_gravity = value;
 		}
 
-    /// <summary>
-    ///  Get the world body list. With the returned body, use Body.GetNext to get
-    ///  the next body in the world list. A null body indicates the end of the list.
-    /// </summary>
-    /// <returns>The head of the world body list.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the world body list. With the returned body, use Body.GetNext to get
+		///  the next body in the world list. A null body indicates the end of the list.
+		/// </summary>
+		/// <returns>The head of the world body list.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Body GetBodyList() => m_bodyList;
 
-    /// <summary>
-    ///  Get the world joint list. With the returned joint, use Joint.GetNext to get
-    ///  the next joint in the world list. A null joint indicates the end of the list.
-    /// </summary>
-    /// <returns>The head of the world joint list.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the world joint list. With the returned joint, use Joint.GetNext to get
+		///  the next joint in the world list. A null joint indicates the end of the list.
+		/// </summary>
+		/// <returns>The head of the world joint list.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Joint GetJointList() => m_jointList;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Contact GetContactList() => m_contactManager.m_contactList;
 
-    /// <summary>
-    ///  Get the number of bodies.
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the number of bodies.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetBodyCount() => m_bodyCount;
 
-    /// <summary>
-    ///  Get the number joints.
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the number joints.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetJointCount() => m_jointCount;
 
-    /// <summary>
-    ///  Get the number of contacts (each may have 0 or more contact points).
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the number of contacts (each may have 0 or more contact points).
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetContactCount() => m_contactManager.m_contactCount;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -190,54 +190,54 @@ namespace Box2D.NetStandard.Dynamics.World
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal ContactManager GetContactManager() => m_contactManager;
 
-    /// <summary>
-    ///  Register a destruction listener.
-    /// </summary>
-    /// <param name="listener"></param>
-    public void SetDestructionListener(DestructionListener listener)
+		/// <summary>
+		///  Register a destruction listener.
+		/// </summary>
+		/// <param name="listener"></param>
+		public void SetDestructionListener(DestructionListener listener)
 		{
 			m_destructionListener = listener;
 		}
 
-    /// <summary>
-    ///  Register a contact filter to provide specific control over collision.
-    ///  Otherwise the default filter is used (b2_defaultFilter).
-    /// </summary>
-    /// <param name="filter"></param>
-    public void SetContactFilter(ContactFilter filter)
+		/// <summary>
+		///  Register a contact filter to provide specific control over collision.
+		///  Otherwise the default filter is used (b2_defaultFilter).
+		/// </summary>
+		/// <param name="filter"></param>
+		public void SetContactFilter(ContactFilter filter)
 		{
 			m_contactManager.m_contactFilter = filter;
 		}
 
-    /// <summary>
-    ///  Register a contact event listener
-    /// </summary>
-    /// <param name="listener"></param>
-    public void SetContactListener(ContactListener listener)
+		/// <summary>
+		///  Register a contact event listener
+		/// </summary>
+		/// <param name="listener"></param>
+		public void SetContactListener(ContactListener listener)
 		{
 			m_contactManager.m_contactListener = listener;
 		}
 
-    /// <summary>
-    ///  Register a routine for debug drawing. The debug draw functions are called
-    ///  inside the World.Step method, so make sure your renderer is ready to
-    ///  consume draw commands when you call Step().
-    /// </summary>
-    /// <param name="debugDraw"></param>
-    public void SetDebugDraw(DebugDraw debugDraw)
+		/// <summary>
+		///  Register a routine for debug drawing. The debug draw functions are called
+		///  inside the World.Step method, so make sure your renderer is ready to
+		///  consume draw commands when you call Step().
+		/// </summary>
+		/// <param name="debugDraw"></param>
+		public void SetDebugDraw(DebugDraw debugDraw)
 		{
 			m_debugDraw = debugDraw;
 			DrawDebugDataStub = DrawDebugData;
 		}
 
-    /// <summary>
-    ///  Create a rigid body given a definition. No reference to the definition
-    ///  is retained.
-    ///  @warning This function is locked during callbacks.
-    /// </summary>
-    /// <param name="def"></param>
-    /// <returns></returns>
-    public Body CreateBody(BodyDef def)
+		/// <summary>
+		///  Create a rigid body given a definition. No reference to the definition
+		///  is retained.
+		///  @warning This function is locked during callbacks.
+		/// </summary>
+		/// <param name="def"></param>
+		/// <returns></returns>
+		public Body CreateBody(BodyDef def)
 		{
 			//Debug.Assert(_locked == false);
 
@@ -264,14 +264,14 @@ namespace Box2D.NetStandard.Dynamics.World
 			return b;
 		}
 
-    /// <summary>
-    ///  Destroy a rigid body given a definition. No reference to the definition
-    ///  is retained. This function is locked during callbacks.
-    ///  @warning This automatically deletes all associated shapes and joints.
-    ///  @warning This function is locked during callbacks.
-    /// </summary>
-    /// <param name="b"></param>
-    public void DestroyBody(Body b)
+		/// <summary>
+		///  Destroy a rigid body given a definition. No reference to the definition
+		///  is retained. This function is locked during callbacks.
+		///  @warning This automatically deletes all associated shapes and joints.
+		///  @warning This function is locked during callbacks.
+		/// </summary>
+		/// <param name="b"></param>
+		public void DestroyBody(Body b)
 		{
 			//Debug.Assert(_bodyCount > 0);
 			//Debug.Assert(_locked    == false);
@@ -349,14 +349,14 @@ namespace Box2D.NetStandard.Dynamics.World
 			b = null;
 		}
 
-    /// <summary>
-    ///  Create a joint to constrain bodies together. No reference to the definition
-    ///  is retained. This may cause the connected bodies to cease colliding.
-    ///  @warning This function is locked during callbacks.
-    /// </summary>
-    /// <param name="def"></param>
-    /// <returns></returns>
-    public Joint CreateJoint(JointDef def)
+		/// <summary>
+		///  Create a joint to constrain bodies together. No reference to the definition
+		///  is retained. This may cause the connected bodies to cease colliding.
+		///  @warning This function is locked during callbacks.
+		/// </summary>
+		/// <param name="def"></param>
+		/// <returns></returns>
+		public Joint CreateJoint(JointDef def)
 		{
 			//Debug.Assert(_locked == false);
 
@@ -427,12 +427,12 @@ namespace Box2D.NetStandard.Dynamics.World
 			return j;
 		}
 
-    /// <summary>
-    ///  Destroy a joint. This may cause the connected bodies to begin colliding.
-    ///  @warning This function is locked during callbacks.
-    /// </summary>
-    /// <param name="j"></param>
-    public void DestroyJoint(Joint j)
+		/// <summary>
+		///  Destroy a joint. This may cause the connected bodies to begin colliding.
+		///  @warning This function is locked during callbacks.
+		/// </summary>
+		/// <param name="j"></param>
+		public void DestroyJoint(Joint j)
 		{
 			//Debug.Assert(_locked == false);
 			if (m_locked)
@@ -1043,14 +1043,14 @@ namespace Box2D.NetStandard.Dynamics.World
 			}
 		}
 
-    /// <summary>
-    ///  Take a time step. This performs collision detection, integration,
-    ///  and constraint solution.
-    /// </summary>
-    /// <param name="dt">The amount of time to simulate, this should not vary.</param>
-    /// <param name="velocityIterations">Iterations for the velocity constraint solver.</param>
-    /// <param name="positionIterations">Iterations for the position constraint solver.</param>
-    public void Step(float dt, int velocityIterations, int positionIterations)
+		/// <summary>
+		///  Take a time step. This performs collision detection, integration,
+		///  and constraint solution.
+		/// </summary>
+		/// <param name="dt">The amount of time to simulate, this should not vary.</param>
+		/// <param name="velocityIterations">Iterations for the velocity constraint solver.</param>
+		/// <param name="positionIterations">Iterations for the position constraint solver.</param>
+		public void Step(float dt, int velocityIterations, int positionIterations)
 		{
 			if (m_newContacts)
 			{

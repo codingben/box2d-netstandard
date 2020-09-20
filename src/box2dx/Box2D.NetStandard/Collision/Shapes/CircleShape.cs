@@ -32,10 +32,10 @@ using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
-  /// <summary>
-  ///  A circle shape.
-  /// </summary>
-  public class CircleShape : Shape
+	/// <summary>
+	///  A circle shape.
+	/// </summary>
+	public class CircleShape : Shape
 	{
 		internal const byte contactMatch = 0;
 		internal Vector2 m_p;

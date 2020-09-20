@@ -30,11 +30,11 @@ using Box2D.NetStandard.Common;
 
 namespace Box2D.NetStandard.Collision.Shapes
 {
-  /// <summary>
-  ///  A shape is used for collision detection. You can create a shape however you like.
-  ///  Shapes used for simulation in World are created automatically when a Fixture is created.
-  /// </summary>
-  public abstract class Shape
+	/// <summary>
+	///  A shape is used for collision detection. You can create a shape however you like.
+	///  Shapes used for simulation in World are created automatically when a Fixture is created.
+	/// </summary>
+	public abstract class Shape
 	{
 		internal float m_radius;
 		internal abstract byte ContactMatch { get; }

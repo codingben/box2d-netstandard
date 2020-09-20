@@ -31,29 +31,29 @@ using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Common
 {
-  /// <summary>
-  ///  A transform contains translation and rotation.
-  ///  It is used to represent the position and orientation of rigid frames.
-  /// </summary>
-  public struct Transform
+	/// <summary>
+	///  A transform contains translation and rotation.
+	///  It is used to represent the position and orientation of rigid frames.
+	/// </summary>
+	public struct Transform
 	{
-    /// <summary>
-    ///  Position
-    /// </summary>
-    public Vector2 p;
+		/// <summary>
+		///  Position
+		/// </summary>
+		public Vector2 p;
 
-    /// <summary>
-    ///  Rotation
-    /// </summary>
-    // public Mat22 q;
+		/// <summary>
+		///  Rotation
+		/// </summary>
+		// public Mat22 q;
 		public Matrix3x2 q;
 
-    /// <summary>
-    ///  Initialize using a position vector and a rotation matrix.
-    /// </summary>
-    /// <param name="position"></param>
-    /// <param name="R"></param>
-    // public Transform(Vector2 position, Mat22 rotation)
+		/// <summary>
+		///  Initialize using a position vector and a rotation matrix.
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="R"></param>
+		// public Transform(Vector2 position, Mat22 rotation)
 		// {
 		// 	p = position;
 		// 	q = rotation;
@@ -64,10 +64,10 @@ namespace Box2D.NetStandard.Common
 			q = rotation;
 		}
 
-    /// <summary>
-    ///  Set this to the identity transform.
-    /// </summary>
-    public void SetIdentity()
+		/// <summary>
+		///  Set this to the identity transform.
+		/// </summary>
+		public void SetIdentity()
 		{
 			p = Vector2.Zero;
 			// q.SetIdentity();

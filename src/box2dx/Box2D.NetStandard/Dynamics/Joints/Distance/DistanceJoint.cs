@@ -48,12 +48,12 @@ using Box2D.NetStandard.Dynamics.World;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Distance
 {
-  /// <summary>
-  ///  A distance joint constrains two points on two bodies
-  ///  to remain at a fixed distance from each other. You can view
-  ///  this as a massless, rigid rod.
-  /// </summary>
-  public class DistanceJoint : Joint
+	/// <summary>
+	///  A distance joint constrains two points on two bodies
+	///  to remain at a fixed distance from each other. You can view
+	///  this as a massless, rigid rod.
+	/// </summary>
+	public class DistanceJoint : Joint
 	{
 		private readonly float m_length;
 		private readonly Vector2 m_localAnchorA;
@@ -98,10 +98,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
 
 		public override Vector2 GetAnchorB => m_bodyB.GetWorldPoint(m_localAnchorB);
 
-    /// <summary>
-    ///  Set/get the linear stiffness in N/m
-    /// </summary>
-    public float Stiffness
+		/// <summary>
+		///  Set/get the linear stiffness in N/m
+		/// </summary>
+		public float Stiffness
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
@@ -109,10 +109,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
 			set;
 		}
 
-    /// <summary>
-    ///  Set/get linear damping in N*s/m
-    /// </summary>
-    public float Damping
+		/// <summary>
+		///  Set/get linear damping in N*s/m
+		/// </summary>
+		public float Damping
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;

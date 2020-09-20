@@ -56,18 +56,18 @@ using Box2D.NetStandard.Dynamics.World;
 
 namespace Box2D.NetStandard.Dynamics.Joints.Gear
 {
-  /// <summary>
-  ///  A gear joint is used to connect two joints together. Either joint
-  ///  can be a revolute or prismatic joint. You specify a gear ratio
-  ///  to bind the motions together:
-  ///  coordinate1 + ratio * coordinate2 = constant
-  ///  The ratio can be negative or positive. If one joint is a revolute joint
-  ///  and the other joint is a prismatic joint, then the ratio will have units
-  ///  of length or units of 1/length.
-  ///  @warning The revolute and prismatic joints must be attached to
-  ///  fixed bodies (which must be body1 on those joints).
-  /// </summary>
-  public class GearJoint : Joint
+	/// <summary>
+	///  A gear joint is used to connect two joints together. Either joint
+	///  can be a revolute or prismatic joint. You specify a gear ratio
+	///  to bind the motions together:
+	///  coordinate1 + ratio * coordinate2 = constant
+	///  The ratio can be negative or positive. If one joint is a revolute joint
+	///  and the other joint is a prismatic joint, then the ratio will have units
+	///  of length or units of 1/length.
+	///  @warning The revolute and prismatic joints must be attached to
+	///  fixed bodies (which must be body1 on those joints).
+	/// </summary>
+	public class GearJoint : Joint
 	{
 		private readonly Body m_bodyC;
 		private readonly Body m_bodyD;
@@ -192,10 +192,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear
 		public override Vector2 GetAnchorA => m_bodyA.GetWorldPoint(m_localAnchorA);
 		public override Vector2 GetAnchorB => m_bodyB.GetWorldPoint(m_localAnchorB);
 
-    /// <summary>
-    ///  Get the gear ratio.
-    /// </summary>
-    public float Ratio
+		/// <summary>
+		///  Get the gear ratio.
+		/// </summary>
+		public float Ratio
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;

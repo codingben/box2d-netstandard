@@ -31,10 +31,10 @@ using System.Runtime.CompilerServices;
 
 namespace Box2D.NetStandard.Common
 {
-  /// <summary>
-  ///  A 2D column vector.
-  /// </summary>
-  [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
+	/// <summary>
+	///  A 2D column vector.
+	/// </summary>
+	[Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
 	public struct Vec2
 	{
 		private bool Equals(Vec2 other) => X.Equals(other.X) && Y.Equals(other.Y);
@@ -54,42 +54,42 @@ namespace Box2D.NetStandard.Common
 
 		public float X, Y;
 
-    /// <summary>
-    ///  Construct using coordinates.
-    /// </summary>
-    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
+		/// <summary>
+		///  Construct using coordinates.
+		/// </summary>
+		[Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
 		public Vec2(float x)
 		{
 			X = x;
 			Y = x;
 		}
 
-    /// <summary>
-    ///  Construct using coordinates.
-    /// </summary>
-    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
+		/// <summary>
+		///  Construct using coordinates.
+		/// </summary>
+		[Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this will be implictly cast to a Vector2. It is recommended to change your code to use System.Numerics.Vector2 instead.")]
 		public Vec2(float x, float y)
 		{
 			X = x;
 			Y = y;
 		}
 
-    /// <summary>
-    ///  Set this vector to all zeros.
-    /// </summary>
-    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this means vectors are now considered immutable. Instead, please create a new Vector2 and assign it.",
-              true)]
+		/// <summary>
+		///  Set this vector to all zeros.
+		/// </summary>
+		[Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this means vectors are now considered immutable. Instead, please create a new Vector2 and assign it.",
+		          true)]
 		public void SetZero()
 		{
 			X = 0.0f;
 			Y = 0.0f;
 		}
 
-    /// <summary>
-    ///  Set this vector to some specified coordinates.
-    /// </summary>
-    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this means vectors are now considered immutable. Instead, please create a new Vector2 and assign it.",
-              true)]
+		/// <summary>
+		///  Set this vector to some specified coordinates.
+		/// </summary>
+		[Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this means vectors are now considered immutable. Instead, please create a new Vector2 and assign it.",
+		          true)]
 		public void Set(float x, float y)
 		{
 			X = x;
@@ -104,24 +104,24 @@ namespace Box2D.NetStandard.Common
 			Y = xy;
 		}
 
-    /// <summary>
-    ///  Get the length of this vector (the norm).
-    /// </summary>
-    [Obsolete("This will still work, but may be removed in a future version. Check the field or property and see if a newer Vector2 is available.")]
+		/// <summary>
+		///  Get the length of this vector (the norm).
+		/// </summary>
+		[Obsolete("This will still work, but may be removed in a future version. Check the field or property and see if a newer Vector2 is available.")]
 		public float Length() => (float) System.Math.Sqrt(X * X + Y * Y);
 
-    /// <summary>
-    ///  Get the length squared. For performance, use this instead of
-    ///  Length (if possible).
-    /// </summary>
-    /// [Obsolete("This will still work, but may be removed in a future version. Check the field or property and see if a newer Vector2 is available.")]
-    public float LengthSquared() => X * X + Y * Y;
+		/// <summary>
+		///  Get the length squared. For performance, use this instead of
+		///  Length (if possible).
+		/// </summary>
+		/// [Obsolete("This will still work, but may be removed in a future version. Check the field or property and see if a newer Vector2 is available.")]
+		public float LengthSquared() => X * X + Y * Y;
 
-    /// <summary>
-    ///  Convert this vector into a unit vector. Returns the length.
-    /// </summary>
-    [Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this won't work any more. If you need the Length, get .Length. If you need to normalize a vector, call Vector2.Normalize and re-assign the result.",
-              true)]
+		/// <summary>
+		///  Convert this vector into a unit vector. Returns the length.
+		/// </summary>
+		[Obsolete("Since Vec2 has been replaced with System.Numerics.Vector2, this won't work any more. If you need the Length, get .Length. If you need to normalize a vector, call Vector2.Normalize and re-assign the result.",
+		          true)]
 		public float Normalize()
 		{
 			float length = Length();
@@ -137,20 +137,20 @@ namespace Box2D.NetStandard.Common
 			return length;
 		}
 
-    /// <summary>
-    ///  Does this vector contain finite coordinates?
-    /// </summary>
-    [Obsolete("Please switch to System.Numerics.Vector2 and use Vector2.IsValid() instead.")]
+		/// <summary>
+		///  Does this vector contain finite coordinates?
+		/// </summary>
+		[Obsolete("Please switch to System.Numerics.Vector2 and use Vector2.IsValid() instead.")]
 		public bool IsValid
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => Math.IsValid(X) && Math.IsValid(Y);
 		}
 
-    /// <summary>
-    ///  Negate this vector.
-    /// </summary>
-    [Obsolete("Please switch to System.Numerics.Vector2.")]
+		/// <summary>
+		///  Negate this vector.
+		/// </summary>
+		[Obsolete("Please switch to System.Numerics.Vector2.")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vec2 operator -(Vec2 v1) => new Vec2(-v1.X, -v1.Y);
 
@@ -186,33 +186,33 @@ namespace Box2D.NetStandard.Common
 		}
 
 
-    /// <summary>
-    ///  Peform the dot product on two vectors.
-    /// </summary>
-    [Obsolete("Please switch to System.Numerics.Vector2.")]
+		/// <summary>
+		///  Peform the dot product on two vectors.
+		/// </summary>
+		[Obsolete("Please switch to System.Numerics.Vector2.")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Dot(Vec2 a, Vec2 b) => a.X * b.X + a.Y * b.Y;
 
-    /// <summary>
-    ///  Perform the cross product on two vectors. In 2D this produces a scalar.
-    /// </summary>
-    [Obsolete("Please switch to System.Numerics.Vector2.")]
+		/// <summary>
+		///  Perform the cross product on two vectors. In 2D this produces a scalar.
+		/// </summary>
+		[Obsolete("Please switch to System.Numerics.Vector2.")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Cross(Vec2 a, Vec2 b) => a.X * b.Y - a.Y * b.X;
 
-    /// <summary>
-    ///  Perform the cross product on a vector and a scalar.
-    ///  In 2D this produces a vector.
-    /// </summary>
-    [Obsolete("Please switch to System.Numerics.Vector2 and use Vectex.Cross.")]
+		/// <summary>
+		///  Perform the cross product on a vector and a scalar.
+		///  In 2D this produces a vector.
+		/// </summary>
+		[Obsolete("Please switch to System.Numerics.Vector2 and use Vectex.Cross.")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vec2 Cross(Vec2 a, float s) => new Vec2(s * a.Y, -s * a.X);
 
-    /// <summary>
-    ///  Perform the cross product on a scalar and a vector.
-    ///  In 2D this produces a vector.
-    /// </summary>
-    [Obsolete("Please switch to System.Numerics.Vector2 and use Vectex.Cross.")]
+		/// <summary>
+		///  Perform the cross product on a scalar and a vector.
+		///  In 2D this produces a vector.
+		/// </summary>
+		[Obsolete("Please switch to System.Numerics.Vector2 and use Vectex.Cross.")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vec2 Cross(float s, Vec2 a) => new Vec2(-s * a.Y, s * a.X);
 

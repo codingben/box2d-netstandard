@@ -38,11 +38,11 @@ namespace Box2D.NetStandard.Common
 		public float a0, a;         //world angles
 		public float alpha0;
 
-    /// <summary>
-    ///  Get the interpolated transform at a specific time.
-    /// </summary>
-    /// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		///  Get the interpolated transform at a specific time.
+		/// </summary>
+		/// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void GetTransform(out Transform xf, in float beta)
 		{
 			xf.p = c0 + beta * (c - c0);
@@ -51,11 +51,11 @@ namespace Box2D.NetStandard.Common
 			xf.p -= Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
 		}
 
-    /// <summary>
-    ///  Advance the sweep forward, yielding a new initial state.
-    /// </summary>
-    /// <param name="t">The new initial time.</param>
-    public void Advance(float alpha)
+		/// <summary>
+		///  Advance the sweep forward, yielding a new initial state.
+		/// </summary>
+		/// <param name="t">The new initial time.</param>
+		public void Advance(float alpha)
 		{
 			//Debug.Assert(alpha0 < 1.0f);
 			float beta = (alpha - alpha0) / (1.0f - alpha0);
