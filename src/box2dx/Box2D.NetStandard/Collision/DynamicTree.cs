@@ -27,763 +27,931 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Box2D.NetStandard.Common;
 using Math = System.Math;
 
 namespace Box2D.NetStandard.Collision
 {
-	internal class DynamicTree
-	{
-		private static readonly Vector2 r = new Vector2(Settings.AABBExtension);
-		private int m_freeList;
-		private int m_nodeCapacity;
-		private int m_nodeCount;
-		private TreeNode[] m_nodes;
-		private int m_root;
-
-		public DynamicTree()
-		{
-			m_root = -1;
-
-			m_nodeCapacity = 2048;
-			m_nodeCount = 0;
-			m_nodes = new TreeNode[m_nodeCapacity];
-
-			// Build a linked list for the free list.
-			for (var i = 0; i < m_nodeCapacity; ++i)
-			{
-				m_nodes[i] = new TreeNode();
-				m_nodes[i].pn.next = i + 1;
-				m_nodes[i].height = -1;
-			}
-
-			m_nodes[m_nodeCapacity - 1].pn.next = -1;
-			m_nodes[m_nodeCapacity - 1].height = -1;
-			m_freeList = 0;
-		}
-
-		public int AllocateNode()
-		{
-			// Expand the node pool as needed.
-			if (m_freeList == -1)
-			{
-				//Debug.Assert(m_nodeCount == m_nodeCapacity);
-
-				// The free list is empty. Rebuild a bigger pool.
-				m_nodeCapacity *= 2;
-				TreeNode[] oldNodes = m_nodes;
-				m_nodes = new TreeNode[m_nodeCapacity];
-				Array.Copy(oldNodes, m_nodes, m_nodeCount);
-
-				// Build a linked list for the free list. The parent
-				// pointer becomes the "next" pointer.
-				for (int i = m_nodeCount; i < m_nodeCapacity; ++i)
-				{
-					m_nodes[i] = new TreeNode();
-					m_nodes[i].pn.next = i + 1;
-					m_nodes[i].height = -1;
-				}
-
-				m_nodes[m_nodeCapacity - 1].pn.next = -1;
-				m_nodes[m_nodeCapacity - 1].height = -1;
-				m_freeList = m_nodeCount;
-			}
-
-			// Peel a node off the free list.
-			int nodeId = m_freeList;
-			m_freeList = m_nodes[nodeId].pn.next;
-			m_nodes[nodeId].pn.parent = -1;
-			m_nodes[nodeId].child1 = -1;
-			m_nodes[nodeId].child2 = -1;
-			m_nodes[nodeId].height = 0;
-			m_nodes[nodeId].userData = null;
-			m_nodes[nodeId].moved = false;
-			++m_nodeCount;
-			return nodeId;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void FreeNode(in int nodeId)
-		{
-			//Debug.Assert(0 <= nodeId && nodeId < m_nodeCapacity);
-			//Debug.Assert(0 < m_nodeCount);
-			m_nodes[nodeId].pn.next = m_freeList;
-			m_nodes[nodeId].height = -1;
-			m_freeList = nodeId;
-			--m_nodeCount;
-		}
-
-		public int CreateProxy(in AABB aabb, object userData)
-		{
-			int proxyId = AllocateNode();
-
-			// Fatten the aabb.
-
-			m_nodes[proxyId].aabb.lowerBound = aabb.lowerBound - r;
-			m_nodes[proxyId].aabb.upperBound = aabb.upperBound + r;
-			m_nodes[proxyId].userData = userData;
-			m_nodes[proxyId].height = 0;
-			m_nodes[proxyId].moved = true;
-
-			InsertLeaf(proxyId);
-
-			return proxyId;
-		}
-
-		public void DestroyProxy(in int proxyId)
-		{
-			//Debug.Assert(0 <= proxyId && proxyId < m_nodeCapacity);
-			//Debug.Assert(m_nodes[proxyId].IsLeaf());
-
-			RemoveLeaf(proxyId);
-			FreeNode(proxyId);
-		}
-
-		public bool MoveProxy(in int proxyId, in AABB aabb, in Vector2 displacement)
-		{
-			//Debug.Assert(0 <= proxyId && proxyId < m_nodeCapacity);
-
-			//Debug.Assert(m_nodes[proxyId].IsLeaf());
-
-			// Extend AABB
-			var fatAABB = new AABB(aabb.lowerBound - r, aabb.UpperBound + r);
-
-			// Predict AABB movement
-			Vector2 d = Settings.AABBMultiplier * displacement;
-
-			if (d.X < 0.0f)
-			{
-				fatAABB.lowerBound.X += d.X;
-			}
-			else
-			{
-				fatAABB.upperBound.X += d.X;
-			}
-
-			if (d.Y < 0.0f)
-			{
-				fatAABB.lowerBound.Y += d.Y;
-			}
-			else
-			{
-				fatAABB.upperBound.Y += d.Y;
-			}
-
-			AABB treeAABB = m_nodes[proxyId].aabb;
-			if (treeAABB.Contains(aabb))
-			{
-				// The tree AABB still contains the object, but it might be too large.
-				// Perhaps the object was moving fast but has since gone to sleep.
-				// The huge AABB is larger than the new fat AABB.
-				var hugeAABB = new AABB(fatAABB.lowerBound - 4 * r, fatAABB.upperBound + 4 * r);
-
-				if (hugeAABB.Contains(treeAABB))
-					// The tree AABB contains the object AABB and the tree AABB is
-					// not too large. No tree update needed.
-				{
-					return false;
-				}
-
-				// Otherwise the tree AABB is huge and needs to be shrunk
-			}
-
-			RemoveLeaf(proxyId);
-
-			m_nodes[proxyId].aabb = fatAABB;
-
-			InsertLeaf(proxyId);
-
-			m_nodes[proxyId].moved = true;
-
-			return true;
-		}
-
-		public void InsertLeaf(in int leaf)
-		{
-			if (m_root == -1)
-			{
-				m_root = leaf;
-				m_nodes[m_root].pn.parent = -1;
-				return;
-			}
-
-			// Find the best sibling for this node
-			AABB leafAABB = m_nodes[leaf].aabb;
-			int index = m_root;
-			while (!m_nodes[index].IsLeaf())
-			{
-				int child1 = m_nodes[index].child1;
-				int child2 = m_nodes[index].child2;
-
-				float area = m_nodes[index].aabb.GetPerimeter();
-
-				var combinedAABB = new AABB();
-				combinedAABB.Combine(m_nodes[index].aabb, leafAABB);
-				float combinedArea = combinedAABB.GetPerimeter();
-
-				// Cost of creating a new parent for this node and the new leaf
-				float cost = 2.0f * combinedArea;
-
-				// Minimum cost of pushing the leaf further down the tree
-				float inheritanceCost = 2.0f * (combinedArea - area);
-
-				float cost1 = GetChildDescentCost(leafAABB, child1) + inheritanceCost;
-				float cost2 = GetChildDescentCost(leafAABB, child2) + inheritanceCost;
-
-				if (cost < cost1 && cost < cost2)
-				{
-					break;
-				}
-
-				index = cost1 < cost2 ? child1 : child2;
-			}
-
-			int sibling = index;
-
-			// Create a new parent.
-			int oldParent = m_nodes[sibling].pn.parent;
-			int newParent = AllocateNode();
-			m_nodes[newParent].pn.parent = oldParent;
-			m_nodes[newParent].userData = null;
-			m_nodes[newParent].aabb.Combine(leafAABB, m_nodes[sibling].aabb);
-			m_nodes[newParent].height = m_nodes[sibling].height + 1;
-			m_nodes[newParent].child1 = sibling;
-			m_nodes[newParent].child2 = leaf;
-			m_nodes[sibling].pn.parent = newParent;
-			m_nodes[leaf].pn.parent = newParent;
-
-			if (oldParent != -1)
-			{
-				// The sibling was not the root.
-				if (m_nodes[oldParent].child1 == sibling)
-				{
-					m_nodes[oldParent].child1 = newParent;
-				}
-				else
-				{
-					m_nodes[oldParent].child2 = newParent;
-				}
-			}
-			else
-			{
-				// The sibling was the root.
-				m_root = newParent;
-			}
-
-			// Walk back up the tree fixing heights and AABBs
-			AdjustBounds(m_nodes[leaf].pn.parent);
-
-			//Validate();
-		}
-
-		// private void VisualiseTree() {
-		//   Console.WriteLine("---- TREE ----");
-		//   
-		//   for (int i = 0; i < m_nodeCount; i++) {
-		//     TreeNode node = m_nodes[i];
-		//     Console.WriteLine($"Node: {i} Parent: {node.pn.parent} Child1: {node.child1} Child2: {node.child2}");
-		//   }
-		// }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float GetChildDescentCost(in AABB leafAABB, in int child)
-		{
-			float cost;
-			AABB aabb = default;
-			aabb.Combine(leafAABB, m_nodes[child].aabb);
-			if (m_nodes[child].IsLeaf())
-			{
-				cost = aabb.GetPerimeter();
-			}
-			else
-			{
-				float oldArea = m_nodes[child].aabb.GetPerimeter();
-				float newArea = aabb.GetPerimeter();
-				cost = newArea - oldArea;
-			}
-
-			return cost;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AdjustBounds(in int idx)
-		{
-			int index = idx;
-			while (index != -1)
-			{
-				index = Balance(index);
-
-				int child1 = m_nodes[index].child1;
-				int child2 = m_nodes[index].child2;
-
-				m_nodes[index].height = 1 + Math.Max(m_nodes[child1].height, m_nodes[child2].height);
-				m_nodes[index].aabb.Combine(m_nodes[child1].aabb, m_nodes[child2].aabb);
-
-				index = m_nodes[index].pn.parent;
-			}
-		}
-
-		public void RemoveLeaf(in int leaf)
-		{
-			if (leaf == m_root)
-			{
-				m_root = -1;
-				return;
-			}
-
-			int parent = m_nodes[leaf].pn.parent;
-			int grandParent = m_nodes[parent].pn.parent;
-			int sibling = m_nodes[parent].child1 == leaf ? m_nodes[parent].child2 : m_nodes[parent].child1;
-
-			if (grandParent == -1)
-			{
-				m_root = sibling;
-				m_nodes[sibling].pn.parent = -1;
-				FreeNode(parent);
-				return;
-			}
-
-			// Destroy parent and connect sibling to grandParent.
-			if (m_nodes[grandParent].child1 == parent)
-			{
-				m_nodes[grandParent].child1 = sibling;
-			}
-			else
-			{
-				m_nodes[grandParent].child2 = sibling;
-			}
-
-			m_nodes[sibling].pn.parent = grandParent;
-			FreeNode(parent);
-
-			AdjustBounds(grandParent);
-
-			//Validate();
-		}
-
-		public int Balance(in int iA)
-		{
-			//Debug.Assert(iA != -1);
-
-			TreeNode A = m_nodes[iA];
-			if (A.IsLeaf() || A.height < 2)
-			{
-				return iA;
-			}
-
-			int iB = A.child1;
-			int iC = A.child2;
-			//Debug.Assert(0 <= iB && iB < m_nodeCapacity);
-			//Debug.Assert(0 <= iC && iC < m_nodeCapacity);
-
-			TreeNode B = m_nodes[iB];
-			TreeNode C = m_nodes[iC];
-
-			int balance = C.height - B.height;
-
-			// Rotate C up
-			if (balance > 1)
-			{
-				int iF = C.child1;
-				int iG = C.child2;
-				TreeNode F = m_nodes[iF];
-				TreeNode G = m_nodes[iG];
-				//Debug.Assert(0 <= iF && iF < m_nodeCapacity);
-				//Debug.Assert(0 <= iG && iG < m_nodeCapacity);
-
-				// Swap A and C
-				C.child1 = iA;
-				C.pn.parent = A.pn.parent;
-				A.pn.parent = iC;
-
-				// A's old parent should point to C
-				if (C.pn.parent != -1)
-				{
-					if (m_nodes[C.pn.parent].child1 == iA)
-					{
-						m_nodes[C.pn.parent].child1 = iC;
-					}
-					else
-						//Debug.Assert(m_nodes[C.pn.parent].child2 == iA);
-					{
-						m_nodes[C.pn.parent].child2 = iC;
-					}
-				}
-				else
-				{
-					m_root = iC;
-				}
-
-				// Rotate
-				if (F.height > G.height)
-				{
-					C.child2 = iF;
-					A.child2 = iG;
-					G.pn.parent = iA;
-					A.aabb.Combine(B.aabb, G.aabb);
-					C.aabb.Combine(A.aabb, F.aabb);
-
-					A.height = 1 + Math.Max(B.height, G.height);
-					C.height = 1 + Math.Max(A.height, F.height);
-				}
-				else
-				{
-					C.child2 = iG;
-					A.child2 = iF;
-					F.pn.parent = iA;
-					A.aabb.Combine(B.aabb, F.aabb);
-					C.aabb.Combine(A.aabb, G.aabb);
-
-					A.height = 1 + Math.Max(B.height, F.height);
-					C.height = 1 + Math.Max(A.height, G.height);
-				}
-
-				return iC;
-			}
-
-			// Rotate B up
-			if (balance < -1)
-			{
-				int iD = B.child1;
-				int iE = B.child2;
-				TreeNode D = m_nodes[iD];
-				TreeNode E = m_nodes[iE];
-				//Debug.Assert(0 <= iD && iD < m_nodeCapacity);
-				//Debug.Assert(0 <= iE && iE < m_nodeCapacity);
-
-				// Swap A and B
-				B.child1 = iA;
-				B.pn.parent = A.pn.parent;
-				A.pn.parent = iB;
-
-				// A's old parent should point to B
-				if (B.pn.parent != -1)
-				{
-					if (m_nodes[B.pn.parent].child1 == iA)
-					{
-						m_nodes[B.pn.parent].child1 = iB;
-					}
-					else
-						//Debug.Assert(m_nodes[B.pn.parent].child2 == iA);
-					{
-						m_nodes[B.pn.parent].child2 = iB;
-					}
-				}
-				else
-				{
-					m_root = iB;
-				}
-
-				// Rotate
-				if (D.height > E.height)
-				{
-					B.child2 = iD;
-					A.child1 = iE;
-					E.pn.parent = iA;
-					A.aabb.Combine(C.aabb, E.aabb);
-					B.aabb.Combine(A.aabb, D.aabb);
-
-					A.height = 1 + Math.Max(C.height, E.height);
-					B.height = 1 + Math.Max(A.height, D.height);
-				}
-				else
-				{
-					B.child2 = iE;
-					A.child1 = iD;
-					D.pn.parent = iA;
-					A.aabb.Combine(C.aabb, D.aabb);
-					B.aabb.Combine(A.aabb, E.aabb);
-
-					A.height = 1 + Math.Max(C.height, D.height);
-					B.height = 1 + Math.Max(A.height, E.height);
-				}
-
-				return iB;
-			}
-
-			return iA;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetHeight() => m_root == -1 ? 0 : m_nodes[m_root].height;
-
-		public float GetAreaRatio()
-		{
-			if (m_root == -1)
-			{
-				return 0.0f;
-			}
-
-			TreeNode root = m_nodes[m_root];
-			float rootArea = root.aabb.GetPerimeter();
-
-			var totalArea = 0.0f;
-			for (var i = 0; i < m_nodeCapacity; ++i)
-			{
-				TreeNode node = m_nodes[i];
-				if (node.height < 0)
-					// Free node in pool
-				{
-					continue;
-				}
-
-				totalArea += node.aabb.GetPerimeter();
-			}
-
-			return totalArea / rootArea;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int ComputeHeight(int nodeId)
-		{
-			//Debug.Assert(0 <= nodeId && nodeId < m_nodeCapacity);
-			TreeNode node = m_nodes[nodeId];
-
-			if (node.IsLeaf())
-			{
-				return 0;
-			}
-
-			int height1 = ComputeHeight(node.child1);
-			int height2 = ComputeHeight(node.child2);
-			return 1 + Math.Max(height1, height2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int ComputeHeight() => ComputeHeight(m_root);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ValidateStructure(int index)
-		{
-			if (index == -1)
-			{
-				return;
-			}
-
-			// if (index == m_root)
-			// {
-			//   //Debug.Assert(m_nodes[index].pn.parent == -1);
-			// }
-
-			TreeNode node = m_nodes[index];
-
-			int child1 = node.child1;
-			int child2 = node.child2;
-
-			if (node.IsLeaf())
-				//Debug.Assert(child1      == -1);
-				//Debug.Assert(child2      == -1);
-				//Debug.Assert(node.height == 0);
-			{
-				return;
-			}
-
-			//Debug.Assert(0 <= child1 && child1 < m_nodeCapacity);
-			//Debug.Assert(0 <= child2 && child2 < m_nodeCapacity);
-			//Debug.Assert(m_nodes[child1].pn.parent == index);
-			//Debug.Assert(m_nodes[child2].pn.parent == index);
-
-			ValidateStructure(child1);
-			ValidateStructure(child2);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ValidateMetrics(int index)
-		{
-			if (index == -1)
-			{
-				return;
-			}
-
-			TreeNode node = m_nodes[index];
-
-			int child1 = node.child1;
-			int child2 = node.child2;
-
-			if (node.IsLeaf())
-				//Debug.Assert(child1      == -1);
-				//Debug.Assert(child2      == -1);
-				//Debug.Assert(node.height == 0);
-			{
-				return;
-			}
-
-			//Debug.Assert(0 <= child1 && child1 < m_nodeCapacity);
-			//Debug.Assert(0 <= child2 && child2 < m_nodeCapacity);
-
-			int height1 = m_nodes[child1].height;
-			int height2 = m_nodes[child2].height;
-			int height;
-			height = 1 + Math.Max(height1, height2);
-			//Debug.Assert(node.height == height);
-
-			var aabb = new AABB();
-			aabb.Combine(m_nodes[child1].aabb, m_nodes[child2].aabb);
-
-			//Debug.Assert(aabb.lowerBound == node.aabb.lowerBound);
-			//Debug.Assert(aabb.upperBound == node.aabb.upperBound);
-
-			ValidateMetrics(child1);
-			ValidateMetrics(child2);
-		}
-
-		public int GetMaxBalance()
-		{
-			var maxBalance = 0;
-			for (var i = 0; i < m_nodeCapacity; ++i)
-			{
-				TreeNode node = m_nodes[i];
-				if (node.height <= 1)
-				{
-					continue;
-				}
-
-				//Debug.Assert(node.IsLeaf() == false);
-
-				int child1 = node.child1;
-				int child2 = node.child2;
-				int balance = Math.Abs(m_nodes[child2].height - m_nodes[child1].height);
-				maxBalance = Math.Max(maxBalance, balance);
-			}
-
-			return maxBalance;
-		}
-
-		public void RebuildBottomUp()
-		{
-			var nodes = new int[m_nodeCount];
-			var count = 0;
-
-			// Build array of leaves. Free the rest.
-			for (var i = 0; i < m_nodeCapacity; ++i)
-			{
-				if (m_nodes[i].height < 0)
-					// free node in pool
-				{
-					continue;
-				}
-
-				if (m_nodes[i].IsLeaf())
-				{
-					m_nodes[i].pn.parent = -1;
-					nodes[count] = i;
-					++count;
-				}
-				else
-				{
-					FreeNode(i);
-				}
-			}
-
-			while (count > 1)
-			{
-				float minCost = float.MaxValue;
-				int iMin = -1, jMin = -1;
-				for (var i = 0; i < count; ++i)
-				{
-					AABB aabbi = m_nodes[nodes[i]].aabb;
-
-					for (int j = i + 1; j < count; ++j)
-					{
-						AABB aabbj = m_nodes[nodes[j]].aabb;
-						var b = new AABB();
-						b.Combine(in aabbi, in aabbj);
-						float cost = b.GetPerimeter();
-						if (cost < minCost)
-						{
-							iMin = i;
-							jMin = j;
-							minCost = cost;
-						}
-					}
-				}
-
-				int index1 = nodes[iMin];
-				int index2 = nodes[jMin];
-				TreeNode child1 = m_nodes[index1];
-				TreeNode child2 = m_nodes[index2];
-
-				int parentIndex = AllocateNode();
-				TreeNode parent = m_nodes[parentIndex];
-				parent.child1 = index1;
-				parent.child2 = index2;
-				parent.height = 1 + Math.Max(child1.height, child2.height);
-				parent.aabb.Combine(child1.aabb, child2.aabb);
-				parent.pn.parent = -1;
-
-				child1.pn.parent = parentIndex;
-				child2.pn.parent = parentIndex;
-
-				nodes[jMin] = nodes[count - 1];
-				nodes[iMin] = parentIndex;
-				--count;
-			}
-
-			m_root = nodes[0];
-
-			//Validate();
-		}
-
-		public void ShiftOrigin(in Vector2 newOrigin)
-		{
-			// Build array of leaves. Free the rest.
-			for (var i = 0; i < m_nodeCapacity; ++i)
-			{
-				m_nodes[i].aabb.lowerBound -= newOrigin;
-				m_nodes[i].aabb.upperBound -= newOrigin;
-			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public object GetUserData(int proxyId) => m_nodes[proxyId].userData;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool WasMoved(int proxyId) => m_nodes[proxyId].moved;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void ClearMoved(int proxyId)
-		{
-			m_nodes[proxyId].moved = false;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public AABB GetFatAABB(int proxyId) => m_nodes[proxyId].aabb;
-
-		public void Query(Func<int, bool> queryCallback, in AABB aabb)
-		{
-			var stack = new Stack<int>(256);
-			stack.Push(m_root);
-
-			while (stack.Count > 0)
-			{
-				int nodeId = stack.Pop();
-				if (nodeId == -1)
-				{
-					continue;
-				}
-
-				TreeNode node = m_nodes[nodeId];
-
-				if (Collision.TestOverlap(node.aabb, aabb))
-				{
-					if (node.IsLeaf())
-					{
-						bool proceed = queryCallback(nodeId);
-						if (proceed == false)
-						{
-							return;
-						}
-					}
-					else
-					{
-						stack.Push(node.child1);
-						stack.Push(node.child2);
-					}
-				}
-			}
-		}
+    /// <summary>
+    ///
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public sealed class DynamicTree
+    {
+        public readonly struct Proxy : IEquatable<Proxy>, IComparable<Proxy>
+        {
+            private readonly int _value;
+
+            public static Proxy Free
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => new Proxy(-1);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public Proxy(int v) => _value = v;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool Equals(Proxy other)
+                => _value == other._value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public int CompareTo(Proxy other)
+                => _value.CompareTo(other._value);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public override bool Equals(object? obj)
+                => obj is Proxy other && Equals(other);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public override int GetHashCode() => _value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static implicit operator int(Proxy n) => n._value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static implicit operator Proxy(int v) => new Proxy(v);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static bool operator ==(Proxy a, Proxy b) => a._value == b._value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static bool operator !=(Proxy a, Proxy b) => a._value != b._value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static bool operator >(Proxy a, Proxy b) => a._value > b._value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static bool operator <(Proxy a, Proxy b) => a._value < b._value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static bool operator >=(Proxy a, Proxy b) => a._value >= b._value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static bool operator <=(Proxy a, Proxy b) => a._value <= b._value;
+
+            public override string ToString()
+                => _value.ToString();
+
+        }
+
+        public delegate float RayQueryCallback<in TState>(TState state, in RayCastInput ray, float fraction, Proxy proxy);
+
+        public delegate float RayQueryCallback(in RayCastInput ray, float fraction, Proxy proxy);
+
+        public delegate bool QueryCallback(int proxyId);
+
+        public delegate bool QueryCallback<in TState>(TState state, Proxy proxy);
+
+        private struct Node
+        {
+            public AABB Aabb;
+            public Proxy Parent;
+            public Proxy Child1;
+            public Proxy Child2;
+
+            public object UserData;
+
+            public int Height;
+            public bool Moved;
+
+            public bool IsLeaf
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => Child2 == Proxy.Free;
+            }
+
+            public bool IsFree
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => Height == -1;
+            }
+
+            public override string ToString()
+                => $@"Parent: {(Parent == Proxy.Free ? "None" : Parent.ToString())}, {
+                    (IsLeaf
+                         ? Height == 0
+                               ? $"Leaf: {UserData}"
+                               : $"Leaf (invalid height of {Height}): {UserData}"
+                         : IsFree
+                             ? "Free"
+                             : $"Branch at height {Height}, children: {Child1} and {Child2}")}";
+        }
+
+        public int Capacity => _nodes.Length;
+        private Node[] _nodes;
+        private Proxy _root;
+        private Proxy _freeNodes;
+        private int _nodeCount;
+
+        public int Height
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _root == Proxy.Free ? 0 : _nodes[_root].Height;
+        }
+
+        public int NodeCount => _nodeCount;
+
+        public int MaxBalance
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            get {
+                var maxBal = 0;
+
+                for (var i = 0; i < Capacity; ++i)
+                {
+                    ref var node = ref _nodes[i];
+                    if (node.Height <= 1)
+                    {
+                        continue;
+                    }
+
+                    ref var child1Node = ref _nodes[node.Child1];
+                    ref var child2Node = ref _nodes[node.Child2];
+
+                    var bal = Math.Abs(child2Node.Height - child1Node.Height);
+                    maxBal = Math.Max(maxBal, bal);
+                }
+
+                return maxBal;
+            }
+        }
+
+        public float AreaRatio
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            get {
+                if (_root == Proxy.Free)
+                {
+                    return 0;
+                }
+
+                ref var rootNode = ref _nodes[_root];
+                var rootPeri = rootNode.Aabb.GetPerimeter();
+
+                var totalPeri = 0f;
+
+                for (var i = 0; i < Capacity; ++i)
+                {
+                    ref var node = ref _nodes[i];
+                    if (node.Height < 0)
+                    {
+                        continue;
+                    }
+
+                    totalPeri += node.Aabb.GetPerimeter();
+                }
+
+                return totalPeri / rootPeri;
+            }
+        }
+
+        private static int GrowthFunc(int x) => x + 256;
+
+        private const float AABBExtendSize = 0.1f;
+
+        private const float AABBMultiplier = 2f;
+        
+        public DynamicTree() // : base(0.1f, null)
+        {
+
+
+            _root = Proxy.Free;
+            _nodes = new Node[16];
+
+            // Build a linked list for the free list.
+            ref Node node = ref _nodes[0];
+            var l = Capacity - 1;
+
+            for (var i = 0; i < l; i++, node = ref _nodes[i])
+            {
+                node.Parent = (Proxy) (i + 1);
+                node.Height = -1;
+            }
+
+            ref var lastNode = ref _nodes[^1];
+
+            lastNode.Parent = Proxy.Free;
+            lastNode.Height = -1;
+        }
+
+        /// <summary>Allocate a node from the pool. Grow the pool if necessary.</summary>
+        /// <remarks>
+        ///     If allocation occurs, references to <see cref="Node" />s will be invalid.
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ref Node AllocateNode(out Proxy proxy)
+        {
+            // Expand the node pool as needed.
+            if (_freeNodes == Proxy.Free)
+            {
+                // Separate method to aid inlining since this is a cold path.
+                Expand();
+            }
+
+            // Peel a node off the free list.
+            var alloc = _freeNodes;
+            ref var allocNode = ref _nodes[alloc];
+            Assert(allocNode.IsFree);
+            _freeNodes = allocNode.Parent;
+            Assert(_freeNodes == -1 || _nodes[_freeNodes].IsFree);
+            allocNode.Parent = Proxy.Free;
+            allocNode.Child1 = Proxy.Free;
+            allocNode.Child2 = Proxy.Free;
+            allocNode.Height = 0;
+            ++_nodeCount;
+            proxy = alloc;
+            return ref allocNode;
+
+            void Expand()
+            {
+                Assert(_nodeCount == Capacity);
+
+                // The free list is empty. Rebuild a bigger pool.
+                var newNodeCap = GrowthFunc(Capacity);
+
+                if (newNodeCap <= Capacity)
+                {
+                    throw new InvalidOperationException(
+                                                        "Growth function returned invalid new capacity, must be greater than current capacity.");
+                }
+
+                var oldNodes = _nodes;
+
+                _nodes = new Node[newNodeCap];
+
+                Array.Copy(oldNodes, _nodes, _nodeCount);
+
+                // Build a linked list for the free list. The parent
+                // pointer becomes the "next" pointer.
+                var l = _nodes.Length - 1;
+                ref Node node = ref _nodes[_nodeCount];
+                for (var i = _nodeCount; i < l; ++i, node = ref _nodes[i])
+                {
+                    node.Parent = (Proxy) (i + 1);
+                    node.Height = -1;
+                }
+
+                ref var lastNode = ref _nodes[l];
+                lastNode.Parent = Proxy.Free;
+                lastNode.Height = -1;
+                _freeNodes = (Proxy) _nodeCount;
+            }
+        }
+
+        /// <summary>
+        ///     Return a node to the pool.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void FreeNode(Proxy proxy)
+        {
+            ref var node = ref _nodes[proxy];
+            node.Parent = _freeNodes;
+            node.Height = -1;
+#if DEBUG_DYNAMIC_TREE
+            node.Child1 = Proxy.Free;
+            node.Child2 = Proxy.Free;
+#endif
+            node.UserData = default;
+            _freeNodes = proxy;
+            --_nodeCount;
+        }
+
+        /// <summary>
+        ///     Create a proxy in the tree as a leaf node.
+        /// </summary>
+        public Proxy CreateProxy(in AABB aabb, object userData)
+        {
+            ref var proxy = ref AllocateNode(out var proxyId);
+
+            // Fatten the aabb.
+            proxy.Aabb = aabb.Enlarged(AABBExtendSize);
+            proxy.Height = 0;
+            proxy.Moved = true;
+            proxy.UserData = userData;
+
+            InsertLeaf(proxyId);
+            return proxyId;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void DestroyProxy(Proxy proxy)
+        {
+            RemoveLeaf(proxy);
+            FreeNode(proxy);
+        }
+        
+        public bool MoveProxy(Proxy proxy, in AABB aabb, Vector2 displacement)
+        {
+            Assert(0 <= proxy && proxy < Capacity);
+
+            ref var leafNode = ref _nodes[proxy];
+
+            Assert(leafNode.IsLeaf);
+
+            // Extend AABB
+            var ext = new Vector2(AABBExtendSize, AABBExtendSize);
+            var fatAabb = aabb.Enlarged(AABBExtendSize);
+
+            // Predict AABB movement
+            var d = displacement * AABBMultiplier;
+
+            // pls can we make math types mutable this sucks.
+            var l = fatAabb.Left;
+            var b = fatAabb.Bottom;
+            var r = fatAabb.Right;
+            var t = fatAabb.Top;
+
+            if (d.X < 0)
+            {
+                l += d.X;
+            }
+            else
+            {
+                r += d.X;
+            }
+
+            if (d.Y < 0)
+            {
+                b += d.Y;
+            }
+            else
+            {
+                t += d.Y;
+            }
+
+            fatAabb = new AABB(new Vector2(l, b), new Vector2(r, t));
+
+            ref var treeAabb = ref leafNode.Aabb;
+
+            if (treeAabb.Contains(aabb))
+            {
+                // The tree AABB still contains the object, but it might be too large.
+                // Perhaps the object was moving fast but has since gone to sleep.
+                // The huge AABB is larger than the new fat AABB.
+                Vector2 growAmount = new Vector2(4, 4) * ext;
+                var hugeAabb = new AABB(
+                                        fatAabb.lowerBound - growAmount,
+                                        fatAabb.upperBound + growAmount);
+
+                if (hugeAabb.Contains(treeAabb))
+                {
+                    // The tree AABB contains the object AABB and the tree AABB is
+                    // not too large. No tree update needed.
+                    return false;
+                }
+
+                // Otherwise the tree AABB is huge and needs to be shrunk
+            }
+
+            RemoveLeaf(proxy);
+
+            leafNode.Aabb = fatAabb;
+
+            InsertLeaf(proxy);
+
+            leafNode.Moved = true;
+
+            return true;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public object GetUserData(Proxy proxy)
+        {
+            return _nodes[proxy].UserData;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool WasMoved(Proxy proxy)
+        {
+            return _nodes[proxy].Moved;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ClearMoved(Proxy proxy)
+        {
+            _nodes[proxy].Moved = false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AABB GetFatAABB(Proxy proxy)
+        {
+            return _nodes[proxy].Aabb;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void RemoveLeaf(Proxy leaf)
+        {
+            if (leaf == _root)
+            {
+                _root = Proxy.Free;
+                return;
+            }
+
+            ref var leafNode = ref _nodes[leaf];
+            Assert(leafNode.IsLeaf);
+            var parent = leafNode.Parent;
+            ref var parentNode = ref _nodes[parent];
+            var grandParent = parentNode.Parent;
+            var sibling = parentNode.Child1 == leaf
+                              ? parentNode.Child2
+                              : parentNode.Child1;
+
+            ref var siblingNode = ref _nodes[sibling];
+
+            if (grandParent != Proxy.Free)
+            {
+                // Destroy parent and connect sibling to grandParent.
+                ref var grandParentNode = ref _nodes[grandParent];
+                if (grandParentNode.Child1 == parent)
+                {
+                    grandParentNode.Child1 = sibling;
+                }
+                else
+                {
+                    grandParentNode.Child2 = sibling;
+                }
+
+                siblingNode.Parent = grandParent;
+                FreeNode(parent);
+
+                // Adjust ancestor bounds.
+                Balance(grandParent);
+            }
+            else
+            {
+                _root = Proxy.Free;
+                siblingNode.Parent = Proxy.Free;
+                FreeNode(parent);
+            }
+
+            Validate();
+        }
+
+        private void InsertLeaf(Proxy leaf)
+        {
+            if (_root == Proxy.Free)
+            {
+                _root = leaf;
+                _nodes[_root].Parent = Proxy.Free;
+                return;
+            }
+
+            Validate();
+
+            // Find the best sibling for this node
+            ref var leafNode = ref _nodes[leaf];
+            ref var leafAabb = ref leafNode.Aabb;
+
+            var index = _root;
+#if DEBUG
+            var loopCount = 0;
+#endif
+            for (;;)
+            {
+#if DEBUG
+                Assert(loopCount++ < Capacity * 2);
+#endif
+
+                ref var indexNode = ref _nodes[index];
+                if (indexNode.IsLeaf) break;
+
+                // assert no loops
+                Assert(_nodes[indexNode.Child1].Child1 != index);
+                Assert(_nodes[indexNode.Child1].Child2 != index);
+                Assert(_nodes[indexNode.Child2].Child1 != index);
+                Assert(_nodes[indexNode.Child2].Child2 != index);
+
+                var child1 = indexNode.Child1;
+                var child2 = indexNode.Child2;
+                ref var child1Node = ref _nodes[child1];
+                ref var child2Node = ref _nodes[child2];
+                ref var indexAabb = ref indexNode.Aabb;
+                var indexPeri = indexAabb.GetPerimeter();
+                AABB combinedAabb = default;
+                combinedAabb = AABB.Combine(indexAabb, leafAabb);
+                var combinedPeri = combinedAabb.GetPerimeter();
+                // Cost of creating a new parent for this node and the new leaf
+                var cost = 2 * combinedPeri;
+                // Minimum cost of pushing the leaf further down the tree
+                var inheritCost = 2 * (combinedPeri - indexPeri);
+
+                // Cost of descending into child1
+                var cost1 = EstimateCost(leafAabb, child1Node) + inheritCost;
+                // Cost of descending into child2
+                var cost2 = EstimateCost(leafAabb, child2Node) + inheritCost;
+
+                // Descend according to the minimum cost.
+                if (cost < cost1 && cost < cost2)
+                {
+                    break;
+                }
+
+                // Descend
+                index = cost1 < cost2 ? child1 : child2;
+            }
+
+            var sibling = index;
+
+            // Create a new parent.
+            ref var newParentNode = ref AllocateNode(out var newParent);
+            ref var siblingNode = ref _nodes[sibling];
+
+            var oldParent = siblingNode.Parent;
+
+            newParentNode.Parent = oldParent;
+            newParentNode.Aabb = AABB.Combine(leafAabb, siblingNode.Aabb);
+            newParentNode.Height = 1 + siblingNode.Height;
+
+            ref var proxyNode = ref _nodes[leaf];
+            if (oldParent != Proxy.Free)
+            {
+                // The sibling was not the root.
+                ref var oldParentNode = ref _nodes[oldParent];
+
+                if (oldParentNode.Child1 == sibling)
+                {
+                    oldParentNode.Child1 = newParent;
+                }
+                else
+                {
+                    oldParentNode.Child2 = newParent;
+                }
+
+                newParentNode.Child1 = sibling;
+                newParentNode.Child2 = leaf;
+                siblingNode.Parent = newParent;
+                proxyNode.Parent = newParent;
+            }
+            else
+            {
+                // The sibling was the root.
+                newParentNode.Child1 = sibling;
+                newParentNode.Child2 = leaf;
+                siblingNode.Parent = newParent;
+                proxyNode.Parent = newParent;
+                _root = newParent;
+            }
+
+            // Walk back up the tree fixing heights and AABBs
+            Balance(proxyNode.Parent);
+
+            Validate();
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static float EstimateCost(in AABB baseAabb, in Node node)
+        {
+            var cost = AABB.Combine(baseAabb, node.Aabb).GetPerimeter();
+
+            if (!node.IsLeaf)
+            {
+                cost -= node.Aabb.GetPerimeter();
+            }
+
+            return cost;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void Balance(Proxy index)
+        {
+            while (index != Proxy.Free)
+            {
+                index = BalanceStep(index);
+
+                ref var indexNode = ref _nodes[index];
+
+                var child1 = indexNode.Child1;
+                var child2 = indexNode.Child2;
+
+                Assert(child1 != Proxy.Free);
+                Assert(child2 != Proxy.Free);
+
+                ref var child1Node = ref _nodes[child1];
+                ref var child2Node = ref _nodes[child2];
+
+                indexNode.Height = Math.Max(child1Node.Height, child2Node.Height) + 1;
+                indexNode.Aabb = AABB.Combine(child1Node.Aabb, child2Node.Aabb);
+
+                index = indexNode.Parent;
+            }
+
+            Validate();
+        }
+
+        /// <summary>
+        ///     Perform a left or right rotation if node A is imbalanced.
+        /// </summary>
+        /// <returns>The new root index.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Proxy BalanceStep(Proxy iA)
+        {
+            ref var a = ref _nodes[iA];
+
+            if (a.IsLeaf || a.Height < 2)
+            {
+                return iA;
+            }
+
+            var iB = a.Child1;
+            var iC = a.Child2;
+            Assert(iA != iB);
+            Assert(iA != iC);
+            Assert(iB != iC);
+
+            ref var b = ref _nodes[iB];
+            ref var c = ref _nodes[iC];
+
+            var balance = c.Height - b.Height;
+
+            // Rotate C up
+            if (balance > 1)
+            {
+                var iF = c.Child1;
+                var iG = c.Child2;
+                Assert(iC != iF);
+                Assert(iC != iG);
+                Assert(iF != iG);
+
+                ref var f = ref _nodes[iF];
+                ref var g = ref _nodes[iG];
+
+                // A <> C
+
+                // this creates a loop ...
+                c.Child1 = iA;
+                c.Parent = a.Parent;
+                a.Parent = iC;
+
+                if (c.Parent == Proxy.Free)
+                {
+                    _root = iC;
+                }
+                else
+                {
+                    ref var cParent = ref _nodes[c.Parent];
+                    if (cParent.Child1 == iA)
+                    {
+                        cParent.Child1 = iC;
+                    }
+                    else
+                    {
+                        Assert(cParent.Child2 == iA);
+                        cParent.Child2 = iC;
+                    }
+                }
+
+                // Rotate
+                if (f.Height > g.Height)
+                {
+                    c.Child2 = iF;
+                    a.Child2 = iG;
+                    g.Parent = iA;
+                    a.Aabb = AABB.Combine(b.Aabb, g.Aabb);
+                    c.Aabb = AABB.Combine(a.Aabb, f.Aabb);
+
+                    a.Height = Math.Max(b.Height, g.Height) + 1;
+                    c.Height = Math.Max(a.Height, f.Height) + 1;
+                }
+                else
+                {
+                    c.Child2 = iG;
+                    a.Child2 = iF;
+                    f.Parent = iA;
+                    a.Aabb = AABB.Combine(b.Aabb, f.Aabb);
+                    c.Aabb = AABB.Combine(a.Aabb, g.Aabb);
+
+                    a.Height = Math.Max(b.Height, f.Height) + 1;
+                    c.Height = Math.Max(a.Height, g.Height) + 1;
+                }
+
+                return iC;
+            }
+
+            // Rotate B up
+            if (balance < -1)
+            {
+                var iD = b.Child1;
+                var iE = b.Child2;
+                Assert(iB != iD);
+                Assert(iB != iE);
+                Assert(iD != iE);
+
+                ref var d = ref _nodes[iD];
+                ref var e = ref _nodes[iE];
+
+                // A <> B
+
+                // this creates a loop ...
+                b.Child1 = iA;
+                b.Parent = a.Parent;
+                a.Parent = iB;
+
+                if (b.Parent == Proxy.Free)
+                {
+                    _root = iB;
+                }
+                else
+                {
+                    ref var bParent = ref _nodes[b.Parent];
+                    if (bParent.Child1 == iA)
+                    {
+                        bParent.Child1 = iB;
+                    }
+                    else
+                    {
+                        Assert(bParent.Child2 == iA);
+                        bParent.Child2 = iB;
+                    }
+                }
+
+                // Rotate
+                if (d.Height > e.Height)
+                {
+                    b.Child2 = iD;
+                    a.Child1 = iE;
+                    e.Parent = iA;
+                    a.Aabb = AABB.Combine(c.Aabb, e.Aabb);
+                    b.Aabb = AABB.Combine(a.Aabb, d.Aabb);
+
+                    a.Height = Math.Max(c.Height, e.Height) + 1;
+                    b.Height = Math.Max(a.Height, d.Height) + 1;
+                }
+                else
+                {
+                    b.Child2 = iE;
+                    a.Child1 = iD;
+                    d.Parent = iA;
+                    a.Aabb = AABB.Combine(c.Aabb, d.Aabb);
+                    b.Aabb = AABB.Combine(a.Aabb, e.Aabb);
+
+                    a.Height = Math.Max(c.Height, d.Height) + 1;
+                    b.Height = Math.Max(a.Height, e.Height) + 1;
+                }
+
+                return iB;
+            }
+
+            return iA;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int ComputeHeight()
+            => ComputeHeight(_root);
+
+        /// <summary>
+        ///     Compute the height of a sub-tree.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private int ComputeHeight(Proxy proxy)
+        {
+            ref var node = ref _nodes[proxy];
+            if (node.IsLeaf)
+            {
+                return 0;
+            }
+
+            return Math.Max(
+                            ComputeHeight(node.Child1),
+                            ComputeHeight(node.Child2)
+                           ) + 1;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void RebuildBottomUp(int free = 0)
+        {
+            var proxies = new Proxy[NodeCount + free];
+            var count = 0;
+
+            // Build array of leaves. Free the rest.
+            for (var i = 0; i < Capacity; ++i)
+            {
+                ref var node = ref _nodes[i];
+                if (node.Height < 0)
+                {
+                    // free node in pool
+                    continue;
+                }
+
+                var proxy = (Proxy) i;
+                if (node.IsLeaf)
+                {
+                    node.Parent = Proxy.Free;
+                    proxies[count++] = proxy;
+                }
+                else
+                {
+                    FreeNode(proxy);
+                }
+            }
+
+            while (count > 1)
+            {
+                var minCost = float.MaxValue;
+
+                var iMin = -1;
+                var jMin = -1;
+
+                for (var i = 0; i < count; ++i)
+                {
+                    ref var aabbI = ref _nodes[proxies[i]].Aabb;
+
+                    for (var j = i + 1; j < count; ++j)
+                    {
+                        ref var aabbJ = ref _nodes[proxies[j]].Aabb;
+
+                        var cost = AABB.Combine(aabbI, aabbJ).GetPerimeter();
+
+                        if (cost >= minCost)
+                        {
+                            continue;
+                        }
+
+                        iMin = i;
+                        jMin = j;
+                        minCost = cost;
+                    }
+                }
+
+                var child1 = proxies[iMin];
+                var child2 = proxies[jMin];
+
+                ref var parentNode = ref AllocateNode(out var parent);
+                ref var child1Node = ref _nodes[child1];
+                ref var child2Node = ref _nodes[child2];
+
+                parentNode.Child1 = child1;
+                parentNode.Child2 = child2;
+                parentNode.Height = Math.Max(child1Node.Height, child2Node.Height) + 1;
+                parentNode.Aabb = AABB.Combine(child1Node.Aabb, child2Node.Aabb);
+                parentNode.Parent = Proxy.Free;
+
+                child1Node.Parent = parent;
+                child2Node.Parent = parent;
+
+                proxies[jMin] = proxies[count - 1];
+                proxies[iMin] = parent;
+                --count;
+            }
+
+            _root = proxies[0];
+
+            Validate();
+        }
+
+        public void ShiftOrigin(in Vector2 newOrigin)
+        {
+            for (var i = 0; i < _nodes.Length; i++)
+            {
+                ref var node = ref _nodes[i];
+                var lb = node.Aabb.lowerBound;
+                var tr = node.Aabb.upperBound;
+
+                node.Aabb = new AABB(lb - newOrigin, tr - newOrigin);
+            }
+        }
+
+        private static readonly QueryCallback<QueryCallback> EasyQueryCallback = (callback, proxy) => callback(proxy);
+
+        public void Query(Func<int, bool> queryCallback, in AABB aabb)
+        {
+            using var stack = new GrowableStack<Proxy>(stackalloc Proxy[256]);
+            stack.Push(_root);
+
+            while (stack.GetCount() != 0)
+            {
+                var nodeId = stack.Pop();
+                if (nodeId == Proxy.Free)
+                {
+                    continue;
+                }
+
+                // Skip bounds check with Unsafe.Add().
+                var node = _nodes[nodeId];
+                if (node.Aabb.Intersects(aabb))
+                {
+                    if (node.IsLeaf)
+                    {
+                        var proceed = queryCallback(nodeId);
+                        if (proceed == false)
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        stack.Push(node.Child1);
+                        stack.Push(node.Child2);
+                    }
+                }
+            }
+        }
 
 		public void RayCast(Func<RayCastInput, int, float> RayCastCallback, in RayCastInput input)
 		{
@@ -795,7 +963,7 @@ namespace Box2D.NetStandard.Collision
 
 			// v is perpendicular to the segment.
 			Vector2 v = Vectex.Cross(1.0f, r);
-			var abs_v = Vector2.Abs(v);
+			var absV = Vector2.Abs(v);
 
 			// Separating axis for segment (Gino, p80).
 			// |dot(v, p1 - c)| > dot(|v|, h)
@@ -810,64 +978,212 @@ namespace Box2D.NetStandard.Collision
 				segmentAABB.upperBound = Vector2.Max(p1, t);
 			}
 
-			var stack = new Stack<int>(256);
-			stack.Push(m_root);
+            using var stack = new GrowableStack<Proxy>(stackalloc Proxy[256]);
+            stack.Push(_root);
 
-			while (stack.Count > 0)
-			{
-				int nodeId = stack.Pop();
-				if (nodeId == -1)
-				{
-					continue;
-				}
+            while (stack.GetCount() != 0)
+            {
+                var nodeId = stack.Pop();
+                if (nodeId == Proxy.Free)
+                {
+                    continue;
+                }
 
-				TreeNode node = m_nodes[nodeId];
+                // Skip bounds check with Unsafe.Add().
+                var node = _nodes[nodeId];
+                if (node.Aabb.Intersects(segmentAABB) == false)
+                {
+                    continue;
+                }
 
-				if (Collision.TestOverlap(node.aabb, segmentAABB) == false)
-				{
-					continue;
-				}
+                // Separating axis for segment (Gino, p80).
+                // |dot(v, p1 - c)| > dot(|v|, h)
+                var c = node.Aabb.GetCenter();
+                var h = node.Aabb.GetExtents();
+                var separation = Math.Abs(Vector2.Dot(v, p1 - c)) - Vector2.Dot(absV, h);
 
-				// Separating axis for segment (Gino, p80).
-				// |dot(v, p1 - c)| > dot(|v|, h)
-				Vector2 c = node.aabb.GetCenter();
-				Vector2 h = node.aabb.GetExtents();
-				float separation = MathF.Abs(Vector2.Dot(v, p1 - c)) - Vector2.Dot(abs_v, h);
-				if (separation > 0.0f)
-				{
-					continue;
-				}
+                if (separation > 0)
+                {
+                    continue;
+                }
 
-				if (node.IsLeaf())
-				{
-					RayCastInput subInput;
-					subInput.p1 = input.p1;
-					subInput.p2 = input.p2;
-					subInput.maxFraction = maxFraction;
+                if (node.IsLeaf)
+                {
+                    var subInput = input;
 
 					float value = RayCastCallback(subInput, nodeId);
 
-					if (value == 0.0f)
-						// The client has terminated the ray cast.
-					{
-						return;
-					}
+                    if (value == 0f)
+                    {
+                        // The client has terminated the ray cast.
+                        return;
+                    }
 
-					if (value > 0.0f)
-					{
-						// Update segment bounding box.
-						maxFraction = value;
-						Vector2 t = p1 + maxFraction * (p2 - p1);
-						segmentAABB.lowerBound = Vector2.Min(p1, t);
-						segmentAABB.upperBound = Vector2.Max(p1, t);
-					}
-				}
-				else
-				{
-					stack.Push(node.child1);
-					stack.Push(node.child2);
-				}
-			}
-		}
-	}
+                    if (value > 0)
+                    {
+                        // Update segment bounding box.
+                        maxFraction = value;
+                        var t = p1 + (p2 - p1) * maxFraction;
+                        segmentAABB = new AABB(
+                                               Vector2.Min(p1, t),
+                                               Vector2.Max(p1, t));
+                    }
+                }
+                else
+                {
+                    stack.Push(node.Child1);
+                    stack.Push(node.Child2);
+                }
+            }
+        }
+
+        [Conditional("DEBUG_DYNAMIC_TREE")]
+        private void Validate()
+        {
+            Validate(_root);
+
+            var freeCount = 0;
+            var freeIndex = _freeNodes;
+            while (freeIndex != Proxy.Free)
+            {
+                Assert(0 <= freeIndex);
+                Assert(freeIndex < Capacity);
+                freeIndex = _nodes[freeIndex].Parent;
+                ++freeCount;
+            }
+
+            Assert(Height == ComputeHeight());
+
+            Assert(NodeCount + freeCount == Capacity);
+        }
+
+        [Conditional("DEBUG_DYNAMIC_TREE")]
+        private void Validate(Proxy proxy)
+        {
+            if (proxy == Proxy.Free) return;
+
+            ref var node = ref _nodes[proxy];
+
+            if (proxy == _root)
+            {
+                Assert(node.Parent == Proxy.Free);
+            }
+
+            var child1 = node.Child1;
+            var child2 = node.Child2;
+
+            if (node.IsLeaf)
+            {
+                Assert(child1 == Proxy.Free);
+                Assert(child2 == Proxy.Free);
+                Assert(node.Height == 0);
+                return;
+            }
+
+            Assert(0 <= child1);
+            Assert(child1 < Capacity);
+            Assert(0 <= child2);
+            Assert(child2 < Capacity);
+
+            ref var child1Node = ref _nodes[child1];
+            ref var child2Node = ref _nodes[child2];
+
+            Assert(child1Node.Parent == proxy);
+            Assert(child2Node.Parent == proxy);
+
+            var height1 = child1Node.Height;
+            var height2 = child2Node.Height;
+
+            var height = 1 + Math.Max(height1, height2);
+
+            Assert(node.Height == height);
+
+            ref var aabb = ref node.Aabb;
+            Assert(aabb.Contains(child1Node.Aabb));
+            Assert(aabb.Contains(child2Node.Aabb));
+
+            Validate(child1);
+            Validate(child2);
+        }
+
+        [Conditional("DEBUG_DYNAMIC_TREE")]
+        private void ValidateHeight(Proxy proxy)
+        {
+            if (proxy == Proxy.Free)
+            {
+                return;
+            }
+
+            ref var node = ref _nodes[proxy];
+
+            if (node.IsLeaf)
+            {
+                Assert(node.Height == 0);
+                return;
+            }
+
+            var child1 = node.Child1;
+            var child2 = node.Child2;
+            ref var child1Node = ref _nodes[child1];
+            ref var child2Node = ref _nodes[child2];
+
+            var height1 = child1Node.Height;
+            var height2 = child2Node.Height;
+
+            var height = 1 + Math.Max(height1, height2);
+
+            Assert(node.Height == height);
+        }
+
+
+        [Conditional("DEBUG_DYNAMIC_TREE")]
+        [Conditional("DEBUG_DYNAMIC_TREE_ASSERTS")]
+        [DebuggerNonUserCode]
+        [DebuggerHidden]
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Assert(bool assertion, [CallerMemberName]
+            string? member = default,
+            [CallerFilePath]
+            string? file = default, [CallerLineNumber]
+            int line = default)
+        {
+            if (assertion) return;
+
+            var msg = $"Assertion failure in {member} ({file}:{line})";
+            Debug.Print(msg);
+            Debugger.Break();
+            throw new InvalidOperationException(msg);
+        }
+
+
+        private IEnumerable<(Proxy, Node)> DebugAllocatedNodesEnumerable
+        {
+            get {
+                for (var i = 0; i < _nodes.Length; i++)
+                {
+                    var node = _nodes[i];
+                    if (!node.IsFree)
+                    {
+                        yield return ((Proxy) i, node);
+                    }
+                }
+            }
+        }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        private (Proxy, Node)[] DebugAllocatedNodes
+        {
+            get {
+                var data = new (Proxy, Node)[NodeCount];
+                var i = 0;
+                foreach (var x in DebugAllocatedNodesEnumerable)
+                {
+                    data[i++] = x;
+                }
+
+                return data;
+            }
+        }
+    }
 }

@@ -25,12 +25,22 @@
 // SOFTWARE.
 */
 
+using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Box2D.NetStandard.Collision;
 
 namespace Box2D.NetStandard.Common
 {
 	public class Global
 	{
+		public static void Swap<T>(ref T a, ref T b)
+		{
+			T c = a;
+			a = b;
+			b = c;
+		}
+		
 		public static void GetPointStates(
 			out PointState[] state1,
 			out PointState[] state2,

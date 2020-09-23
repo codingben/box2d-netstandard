@@ -27,6 +27,7 @@
 
 
 using Box2D.NetStandard.Collision;
+using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Fixtures;
@@ -193,8 +194,8 @@ namespace Box2D.NetStandard.Dynamics.World
 
 		private void AddPair(object proxyUserDataA, object proxyUserDataB)
 		{
-			var proxyA = (FixtureProxy) proxyUserDataA;
-			var proxyB = (FixtureProxy) proxyUserDataB;
+			var proxyA = (FixtureProxy)proxyUserDataA;
+			var proxyB = (FixtureProxy)proxyUserDataB;
 
 			Fixture fixtureA = proxyA.fixture;
 			Fixture fixtureB = proxyB.fixture;

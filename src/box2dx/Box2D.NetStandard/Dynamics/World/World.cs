@@ -277,13 +277,10 @@ namespace Box2D.NetStandard.Dynamics.World
 			//Debug.Assert(_locked    == false);
 			if (m_locked)
 			{
-				if (m_locked)
-				{
-					throw new
-						Box2DException("Cannot destroy bodies in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
-				}
+				throw new
+					Box2DException("Cannot destroy bodies in the middle of Step. Has this been spawned from an event such as a ContactListener callback?");
 			}
-
+			
 			// Delete the attached joints.
 			JointEdge je = b.m_jointList;
 			while (je != null)

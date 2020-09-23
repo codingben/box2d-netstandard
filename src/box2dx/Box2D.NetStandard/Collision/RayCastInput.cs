@@ -25,6 +25,7 @@
 // SOFTWARE.
 */
 
+using System;
 using System.Numerics;
 
 namespace Box2D.NetStandard.Collision

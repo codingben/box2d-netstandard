@@ -100,7 +100,7 @@ namespace Box2D.NetStandard.Collision
 		public int GetProxyCount() => m_proxyCount;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetTreeHeight() => m_tree.GetHeight();
+		public int GetTreeHeight() => m_tree.Height;
 
 		public void UpdatePairs(Action<object, object> AddPair)
 		{
@@ -175,10 +175,10 @@ namespace Box2D.NetStandard.Collision
 		}
 
 		// Call MoveProxy as many times as you like, then when you are done
-		// call Commit to finalized the proxy pairs (for your time step).
+		// call Commit to finalize the proxy pairs (for your time step).
 		public void MoveProxy(int proxyId, in AABB aabb, in Vector2 displacement)
 		{
-			bool buffer = m_tree.MoveProxy(proxyId, aabb, displacement);
+			bool buffer = m_tree.MoveProxy((DynamicTree.Proxy)proxyId, aabb, displacement);
 			if (buffer)
 			{
 				BufferMove(proxyId);
