@@ -213,16 +213,14 @@ namespace Box2D.NetStandard.Collision
 
         private static int GrowthFunc(int x) => x + 256;
 
-        private const float AABBExtendSize = 0.1f;
+        private const float AABBExtendSize = 1f/32;
 
         private const float AABBMultiplier = 2f;
         
-        public DynamicTree() // : base(0.1f, null)
+        public DynamicTree()
         {
-
-
             _root = Proxy.Free;
-            _nodes = new Node[16];
+            _nodes = new Node[256];
 
             // Build a linked list for the free list.
             ref Node node = ref _nodes[0];
@@ -342,6 +340,9 @@ namespace Box2D.NetStandard.Collision
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void DestroyProxy(Proxy proxy)
         {
+            Assert(0 <= proxy && proxy < Capacity);
+            Assert(_nodes[proxy].IsLeaf);
+            
             RemoveLeaf(proxy);
             FreeNode(proxy);
         }
@@ -485,7 +486,7 @@ namespace Box2D.NetStandard.Collision
             }
             else
             {
-                _root = Proxy.Free;
+                _root = sibling;
                 siblingNode.Parent = Proxy.Free;
                 FreeNode(parent);
             }
