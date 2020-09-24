@@ -27,7 +27,7 @@ namespace Box2D.NetStandard.Common
         /// </summary>
         /// <remarks>
         ///     <paramref name="stackSpace"/> MUST BE A PIECE OF PINNED MEMORY,
-        ///     OR ELSE YOU HAVE A MASSIVE GC BUG ON YOUR HAND.
+        ///     OR ELSE YOU HAVE A MASSIVE GC BUG ON YOUR HANDS.
         /// </remarks>
         public GrowableStack(Span<T> stackSpace)
         {
