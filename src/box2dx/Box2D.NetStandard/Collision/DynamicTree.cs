@@ -41,18 +41,14 @@ namespace Box2D.NetStandard.Collision
 	///
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public sealed class DynamicTree
+	internal sealed class DynamicTree
 	{
-		public readonly struct Proxy : IEquatable<Proxy>, IComparable<Proxy>
+		internal readonly struct Proxy : IEquatable<Proxy>, IComparable<Proxy>
 		{
 			private readonly int _value;
 
-			public static Proxy Free
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => new Proxy(-1);
-			}
-
+			public static readonly Proxy Free = -1; 
+			
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public Proxy(int v) => _value = v;
 
@@ -98,15 +94,7 @@ namespace Box2D.NetStandard.Collision
 			public override string ToString()
 				=> _value.ToString();
 		}
-
-		public delegate float RayQueryCallback<in TState>(TState state, in RayCastInput ray, float fraction, Proxy proxy);
-
-		public delegate float RayQueryCallback(in RayCastInput ray, float fraction, Proxy proxy);
-
-		public delegate bool QueryCallback(int proxyId);
-
-		public delegate bool QueryCallback<in TState>(TState state, Proxy proxy);
-
+		
 		private struct Node
 		{
 			public AABB Aabb;
@@ -362,10 +350,10 @@ namespace Box2D.NetStandard.Collision
 			var d = displacement * AABBMultiplier;
 
 			// pls can we make math types mutable this sucks.
-			var l = fatAabb.Left;
-			var b = fatAabb.Bottom;
-			var r = fatAabb.Right;
-			var t = fatAabb.Top;
+			var l = fatAabb.lowerBound.X;
+			var b = fatAabb.lowerBound.Y;
+			var r = fatAabb.upperBound.X;
+			var t = fatAabb.upperBound.Y;
 
 			if (d.X < 0)
 			{
@@ -917,14 +905,12 @@ namespace Box2D.NetStandard.Collision
 			}
 		}
 
-		private static readonly QueryCallback<QueryCallback> EasyQueryCallback = (callback, proxy) => callback(proxy);
-
 		public void Query(Func<int, bool> queryCallback, in AABB aabb)
 		{
 			using var stack = new GrowableStack<Proxy>(stackalloc Proxy[256]);
 			stack.Push(_root);
 
-			while (stack.GetCount() != 0)
+			while (stack._count != 0)
 			{
 				var nodeId = stack.Pop();
 				if (nodeId == Proxy.Free)
@@ -981,7 +967,7 @@ namespace Box2D.NetStandard.Collision
 			using var stack = new GrowableStack<Proxy>(stackalloc Proxy[256]);
 			stack.Push(_root);
 
-			while (stack.GetCount() != 0)
+			while (stack._count != 0)
 			{
 				var nodeId = stack.Pop();
 				if (nodeId == Proxy.Free)
@@ -1037,7 +1023,7 @@ namespace Box2D.NetStandard.Collision
 			}
 		}
 
-		[Conditional("DEBUG_DYNAMIC_TREE")]
+		[Conditional("DEBUG")]
 		private void Validate()
 		{
 			Validate(_root);
@@ -1057,7 +1043,7 @@ namespace Box2D.NetStandard.Collision
 			Assert(NodeCount + freeCount == Capacity);
 		}
 
-		[Conditional("DEBUG_DYNAMIC_TREE")]
+		[Conditional("DEBUG")]
 		private void Validate(Proxy proxy)
 		{
 			if (proxy == Proxy.Free) return;
@@ -1134,10 +1120,8 @@ namespace Box2D.NetStandard.Collision
 
 			Assert(node.Height == height);
 		}
-
-
-		[Conditional("DEBUG_DYNAMIC_TREE")]
-		[Conditional("DEBUG_DYNAMIC_TREE_ASSERTS")]
+		
+		[Conditional("DEBUG")]
 		[DebuggerNonUserCode]
 		[DebuggerHidden]
 		[DebuggerStepThrough]

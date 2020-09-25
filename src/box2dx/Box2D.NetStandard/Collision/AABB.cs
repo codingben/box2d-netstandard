@@ -105,16 +105,13 @@ namespace Box2D.NetStandard.Collision
 			Vector2 vecAmt = new Vector2(amount);
 			return new AABB(lowerBound - vecAmt, upperBound + vecAmt);
 		}
-
-		public float Bottom => lowerBound.Y;
-		public float Top => upperBound.Y;
-		public float Left => lowerBound.X;
-		public float Right => upperBound.X;
 		
 		internal bool Intersects(in AABB other)
 		{
-			return other.Bottom <= this.Top && other.Top >= this.Bottom && other.Right >= this.Left &&
-			       other.Left <= this.Right;
+			return other.lowerBound.Y <= this.upperBound.Y &&
+			       other.upperBound.Y >= this.lowerBound.Y &&
+			       other.upperBound.X >= this.lowerBound.X &&
+			       other.lowerBound.X <= this.upperBound.X;
 		}
 		
 		/// Does this aabb contain the provided AABB.

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D.NetStandard.Common
@@ -19,7 +20,7 @@ namespace Box2D.NetStandard.Common
         // Because with .NET 5 we can use the Pinned Object Heap.
         private T* _stack;
         private bool _wasReallocated;
-        private int _count;
+        internal int _count;
         private int _capacity;
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace Box2D.NetStandard.Common
         ///     <paramref name="stackSpace"/> MUST BE A PIECE OF PINNED MEMORY,
         ///     OR ELSE YOU HAVE A MASSIVE GC BUG ON YOUR HANDS.
         /// </remarks>
-        public GrowableStack(Span<T> stackSpace)
+        internal GrowableStack(Span<T> stackSpace)
         {
             fixed (T* ap = stackSpace)
             {
@@ -41,7 +42,7 @@ namespace Box2D.NetStandard.Common
             _count = 0;
         }
 
-        public void Dispose()
+        internal void Dispose()
         {
             if (_wasReallocated)
             {
@@ -50,7 +51,7 @@ namespace Box2D.NetStandard.Common
             }
         }
 
-        public void Push(in T element)
+        internal void Push(in T element)
         {
             if (_count == _capacity)
             {
@@ -71,16 +72,11 @@ namespace Box2D.NetStandard.Common
             ++_count;
         }
 
-        public T Pop()
+        internal T Pop()
         {
             Debug.Assert(_count > 0);
-            --_count;
+            --_count;                
             return _stack[_count];
-        }
-
-        public int GetCount()
-        {
-            return _count;
         }
     }
 }
