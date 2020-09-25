@@ -10,7 +10,7 @@
     <Description>Box2D.NetStandard is the C# port of C++ Box2D. This package supports .NET Standard 2.1.</Description>
     <PackageProjectUrl>https://github.com/benzuk/box2d-netstandard</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>2.4.0.*</AssemblyVersion>
+    <AssemblyVersion>2.4.0.1</AssemblyVersion>
     <FileVersion>2.4.0.1</FileVersion>
     <Version>2.4.0-alpha1</Version>
     <PackageVersion>2.4.0-alpha1</PackageVersion>
