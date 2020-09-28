@@ -13,7 +13,8 @@ Loosely based on Box2DX by Ihar Kalasouski 2008.
 ## Current Status
 
 - The latest non-pre-release version on NuGet (1.0.3) is essentially Box2DX from 2008 updated to work with .NET Standard and cleaned up.
-- The current pre-release version is unstable. 2.0.0-alpha produces Null Reference Exceptions, for example. The API is unstable - the intent is to change all casing to lowerCamelCase to match Erin's code, and replace all Get...() and Set...(value) methods with Properties, but this is still all half-done. ChainShape exists, but no collisions take place yet. If you take the pre-release version, PLEASE feel free to raise Issues and create Pull Requests, but at the same time DON'T expect perfection or stability.
+- The current pre-release version may be unstable. For example, an earlier version was known to produce Null Reference Exceptions. The API is unstable - the intent is to change all casing to lowerCamelCase to match Erin's code, and replace all Get...() and Set...(value) methods with Properties. Some features beyond Box2D 2.4.0 _are_ implemented, but not all.
+If you take the pre-release version, PLEASE feel free to raise Issues and create Pull Requests, but at the same time DON'T expect perfection or stability.
 
 ## Known issues
 
