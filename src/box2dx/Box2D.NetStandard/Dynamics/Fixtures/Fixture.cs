@@ -204,7 +204,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 				Shape.ComputeAABB(out AABB aabb1, in transform1, proxy.childIndex);
 				Shape.ComputeAABB(out AABB aabb2, in transform2, proxy.childIndex);
 
-				proxy.aabb.Combine(aabb1, aabb2);
+				proxy.aabb = AABB.Combine(aabb1, aabb2);
 
 				Vector2 displacement = aabb2.GetCenter() - aabb1.GetCenter();
 

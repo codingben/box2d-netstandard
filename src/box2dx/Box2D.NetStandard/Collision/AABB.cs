@@ -84,7 +84,7 @@ namespace Box2D.NetStandard.Collision
 
 		/// Combine an AABB into this one.
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void Combine(in AABB aabb)
+		internal void Combine(in AABB aabb)
 		{
 			lowerBound = Vector2.Min(lowerBound, aabb.lowerBound);
 			upperBound = Vector2.Max(upperBound, aabb.upperBound);
@@ -92,12 +92,28 @@ namespace Box2D.NetStandard.Collision
 
 		/// Combine two AABBs into this one.
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Combine(in AABB aabb1, in AABB aabb2)
+		internal static AABB Combine(in AABB aabb1, in AABB aabb2)
 		{
-			lowerBound = Vector2.Min(aabb1.lowerBound, aabb2.lowerBound);
-			upperBound = Vector2.Max(aabb1.upperBound, aabb2.upperBound);
+			AABB result = default;
+			result.lowerBound = Vector2.Min(aabb1.lowerBound, aabb2.lowerBound);
+			result.upperBound = Vector2.Max(aabb1.upperBound, aabb2.upperBound);
+			return result;
 		}
 
+		internal AABB Enlarged(float amount)
+		{
+			Vector2 vecAmt = new Vector2(amount);
+			return new AABB(lowerBound - vecAmt, upperBound + vecAmt);
+		}
+		
+		internal bool Intersects(in AABB other)
+		{
+			return other.lowerBound.Y <= this.upperBound.Y &&
+			       other.upperBound.Y >= this.lowerBound.Y &&
+			       other.upperBound.X >= this.lowerBound.X &&
+			       other.lowerBound.X <= this.upperBound.X;
+		}
+		
 		/// Does this aabb contain the provided AABB.
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal bool Contains(in AABB aabb)
