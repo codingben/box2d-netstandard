@@ -21,7 +21,7 @@ If you take the pre-release version, PLEASE feel free to raise Issues and create
 In 1.0.3:
 - None.
 
-In 2.0.x:
+In 2.4.x:
 - Code Optimisation must be enabled for things to work properly, and you **must not** have a debugger attached.
 
 ## Source
