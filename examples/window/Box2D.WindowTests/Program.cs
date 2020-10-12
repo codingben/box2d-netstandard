@@ -2,16 +2,14 @@
     Window Simulation Copyright © Ben Ukhanov 2020
 */
 
-using System;
 using System.Threading;
-using Box2D.NetStandard.Collision;
-using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 using Box2D.Window;
 using Box2D.WorldTests;
+using OpenTK.Windowing.Common;
 
 namespace Box2D.WindowTests
 {
@@ -21,11 +19,6 @@ namespace Box2D.WindowTests
 
         private static World world;
         private static Body focusBody;
-
-        static Program()
-        {
-            CreateWorld();
-        }
 
         private static void CreateWorld()
         {
@@ -47,35 +40,38 @@ namespace Box2D.WindowTests
 
         private static void Main()
         {
-            var windowThread = new Thread(new ThreadStart(() =>
-            {
-                var game = new SimulationWindow("Physics Simulation", 800, 600, focusBody);
-                game.UpdateFrame += OnUpdateFrame;
-                game.Disposed += OnDisposed;
-                game.SetView(new CameraView());
+            CreateWorld();
 
-                var physicsDrawer = new DrawPhysics(game);
-
-                // physicsDrawer.AppendFlags(DrawFlags.Aabb);
-
-                physicsDrawer.AppendFlags(DrawFlags.Shape);
-
-                // physicsDrawer.AppendFlags(DrawFlags.Pair);
-
-                physicsDrawer.AppendFlags(DrawFlags.Joint);
-
-                world.SetDebugDraw(physicsDrawer);
-
-                // CreateBodies();
-
-                game.VSync = OpenTK.VSyncMode.Off;
-                game.Run(60.0, 60.0);
-            }));
-
+            var windowThread = new Thread(new ThreadStart(CreateWindow));
             windowThread.Start();
         }
 
-        private static void OnUpdateFrame(object sender, EventArgs eventArgs)
+        private static void CreateWindow()
+        {
+            var game = new SimulationWindow("Physics Simulation", 800, 600, focusBody);
+            game.UpdateFrame += OnUpdateFrame;
+            game.Unload += OnUnload;
+            game.SetView(new CameraView());
+
+            var physicsDrawer = new DrawPhysics(game);
+
+            // physicsDrawer.AppendFlags(DrawFlags.Aabb);
+
+            physicsDrawer.AppendFlags(DrawFlags.Shape);
+
+            // physicsDrawer.AppendFlags(DrawFlags.Pair);
+
+            physicsDrawer.AppendFlags(DrawFlags.Joint);
+
+            world.SetDebugDraw(physicsDrawer);
+
+            // CreateBodies();
+
+            game.VSync = VSyncMode.Off;
+            game.Run();
+        }
+
+        private static void OnUpdateFrame(FrameEventArgs args)
         {
             // Prepare for simulation. Typically we use a time step of 1/60 of a
             // second (60Hz) and 10 iterations. This provides a high quality simulation
@@ -95,10 +91,9 @@ namespace Box2D.WindowTests
             world?.DrawDebugData();
         }
 
-        private static void OnDisposed(object sender, EventArgs eventArgs)
+        private static void OnUnload()
         {
             world?.SetDebugDraw(null);
-            // world?.Dispose();
         }
 
         #region Deprecated
