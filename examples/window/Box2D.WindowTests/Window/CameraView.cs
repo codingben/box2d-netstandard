@@ -2,11 +2,13 @@
     Window Simulation Copyright © Ben Ukhanov 2020
 */
 
-using OpenTK;
+using System.Numerics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Box2D.Window
 {
+    using Matrix4 = OpenTK.Mathematics.Matrix4;
+
     public class CameraView : IView
     {
         public Vector2 Position { get; set; }

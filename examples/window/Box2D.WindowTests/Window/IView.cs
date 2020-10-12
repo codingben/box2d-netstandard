@@ -2,7 +2,7 @@
     Window Simulation Copyright © Ben Ukhanov 2020
 */
 
-using OpenTK;
+using System.Numerics;
 
 namespace Box2D.Window
 {
