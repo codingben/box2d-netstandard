@@ -6,28 +6,40 @@ using System;
 using System.Collections.Concurrent;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Graphics;
-using OpenTK.Input;
 using Math = System.Math;
 using Color = Box2D.NetStandard.Dynamics.World.Color;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Numerics;
 
 namespace Box2D.Window
 {
     public class SimulationWindow : GameWindow, IWindow
     {
         private readonly string windowTitle;
-        private readonly Body _focusBody;
+        private readonly Body focusBody;
         private readonly ConcurrentQueue<Action> drawActions;
 
         private IView view;
 
         public SimulationWindow(string title, int width, int height, Body focusBody = null)
-            : base(width, height, GraphicsMode.Default, title, GameWindowFlags.FixedWindow)
+            : base(
+                new GameWindowSettings()
+                {
+                    RenderFrequency = 60.0,
+                    UpdateFrequency = 60.0
+                },
+                new NativeWindowSettings()
+                {
+                    Title = title,
+                    Size = new OpenTK.Mathematics.Vector2i(width, height)
+                })
         {
+            this.focusBody = focusBody;
+
             windowTitle = title;
-            _focusBody = focusBody;
             drawActions = new ConcurrentQueue<Action>();
         }
 
@@ -39,15 +51,15 @@ namespace Box2D.Window
         public static bool stepNext;
         public static bool paused = false;
 
-        private int mouseLast = 0;
+        private float mouseLast = 0;
         private int frames = 0;
 
         protected override void OnMouseWheel(MouseWheelEventArgs eventArgs)
         {
             base.OnMouseWheel(eventArgs);
 
-            int mouseDelta = eventArgs.Value - mouseLast;
-            mouseLast = eventArgs.Value;
+            float mouseDelta = eventArgs.OffsetX - mouseLast;
+            mouseLast = eventArgs.OffsetX;
 
             if (mouseDelta > 0) view.Zoom *= 1.2f;
             if (mouseDelta < 0) view.Zoom /= 1.2f;
@@ -57,7 +69,7 @@ namespace Box2D.Window
         {
             base.OnKeyDown(eventArgs);
 
-            if (eventArgs.Key == Key.Enter)
+            if (eventArgs.Key == Keys.Enter)
             {
                 if (view != null)
                 {
@@ -65,12 +77,12 @@ namespace Box2D.Window
                 }
             }
 
-            if (eventArgs.Key == Key.Space)
+            if (eventArgs.Key == Keys.Space)
             {
                 stepNext = true;
             }
 
-            if (eventArgs.Key == Key.P)
+            if (eventArgs.Key == Keys.P)
             {
                 paused = !paused;
             }
@@ -82,14 +94,14 @@ namespace Box2D.Window
 
             Title = $"{windowTitle} - FPS: {RenderFrequency:0.0} - Frames: {frames}";
 
-            if (Focused)
+            if (IsFocused)
             {
-                if (Mouse.GetState().IsButtonDown(MouseButton.Right))
+                if (IsMouseButtonDown(MouseButton.Right))
                 {
                     if (view != null)
                     {
-                        var x = Mouse.GetState().X;
-                        var y = Mouse.GetState().Y;
+                        var x = MousePosition.X;
+                        var y = MousePosition.Y;
                         var direction = new Vector2(x, -y) - view.Position;
 
                         view.Position += direction * WindowSettings.MouseMoveSpeed;
@@ -116,11 +128,11 @@ namespace Box2D.Window
             base.OnRenderFrame(eventArgs);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(OpenTK.Color.Black);
+            GL.ClearColor(OpenTK.Mathematics.Color4.Black);
 
-            if (_focusBody != null)
+            if (focusBody != null)
             {
-                var bodyPosition = _focusBody.GetPosition();
+                var bodyPosition = focusBody.GetPosition();
                 view.Position = new Vector2(bodyPosition.X, bodyPosition.Y);
             }
 
@@ -138,12 +150,12 @@ namespace Box2D.Window
         {
             var horizontal = 0;
 
-            if (Keyboard.GetState().IsKeyDown(Key.Left))
+            if (IsKeyDown(Keys.Left))
             {
                 horizontal = -1;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Key.Right))
+            if (IsKeyDown(Keys.Right))
             {
                 horizontal = 1;
             }
@@ -155,12 +167,12 @@ namespace Box2D.Window
         {
             var vertical = 0;
 
-            if (Keyboard.GetState().IsKeyDown(Key.Up))
+            if (IsKeyDown(Keys.Up))
             {
                 vertical = 1;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Key.Down))
+            if (IsKeyDown(Keys.Down))
             {
                 vertical = -1;
             }
