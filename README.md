@@ -7,7 +7,7 @@ Box2D .NET Standard is the port of Box2D from C++ to C# by Ben Ukhanov & Hugh Ph
 Loosely based on Box2DX by Ihar Kalasouski 2008.
 
 - The purpose of this repository is to create Box2D .NET Standard library.
-- The .NET Standard supports .NET Framework, .NET Core, and .NET 5.
+- The .NET Standard supports .NET Framework, .NET Core, and .NET 5.0.
 - The NuGet package is available on [Box2D.NetStandard](https://www.nuget.org/packages/Box2D.NetStandard/).
 
 ## Current Status
