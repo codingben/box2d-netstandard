@@ -18,7 +18,7 @@ If you take the pre-release version, PLEASE feel free to raise Issues and create
 
 ## Known issues
 
-In 1.0.3:
+In 1.0.x:
 - None.
 
 In 2.4.x:
