@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\examples\window\Box2D.WorldTests\Box2D.WorldTests.csproj" />
+    <ProjectReference Include="..\Box2D.WorldTests\Box2D.WorldTests.csproj" />
     <ProjectReference Include="..\Box2D.Window\Box2D.Window.csproj" />
   </ItemGroup>
 </Project>
