@@ -71,7 +71,7 @@ namespace Box2D.NetStandard.Collision
 			SimplexVertex[] vertices = m_v;
 			for (var i = 0; i < m_count; ++i)
 			{
-				SimplexVertex v = vertices[i];
+				ref SimplexVertex v = ref vertices[i];
 				v.indexA = cache.indexA[i];
 				v.indexB = cache.indexB[i];
 				Vector2 wALocal = proxyA.GetVertex(v.indexA);
@@ -98,7 +98,7 @@ namespace Box2D.NetStandard.Collision
 			// If the cache is empty or invalid ...
 			if (m_count == 0)
 			{
-				SimplexVertex v = vertices[0];
+				ref SimplexVertex v = ref vertices[0];
 				v.indexA = 0;
 				v.indexB = 0;
 				Vector2 wALocal = proxyA.GetVertex(0);
