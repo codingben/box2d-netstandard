@@ -4,15 +4,15 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Erin Catto, Ben Ukhanov, Hugh Phoenix-Hulme</Authors>
-    <Copyright>Copyright © Erin Catto, Ben Ukhanov, Hugh Phoenix-Hulme 2020</Copyright>
+    <Copyright>Copyright © Erin Catto, Ben Ukhanov, Hugh Phoenix-Hulme 2021</Copyright>
     <PackageTags>Box2D, Physics, .NET, Standard, Core</PackageTags>
     <Description>Box2D.NetStandard is the C# port of C++ Box2D. This package supports .NET Standard 2.1.</Description>
     <PackageProjectUrl>https://github.com/benukhanov/box2d-netstandard</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <AssemblyVersion>2.4.0.1</AssemblyVersion>
-    <FileVersion>2.4.0.1</FileVersion>
-    <Version>2.4.0-alpha1</Version>
-    <PackageVersion>2.4.0-alpha1</PackageVersion>
+    <AssemblyVersion>2.4.1.2</AssemblyVersion>
+    <FileVersion>2.4.1.2</FileVersion>
+    <Version>2.4.1-alpha</Version>
+    <PackageVersion>2.4.1-alpha</PackageVersion>
     <TieredCompilation>false</TieredCompilation>
     <Nullable>disable</Nullable>
   </PropertyGroup>
