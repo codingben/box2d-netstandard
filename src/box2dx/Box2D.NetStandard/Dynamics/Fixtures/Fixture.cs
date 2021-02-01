@@ -44,7 +44,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 	///  Fixtures are created via Body.CreateFixture.
 	///  @warning you cannot reuse fixtures.
 	/// </summary>
-	[DebuggerDisplay("Fixture of {m_body.m_userData}")]
+	[DebuggerDisplay("Fixture of {m_body.UserData}")]
 	public class Fixture
 	{
 		internal Body m_body;

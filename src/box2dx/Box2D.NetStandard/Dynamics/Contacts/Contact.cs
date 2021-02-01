@@ -499,7 +499,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 				}
 
 				// Compute a tentative new simplex vertex using support points.
-				SimplexVertex vertex = vertices[simplex.m_count];
+				ref SimplexVertex vertex = ref vertices[simplex.m_count];
 				vertex.indexA = proxyA.GetSupport(Math.MulT(transformA.q, -d));
 				vertex.wA = Math.Mul(transformA, proxyA.GetVertex(vertex.indexA));
 				vertex.indexB = proxyB.GetSupport(Math.MulT(transformB.q, d));
