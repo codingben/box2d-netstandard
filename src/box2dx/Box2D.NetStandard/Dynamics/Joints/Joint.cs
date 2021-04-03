@@ -35,6 +35,7 @@ using Box2D.NetStandard.Dynamics.Joints.Mouse;
 using Box2D.NetStandard.Dynamics.Joints.Prismatic;
 using Box2D.NetStandard.Dynamics.Joints.Pulley;
 using Box2D.NetStandard.Dynamics.Joints.Revolute;
+using Box2D.NetStandard.Dynamics.Joints.Weld;
 using Box2D.NetStandard.Dynamics.Joints.Wheel;
 using Box2D.NetStandard.Dynamics.World;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
@@ -198,7 +199,8 @@ namespace Box2D.NetStandard.Dynamics.Joints
 				       RevoluteJointDef d  => new RevoluteJoint(d),
 				       PulleyJointDef d    => new PulleyJoint(d),
 				       GearJointDef d      => new GearJoint(d),
-				       WheelJointDef d     => new WheelJoint(d)
+				       WheelJointDef d     => new WheelJoint(d),
+				       WeldJointDef d     => new WeldJoint(d)
 			       };
 		}
 
