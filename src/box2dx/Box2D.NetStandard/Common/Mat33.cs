@@ -64,7 +64,10 @@ namespace Box2D.NetStandard.Common
 		{
 			float det = Vector3.Dot(ex, Vector3.Cross(ey, ez));
 			//Debug.Assert(det != 0.0f);
-			det = 1.0f / det;
+			if (det != 0.0f)
+			{
+				det = 1.0f / det;
+			}
 			var x = new Vector3();
 			x.X = det * Vector3.Dot(b, Vector3.Cross(ey, ez));
 			x.Y = det * Vector3.Dot(ex, Vector3.Cross(b, ez));
@@ -82,14 +85,17 @@ namespace Box2D.NetStandard.Common
 			float a11 = ex.X, a12 = ey.X, a21 = ex.Y, a22 = ey.Y;
 			float det = a11 * a22 - a12 * a21;
 			//Debug.Assert(det != 0.0f);
-			det = 1.0f / det;
+			if (det != 0.0f)
+			{
+				det = 1.0f / det;
+			}
 			var x = new Vector2();
 			x.X = det * (a22 * b.X - a12 * b.Y);
 			x.Y = det * (a11 * b.Y - a21 * b.X);
 			return x;
 		}
 
-		internal void GetInverse22(Mat33 M)
+		internal Mat33 GetInverse22(Mat33 M)
 		{
 			float a = ex.X, b = ey.X, c = ex.Y, d = ey.Y;
 			float det = a * d - b * c;
@@ -107,9 +113,11 @@ namespace Box2D.NetStandard.Common
 			M.ez.X = 0.0f;
 			M.ez.Y = 0.0f;
 			M.ez.Z = 0.0f;
+
+			return M;
 		}
 
-		internal void GetSymInverse33(Mat33 M)
+		internal Mat33 GetSymInverse33(Mat33 M)
 		{
 			float det = Vector3.Dot(ex, Vector3.Cross(ey, ez));
 			if (det != 0.0f)
@@ -132,6 +140,8 @@ namespace Box2D.NetStandard.Common
 			M.ez.X = M.ex.Z;
 			M.ez.Y = M.ey.Z;
 			M.ez.Z = det * (a11 * a22 - a12 * a12);
+
+			return M;
 		}
 	}
 }

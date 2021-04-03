@@ -122,7 +122,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
 
 			if (Stiffness > 0.0f)
 			{
-				K.GetInverse22(m_mass);
+				m_mass = K.GetInverse22(m_mass);
 
 				float invM = iA + iB;
 
@@ -143,13 +143,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
 			}
 			else if (K.ez.Z == 0.0f)
 			{
-				K.GetInverse22(m_mass);
+				m_mass = K.GetInverse22(m_mass);
 				m_gamma = 0.0f;
 				m_bias = 0.0f;
 			}
 			else
 			{
-				K.GetSymInverse33(m_mass);
+				m_mass = K.GetSymInverse33(m_mass);
 				m_gamma = 0.0f;
 				m_bias = 0.0f;
 			}
