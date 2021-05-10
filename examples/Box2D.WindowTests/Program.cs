@@ -86,10 +86,11 @@ namespace Box2D.WindowTests
 
             // Instruct the world to perform a single step of simulation. It is
             // generally best to keep the time step and iterations fixed.
-            if ((SimulationWindow.stepNext || !StepByStep) && !SimulationWindow.paused)
+            if ((SimulationWindow.StepNext || !StepByStep) && !SimulationWindow.Paused)
             {
                 world?.Step(TimeStep, VelocityIterations, PositionIterations);
-                SimulationWindow.stepNext = false;
+                
+                SimulationWindow.StepNext = false;
             }
 
             world?.DrawDebugData();

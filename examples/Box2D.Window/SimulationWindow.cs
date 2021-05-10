@@ -1,6 +1,6 @@
 ﻿/*
-    Window Simulation Copyright © Ben Ukhanov 2020
-*/
+ * Window Simulation Copyright © Ben Ukhanov 2021
+ */
 
 using System;
 using System.Collections.Concurrent;
@@ -17,17 +17,24 @@ namespace Box2D.Window
 {
     public class SimulationWindow : GameWindow, IWindow
     {
-        private readonly string windowTitle;
-        private readonly Body _focusBody;
+        public static bool StepNext;
+        public static bool Paused;
+
+        private readonly string title;
+        private readonly Body focusBody;
         private readonly ConcurrentQueue<Action> drawActions;
 
         private IView view;
 
+        private int mouseLast = 0;
+        private int frames = 0;
+
         public SimulationWindow(string title, int width, int height, Body focusBody = null)
             : base(width, height, GraphicsMode.Default, title, GameWindowFlags.FixedWindow)
         {
-            windowTitle = title;
-            _focusBody = focusBody;
+            this.title = title;
+            this.focusBody = focusBody;
+
             drawActions = new ConcurrentQueue<Action>();
         }
 
@@ -36,17 +43,11 @@ namespace Box2D.Window
             this.view = view;
         }
 
-        public static bool stepNext;
-        public static bool paused = false;
-
-        private int mouseLast = 0;
-        private int frames = 0;
-
         protected override void OnMouseWheel(MouseWheelEventArgs eventArgs)
         {
             base.OnMouseWheel(eventArgs);
 
-            int mouseDelta = eventArgs.Value - mouseLast;
+            var mouseDelta = eventArgs.Value - mouseLast;
             mouseLast = eventArgs.Value;
 
             if (mouseDelta > 0) view.Zoom *= 1.2f;
@@ -67,12 +68,12 @@ namespace Box2D.Window
 
             if (eventArgs.Key == Key.Space)
             {
-                stepNext = true;
+                StepNext = true;
             }
 
             if (eventArgs.Key == Key.P)
             {
-                paused = !paused;
+                Paused = !Paused;
             }
         }
 
@@ -80,7 +81,7 @@ namespace Box2D.Window
         {
             base.OnUpdateFrame(eventArgs);
 
-            Title = $"{windowTitle} - FPS: {RenderFrequency:0.0} - Frames: {frames}";
+            Title = $"{title} - FPS: {RenderFrequency:0.0} - Frames: {frames}";
 
             if (Focused)
             {
@@ -111,16 +112,16 @@ namespace Box2D.Window
 
         protected override void OnRenderFrame(FrameEventArgs eventArgs)
         {
-            if (!paused) frames++;
+            if (!Paused) frames++;
 
             base.OnRenderFrame(eventArgs);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(OpenTK.Color.Black);
 
-            if (_focusBody != null)
+            if (focusBody != null)
             {
-                var bodyPosition = _focusBody.GetPosition();
+                var bodyPosition = focusBody.GetPosition();
                 view.Position = new Vector2(bodyPosition.X, bodyPosition.Y);
             }
 
@@ -289,7 +290,6 @@ namespace Box2D.Window
                 GL.Vertex2(a.X, a.Y);
 
                 var ex = new System.Numerics.Vector2(xf.q.M11, xf.q.M21);
-
                 var b = a + (kAxisScale * ex);
 
                 GL.Vertex2(b.X, b.Y);
@@ -297,7 +297,6 @@ namespace Box2D.Window
                 GL.Vertex2(a.X, a.Y);
 
                 var ey = new System.Numerics.Vector2(xf.q.M12, xf.q.M22);
-
                 b = a + (kAxisScale * ey);
 
                 GL.Vertex2(b.X, b.Y);
