@@ -1,11 +1,9 @@
 ﻿/*
-    Window Simulation Copyright © Ben Ukhanov 2020
-*/
+ * Window Simulation Copyright © Ben Ukhanov 2021
+ */
 
 using System.Numerics;
 using Box2D.NetStandard.Common;
-using Box2D.NetStandard.Dynamics;
-using Box2D.NetStandard.Dynamics.World;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 using Color = Box2D.NetStandard.Dynamics.World.Color;
 
