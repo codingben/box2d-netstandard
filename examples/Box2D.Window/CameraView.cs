@@ -1,6 +1,6 @@
 ﻿/*
-    Window Simulation Copyright © Ben Ukhanov 2020
-*/
+ * Window Simulation Copyright © Ben Ukhanov 2021
+ */
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -16,7 +16,7 @@ namespace Box2D.Window
         public CameraView()
         {
             Position = new Vector2(12, 5);
-            Zoom = 0.072F; // WindowSettings.MinimumCameraZoom;
+            Zoom = WindowSettings.MinimumCameraZoom;
         }
 
         public void Update()
