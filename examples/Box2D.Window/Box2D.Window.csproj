@@ -6,7 +6,7 @@
     <Copyright>Copyright © Ben Ukhanov 2021</Copyright>
     <PackageTags>Box2D, OpenTK</PackageTags>
     <Description>The Box2D window physics simulation.</Description>
-    <PackageProjectUrl>https://github.com/benzuk/box2d-netstandard/tree/master/examples/window</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/benukhanov/box2d-netstandard/tree/master/examples/Box2D.Window</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <FileVersion>1.1.0.0</FileVersion>
