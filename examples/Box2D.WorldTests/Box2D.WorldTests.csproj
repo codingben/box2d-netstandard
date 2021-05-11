@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-      <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\box2dx\Box2D.NetStandard\Box2D.NetStandard.csproj" />
+    <PackageReference Include="Box2D.NetStandard" Version="2.4.2-alpha"/>
   </ItemGroup>
 </Project>
