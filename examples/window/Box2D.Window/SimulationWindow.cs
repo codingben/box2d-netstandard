@@ -1,6 +1,6 @@
 ﻿/*
-    Window Simulation Copyright © Ben Ukhanov 2020
-*/
+ * Window Simulation Copyright © Ben Ukhanov 2021
+ */
 
 using System;
 using System.Collections.Concurrent;
@@ -53,12 +53,24 @@ namespace Box2D.Window
         {
             base.OnKeyDown(eventArgs);
 
+            if (view == null)
+            {
+                return;
+            }
+
             if (eventArgs.Key == Key.Enter)
             {
-                if (view != null)
-                {
-                    view.Position = Vector2.Zero;
-                }
+                view.Position = Vector2.Zero;
+            }
+
+            if (eventArgs.Key == Key.Minus || eventArgs.Key == Key.KeypadMinus)
+            {
+                view.Zoom /= 1.2f;
+            }
+
+            if (eventArgs.Key == Key.Plus || eventArgs.Key == Key.KeypadPlus)
+            {
+                view.Zoom *= 1.2f;
             }
         }
 
