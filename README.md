@@ -12,16 +12,16 @@ Loosely based on Box2DX by Ihar Kalasouski 2008.
 
 ## Current Status
 
-- The latest non-pre-release version on NuGet (1.0.3) is essentially Box2DX from 2008 updated to work with .NET Standard and cleaned up.
+- The latest non-pre-release version on NuGet (v1.x.x) is essentially Box2DX from 2008 updated to work with .NET Standard and cleaned up.
 - The current pre-release version may be unstable. For example, an earlier version was known to produce Null Reference Exceptions. The API is unstable - the intent is to change all casing to lowerCamelCase to match Erin's code, and replace all Get...() and Set...(value) methods with Properties. Some features beyond Box2D 2.4.0 _are_ implemented, but not all.
 If you take the pre-release version, PLEASE feel free to raise Issues and create Pull Requests, but at the same time DON'T expect perfection or stability.
 
 ## Known issues
 
-In 1.0.x:
+In v1.0.x:
 - None.
 
-In 2.4.x:
+In v2.4.x:
 - Code Optimisation must be enabled for things to work properly, and you **must not** have a debugger attached.
 
 ## Source
