@@ -39,6 +39,7 @@ Anyone who wants to contribute to this repository:
 ## Features
 
 ### Collision
+
 - Continuous collision detection.
 - Contact callbacks: add, persist, remove.
 - Convex polygons and circles.
@@ -50,6 +51,7 @@ Anyone who wants to contribute to this repository:
 - Collision groups and categories.
 
 ### Physics
+
 - Continuous physics with time of impact solver.
 - Persistent body-joint-contact graph.
 - Island solution and sleep management.
@@ -61,14 +63,17 @@ Anyone who wants to contribute to this repository:
 - Fairly accurate reaction forces/impulses.
 
 ### System
+
 - Centralized tuning parameters.
 - Pure .NET Standard 2.0+ library.
 - Please [See .NET Implementation Support](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
 
 ## Documentation
+
 - [Manual](https://box2d.org/documentation/)
 - [Reddit](https://www.reddit.com/r/box2d/)
 - [Discord](https://discord.gg/NKYgCBP)
 
 ## License
+
 Original C++ Box2D is developed by Erin Catto, under the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
