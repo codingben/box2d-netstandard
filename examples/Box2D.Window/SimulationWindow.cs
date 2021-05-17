@@ -58,14 +58,6 @@ namespace Box2D.Window
         {
             base.OnKeyDown(eventArgs);
 
-            if (eventArgs.Key == Key.Enter)
-            {
-                if (view != null)
-                {
-                    view.Position = Vector2.Zero;
-                }
-            }
-
             if (eventArgs.Key == Key.Space)
             {
                 StepNext = true;
@@ -74,6 +66,16 @@ namespace Box2D.Window
             if (eventArgs.Key == Key.P)
             {
                 Paused = !Paused;
+            }
+
+            if (view == null)
+            {
+                return;
+            }
+
+            if (eventArgs.Key == Key.Enter)
+            {
+                view.Position = Vector2.Zero;
             }
 
             if (eventArgs.Key == Key.Minus || eventArgs.Key == Key.KeypadMinus)
@@ -93,29 +95,28 @@ namespace Box2D.Window
 
             Title = $"{title} - FPS: {RenderFrequency:0.0} - Frames: {frames}";
 
+            if (view == null)
+            {
+                return;
+            }
+
             if (Focused)
             {
                 if (Mouse.GetState().IsButtonDown(MouseButton.Right))
                 {
-                    if (view != null)
-                    {
-                        var x = Mouse.GetState().X;
-                        var y = Mouse.GetState().Y;
-                        var direction = new Vector2(x, -y) - view.Position;
+                    var x = Mouse.GetState().X;
+                    var y = Mouse.GetState().Y;
+                    var direction = new Vector2(x, -y) - view.Position;
 
-                        view.Position += direction * WindowSettings.MouseMoveSpeed;
-                    }
+                    view.Position += direction * WindowSettings.MouseMoveSpeed;
                 }
                 else
                 {
-                    if (view != null)
-                    {
-                        var x = GetHorizontal();
-                        var y = GetVertical();
-                        var direction = new Vector2(x, y);
+                    var x = GetHorizontal();
+                    var y = GetVertical();
+                    var direction = new Vector2(x, y);
 
-                        view.Position += direction * WindowSettings.KeyboardMoveSpeed;
-                    }
+                    view.Position += direction * WindowSettings.KeyboardMoveSpeed;
                 }
             }
         }
