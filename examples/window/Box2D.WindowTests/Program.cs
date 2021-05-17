@@ -8,6 +8,7 @@ using Box2D.Window;
 using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
+using OpenTK;
 
 namespace Box2D.WindowTests
 {
@@ -27,7 +28,7 @@ namespace Box2D.WindowTests
                 var game = new SimulationWindow("Physics Simulation", 800, 600);
                 game.UpdateFrame += OnUpdateFrame;
                 game.Disposed += OnDisposed;
-                game.SetView(new CameraView());
+                game.SetView(new CameraView(position: Vector2.Zero, zoom: 0.008f));
 
                 var physicsDrawer = new DrawPhysics(game);
                 physicsDrawer.AppendFlags(DebugDraw.DrawFlags.Aabb);
