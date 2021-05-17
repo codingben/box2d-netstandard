@@ -10,7 +10,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AssemblyVersion>2.0.2.0</AssemblyVersion>
     <FileVersion>2.0.2.0</FileVersion>
-    <Version>2.0.2</Version>
+    <Version>2.0.2-alpha</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="OpenTK.NetStandard" Version="1.0.5.22"/>
