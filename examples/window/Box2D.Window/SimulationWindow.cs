@@ -80,29 +80,28 @@ namespace Box2D.Window
 
             Title = $"{windowTitle} - FPS: {RenderFrequency:0.0}";
 
+            if (view == null)
+            {
+                return;
+            }
+
             if (Focused)
             {
                 if (Mouse.GetState().IsButtonDown(MouseButton.Right))
                 {
-                    if (view != null)
-                    {
-                        var x = Mouse.GetState().X;
-                        var y = Mouse.GetState().Y;
-                        var direction = new Vector2(x, -y) - view.Position;
+                    var x = Mouse.GetState().X;
+                    var y = Mouse.GetState().Y;
+                    var direction = new Vector2(x, -y) - view.Position;
 
-                        view.Position += direction * WindowSettings.MouseMoveSpeed;
-                    }
+                    view.Position += direction * WindowSettings.MouseMoveSpeed;
                 }
                 else
                 {
-                    if (view != null)
-                    {
-                        var x = GetHorizontal();
-                        var y = GetVertical();
-                        var direction = new Vector2(x, y);
+                    var x = GetHorizontal();
+                    var y = GetVertical();
+                    var direction = new Vector2(x, y);
 
-                        view.Position += direction * WindowSettings.KeyboardMoveSpeed;
-                    }
+                    view.Position += direction * WindowSettings.KeyboardMoveSpeed;
                 }
             }
         }
