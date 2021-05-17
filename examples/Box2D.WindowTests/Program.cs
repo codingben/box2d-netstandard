@@ -1,17 +1,16 @@
 ﻿/*
-    Window Simulation Copyright © Ben Ukhanov 2020
-*/
+ * Window Simulation Copyright © Ben Ukhanov 2021
+ */
 
 using System;
 using System.Threading;
-using Box2D.NetStandard.Collision;
-using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Joints;
 using Box2D.NetStandard.Dynamics.World;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
 using Box2D.Window;
 using Box2D.WorldTests;
+using OpenTK;
 
 namespace Box2D.WindowTests
 {
@@ -52,7 +51,7 @@ namespace Box2D.WindowTests
                 var game = new SimulationWindow("Physics Simulation", 800, 600, focusBody);
                 game.UpdateFrame += OnUpdateFrame;
                 game.Disposed += OnDisposed;
-                game.SetView(new CameraView());
+                game.SetView(new CameraView(position: new Vector2(12, 5)));
 
                 var physicsDrawer = new DrawPhysics(game);
 
@@ -89,7 +88,7 @@ namespace Box2D.WindowTests
             if ((SimulationWindow.StepNext || !StepByStep) && !SimulationWindow.Paused)
             {
                 world?.Step(TimeStep, VelocityIterations, PositionIterations);
-                
+
                 SimulationWindow.StepNext = false;
             }
 
