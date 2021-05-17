@@ -38,8 +38,8 @@ namespace Box2D.WindowTests
 
                 CreateBodies();
 
-                game.VSync = OpenTK.VSyncMode.Adaptive;
-                game.Run(60.0, 0.0);
+                game.VSync = OpenTK.VSyncMode.Off;
+                game.Run(60.0, 60.0);
             }));
 
             windowThread.Start();
