@@ -3,6 +3,6 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Box2D.NetStandard" Version="2.4.2-alpha"/>
+    <ProjectReference Include="..\..\src\box2dx\Box2D.NetStandard\Box2D.NetStandard.csproj"/>
   </ItemGroup>
 </Project>
