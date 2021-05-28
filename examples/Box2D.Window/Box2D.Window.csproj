@@ -14,6 +14,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="OpenTK.NetStandard" Version="1.0.5.22"/>
-    <PackageReference Include="Box2D.NetStandard" Version="2.4.2-alpha"/>
+    <ProjectReference Include="..\..\src\box2dx\Box2D.NetStandard\Box2D.NetStandard.csproj"/>
   </ItemGroup>
 </Project>
