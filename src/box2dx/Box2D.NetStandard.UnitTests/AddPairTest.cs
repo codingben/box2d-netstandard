@@ -1,8 +1,6 @@
 using Box2D.NetStandard.Dynamics.World;
 using Box2D.WorldTests;
 using Xunit;
-using MathF = System.Math;
-using Float = System.Double;
 
 namespace Box2D.NetStandard.UnitTests
 {

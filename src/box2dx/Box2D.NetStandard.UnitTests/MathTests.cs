@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics;
 using System.Numerics;
-using System.Timers;
 using Box2D.NetStandard.Common;
 using Xunit;
 using Xunit.Abstractions;
