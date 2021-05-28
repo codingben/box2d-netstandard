@@ -1,0 +1,17 @@
+name: Unit Tests
+
+on:
+  pull_request: { branches: [v2.4] }
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1
+      - name: Execute Tests
+        run: dotnet test src/ -c Release
