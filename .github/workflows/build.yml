@@ -3,6 +3,8 @@ name: Build
 on:
   push:
     branches: [v2.4]
+    paths:
+      - src/box2dx/Box2D.NetStandard/**
 
 jobs:
   build:
@@ -13,6 +15,6 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: "5.0.x"
       - name: Box2D Build
         run: dotnet build src/box2dx/Box2D.NetStandard -c Release

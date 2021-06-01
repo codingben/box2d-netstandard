@@ -3,8 +3,12 @@ name: Unit Tests
 on:
   push:
     branches: [v2.4]
+    paths:
+      - src/**
   pull_request:
     branches: [v2.4]
+    paths:
+      - src/**
 
 jobs:
   build:
@@ -15,6 +19,6 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: "3.1.x"
       - name: Execute Tests
         run: dotnet test src/ -c Release
