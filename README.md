@@ -44,26 +44,13 @@ In v2.4.x:
     └── box2dx
         ├── Box2D.NetStandard
         │   ├── Collision
-        │   │   ├── Colliders
-        │   │   └── Shapes
         │   ├── Common
         │   ├── Dynamics
         │   │   ├── Bodies
         │   │   ├── Contacts
         │   │   ├── Fixtures
         │   │   ├── Joints
-        │   │   │   ├── Distance
-        │   │   │   ├── Friction
-        │   │   │   ├── Gear
-        │   │   │   ├── Motor
-        │   │   │   ├── Mouse
-        │   │   │   ├── Prismatic
-        │   │   │   ├── Pulley
-        │   │   │   ├── Revolute
-        │   │   │   ├── Weld
-        │   │   │   └── Wheel
         │   │   └── World
-        │   │       └── Callbacks
         └── Box2D.NetStandard.UnitTests
 ```
 
