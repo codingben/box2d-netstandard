@@ -31,6 +31,43 @@ In v2.4.x:
 - [Ported C# Box2DX - Ihar Kalasouski](https://code.google.com/archive/p/box2dx/)
 - [C++ Box2D Original - Erin Catto](https://github.com/erincatto/box2d)
 
+## Folder Structure
+
+```
+├── docs
+│   └── images
+├── examples
+│   ├── Box2D.Window
+│   ├── Box2D.WindowTests
+│   └── Box2D.WorldTests
+└── src
+    └── box2dx
+        ├── Box2D.NetStandard
+        │   ├── Collision
+        │   │   ├── Colliders
+        │   │   └── Shapes
+        │   ├── Common
+        │   ├── Dynamics
+        │   │   ├── Bodies
+        │   │   ├── Contacts
+        │   │   ├── Fixtures
+        │   │   ├── Joints
+        │   │   │   ├── Distance
+        │   │   │   ├── Friction
+        │   │   │   ├── Gear
+        │   │   │   ├── Motor
+        │   │   │   ├── Mouse
+        │   │   │   ├── Prismatic
+        │   │   │   ├── Pulley
+        │   │   │   ├── Revolute
+        │   │   │   ├── Weld
+        │   │   │   └── Wheel
+        │   │   └── World
+        │   │       └── Callbacks
+        └── Box2D.NetStandard.UnitTests
+
+```
+
 ## Contributing
 
 Anyone who wants to contribute to this repository:
