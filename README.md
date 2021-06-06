@@ -15,6 +15,27 @@ Loosely based on Box2DX by Ihar Kalasouski 2008.
 - [Ported C# Box2DX - Ihar Kalasouski](https://code.google.com/archive/p/box2dx/)
 - [C++ Box2D Original - Erin Catto](https://github.com/erincatto/box2d)
 
+## Folder Structure
+
+```
+├── examples
+│   ├── console
+│   │   └── HelloWorld
+│   └── window
+│       ├── Box2D.Window
+│       └── Box2D.WindowTests
+└── src
+    └── box2dx
+        └── Box2D.NetStandard
+            ├── Collision
+            │   └── Shapes
+            ├── Common
+            └── Dynamics
+                ├── Contacts
+                ├── Controllers
+                └── Joints
+```
+
 ## Contributing
 
 Anyone who wants to contribute to this repository:
