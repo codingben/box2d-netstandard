@@ -65,7 +65,6 @@ In v2.4.x:
         │   │   └── World
         │   │       └── Callbacks
         └── Box2D.NetStandard.UnitTests
-
 ```
 
 ## Contributing
