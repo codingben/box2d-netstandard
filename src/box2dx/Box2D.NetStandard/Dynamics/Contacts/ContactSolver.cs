@@ -326,7 +326,7 @@ namespace Box2DX.Dynamics
 						// Solve normal constraints
 						if (c.PointCount == 1)
 						{
-							ContactConstraintPoint ccp = c.Points[0];
+							ref ContactConstraintPoint ccp = ref c.Points[0];
 
 							// Relative velocity at contact
 							Vec2 dv = vB + Vec2.Cross(wB, ccp.RB) - vA - Vec2.Cross(wA, ccp.RA);
