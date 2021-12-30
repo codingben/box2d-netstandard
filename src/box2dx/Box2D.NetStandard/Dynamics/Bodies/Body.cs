@@ -448,7 +448,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
 			if (HasFlag(BodyFlags.Awake))
 			{
-				m_torque += m_torque;
+				m_torque += torque;
 			}
 		}
 
