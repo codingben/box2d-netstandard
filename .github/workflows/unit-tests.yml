@@ -20,5 +20,5 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "3.1.x"
-      - name: Execute Tests
+      - name: Box2D Tests
         run: dotnet test src/ -c Release

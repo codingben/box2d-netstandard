@@ -4,7 +4,11 @@ on:
   push:
     branches: [v2.4]
     paths:
-      - src/box2dx/Box2D.NetStandard/**
+      - src/**
+  pull_request:
+    branches: [v2.4]
+    paths:
+      - src/**
 
 jobs:
   build:
@@ -17,4 +21,4 @@ jobs:
         with:
           dotnet-version: "5.0.x"
       - name: Box2D Build
-        run: dotnet build src/box2dx/Box2D.NetStandard -c Release
+        run: dotnet build src/ -c Release
