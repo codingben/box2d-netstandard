@@ -16,7 +16,7 @@ namespace Box2D.NetStandard.Dynamics.World.Callbacks
 	/// <warning>
 	///  You cannot create/destroy Box2DX entities inside these callbacks.
 	/// </warning>
-	public interface ContactListener
+	public interface IContactListener
 	{
 		/// <summary>
 		///  Called when two fixtures begin to touch.
