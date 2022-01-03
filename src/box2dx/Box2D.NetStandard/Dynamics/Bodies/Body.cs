@@ -282,6 +282,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 			// You tried to remove a shape that is not attached to this body.
 			//Debug.Assert(found);
 
+			float density = fixture.m_density;
+
 			// Destroy any contacts associated with the fixture.
 			ContactEdge edge = m_contactList;
 			while (edge != null)
@@ -311,8 +313,11 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
 			--m_fixtureCount;
 
-			// Reset the mass data.
-			ResetMassData();
+			if (density > 0.0f)
+			{
+				// Reset the mass data.
+				ResetMassData();
+			}
 		}
 
 		public void SetTransform(in Vector2 position, float angle)
