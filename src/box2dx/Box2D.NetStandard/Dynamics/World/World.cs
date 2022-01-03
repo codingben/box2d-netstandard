@@ -213,7 +213,7 @@ namespace Box2D.NetStandard.Dynamics.World
 		///  Register a contact event listener
 		/// </summary>
 		/// <param name="listener"></param>
-		public void SetContactListener(ContactListener listener)
+		public void SetContactListener(IContactListener listener)
 		{
 			m_contactManager.m_contactListener = listener;
 		}
