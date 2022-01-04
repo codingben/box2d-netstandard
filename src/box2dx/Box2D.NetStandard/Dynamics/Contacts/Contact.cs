@@ -318,7 +318,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 			        })!;
 		}
 
-		public void Update(IContactListener listener)
+		public void Update(ContactListener listener)
 		{
 			Manifold oldManifold = m_manifold;
 

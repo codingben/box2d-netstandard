@@ -16,19 +16,19 @@ namespace Box2D.NetStandard.Dynamics.World.Callbacks
 	/// <warning>
 	///  You cannot create/destroy Box2DX entities inside these callbacks.
 	/// </warning>
-	public interface IContactListener
+	public abstract class ContactListener
 	{
 		/// <summary>
 		///  Called when two fixtures begin to touch.
 		/// </summary>
 		/// <param name="contact"></param>
-		void BeginContact(in Contact contact);
+		public abstract void BeginContact(in Contact contact);
 
 		/// <summary>
 		///  Called when two fixtures cease to touch.
 		/// </summary>
 		/// <param name="contact"></param>
-		void EndContact(in Contact contact);
+		public abstract void EndContact(in Contact contact);
 
 		/// <summary>
 		///  This is called after a contact is updated. This allows you to inspect a
@@ -44,7 +44,7 @@ namespace Box2D.NetStandard.Dynamics.World.Callbacks
 		/// </summary>
 		/// <param name="contact"></param>
 		/// <param name="oldManifold"></param>
-		void PreSolve(in Contact contact, in Manifold oldManifold);
+		public abstract void PreSolve(in Contact contact, in Manifold oldManifold);
 
 		/// <summary>
 		///  This lets you inspect a contact after the solver is finished. This is useful
@@ -56,6 +56,6 @@ namespace Box2D.NetStandard.Dynamics.World.Callbacks
 		/// </summary>
 		/// <param name="contact"></param>
 		/// <param name="impulse"></param>
-		void PostSolve(in Contact contact, in ContactImpulse impulse);
+		public abstract void PostSolve(in Contact contact, in ContactImpulse impulse);
 	}
 }

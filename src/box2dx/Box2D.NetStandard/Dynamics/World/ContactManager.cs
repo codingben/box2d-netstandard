@@ -44,7 +44,7 @@ namespace Box2D.NetStandard.Dynamics.World
 		internal int m_contactCount;
 		internal ContactFilter m_contactFilter;
 		internal Contact m_contactList;
-		internal IContactListener m_contactListener;
+		internal ContactListener m_contactListener;
 
 		internal ContactManager()
 		{

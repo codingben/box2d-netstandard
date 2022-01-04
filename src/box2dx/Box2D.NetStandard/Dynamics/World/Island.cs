@@ -162,7 +162,7 @@ namespace Box2D.NetStandard.Dynamics.World
 		internal readonly int m_contactCapacity;
 		private readonly Contact[] m_contacts;
 		private readonly Joint[] m_joints;
-		private readonly IContactListener m_listener;
+		private readonly ContactListener m_listener;
 
 		private readonly Position[] m_positions;
 		private readonly Velocity[] m_velocities;
@@ -173,7 +173,7 @@ namespace Box2D.NetStandard.Dynamics.World
 		internal int m_contactCount;
 		private int m_jointCount;
 
-		public Island(int bodyCapacity, int contactCapacity, int jointCapacity, IContactListener listener)
+		public Island(int bodyCapacity, int contactCapacity, int jointCapacity, ContactListener listener)
 		{
 			m_bodyCapacity = bodyCapacity;
 			m_contactCapacity = contactCapacity;
