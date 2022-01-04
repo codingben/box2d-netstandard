@@ -268,19 +268,28 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 			// Remove the fixture from this body's singly linked list.
 			//Debug.Assert(_fixtureCount > 0);
 			Fixture node = m_fixtureList;
+			Fixture prevNode = null;
+			bool found = false;
 			while (node != null)
 			{
-				if (node.m_next == fixture)
+				if (node == fixture)
 				{
-					node.m_next = fixture.m_next;
+					if (prevNode == null)
+						m_fixtureList = fixture.m_next;
+					else
+						prevNode.m_next = fixture.m_next;
+
+					found = true;
 					break;
 				}
 
+				prevNode = node;
 				node = node.m_next;
 			}
 
 			// You tried to remove a shape that is not attached to this body.
-			//Debug.Assert(found);
+			if (!found)
+				throw new System.ArgumentException("Fixture does not belong to this Body.", nameof(fixture));
 
 			float density = fixture.m_density;
 
