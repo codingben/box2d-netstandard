@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Box2D Unit Tests
 
 on:
   push:
@@ -20,5 +20,5 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "3.1.x"
-      - name: Box2D Tests
+      - name: Unit Tests
         run: dotnet test src/ -c Release
