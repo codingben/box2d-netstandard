@@ -2,6 +2,7 @@
 
 # Box2D .NET Standard 
 [![Build](https://github.com/benukhanov/box2d-netstandard/actions/workflows/box2d-build.yml/badge.svg)](https://github.com/benukhanov/box2d-netstandard/actions/workflows/box2d-build.yml)
+[![Box2D Examples Build](https://github.com/benukhanov/box2d-netstandard/actions/workflows/box2d-examples-build.yml/badge.svg)](https://github.com/benukhanov/box2d-netstandard/actions/workflows/box2d-examples-build.yml)
 [![Unit Tests](https://github.com/benukhanov/box2d-netstandard/actions/workflows/box2d-unit-tests.yml/badge.svg)](https://github.com/benukhanov/box2d-netstandard/actions/workflows/box2d-unit-tests.yml)
 
 Box2D .NET Standard is the port of Box2D from C++ to C# by Ben Ukhanov & Hugh Phoenix-Hulme 2020.
