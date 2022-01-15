@@ -46,7 +46,7 @@ namespace Box2D.NetStandard.Common
         {
             if (_wasReallocated)
             {
-                Marshal.FreeHGlobal((IntPtr) _stack);
+                Marshal.FreeHGlobal((IntPtr)_stack);
                 _stack = null;
             }
         }
@@ -58,11 +58,11 @@ namespace Box2D.NetStandard.Common
                 var old = _stack;
                 _capacity *= 2;
                 var dstSize = _capacity * sizeof(T);
-                _stack = (T*) Marshal.AllocHGlobal(dstSize);
+                _stack = (T*)Marshal.AllocHGlobal(dstSize);
                 Buffer.MemoryCopy(old, _stack, dstSize, _count * sizeof(T));
                 if (_wasReallocated)
                 {
-                    Marshal.FreeHGlobal((IntPtr) old);
+                    Marshal.FreeHGlobal((IntPtr)old);
                 }
 
                 _wasReallocated = true;
@@ -75,7 +75,7 @@ namespace Box2D.NetStandard.Common
         internal T Pop()
         {
             Debug.Assert(_count > 0);
-            --_count;                
+            --_count;
             return _stack[_count];
         }
     }
