@@ -41,21 +41,21 @@ namespace Box2D.NetStandard.Dynamics.Contacts
         /// <summary>
         ///  The contact.
         /// </summary>
-        internal Contact contact;
+        public Contact contact;
 
         /// <summary>
         ///  The next contact edge in the body's contact list.
         /// </summary>
-        internal ContactEdge next;
+        public ContactEdge next;
 
         /// <summary>
         ///  Provides quick access to the other body attached.
         /// </summary>
-        internal Body other;
+        public Body other;
 
         /// <summary>
         ///  The previous contact edge in the body's contact list.
         /// </summary>
-        internal ContactEdge prev;
+        public ContactEdge prev;
     }
 }
