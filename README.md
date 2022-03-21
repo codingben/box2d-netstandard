@@ -57,10 +57,7 @@ In v2.4.x:
 
 ## Contributing
 
-Anyone who wants to contribute to this repository:
-- The changes will be in the new branch (feature/new or feature/bug-fix).
-- The new pull request will be started.
-- The new version will be published.
+Please read and follow the [contributing guidelines](CONTRIBUTING.md).
 
 ## Features
 
