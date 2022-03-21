@@ -6,7 +6,7 @@ No new features will be developed. Bug reports and any other improvements are we
 
  - [Code of Conduct](#coc)
  - [Bug Report](#bug)
- - [Submission Guidelines](#submit)
+ - [Submission Guidelines](#submit-pr)
 
 ## <a name="coc"></a> Code of Conduct
 
