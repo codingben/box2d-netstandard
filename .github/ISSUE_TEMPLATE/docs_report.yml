@@ -1,0 +1,11 @@
+name: 'Docs Report'
+description: Report an issue in Box2D .NET Standard's documentation
+labels: ["documentation"]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
