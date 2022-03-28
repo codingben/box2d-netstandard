@@ -22,3 +22,5 @@ jobs:
           dotnet-version: "5.0.x"
       - name: Build
         run: dotnet build src/ -c Release
+      - name: Unit Tests
+        run: dotnet test src/ -c Release
