@@ -18,7 +18,7 @@ namespace Box2D.NetStandard.UnitTests
 
         // TODO: Fix because the test isn't working correctly
         // [Fact]
-        public void Test1()
+        public void Test()
         {
             World world = RubeGoldbergWorld.CreateWorld(out Body[] bodies, out Joint[] joints);
 

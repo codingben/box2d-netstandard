@@ -8,82 +8,71 @@ namespace Box2D.NetStandard.UnitTests.Dynamics.Bodies
 {
     public class BodyTests
     {
-        private readonly Body sut;
+        private readonly Body body;
 
         public BodyTests()
         {
-            var world = new World();
-            var bd = new BodyDef();
-
-            sut = world.CreateBody(bd);
+            World world = new World();
+            body = world.CreateBody(new BodyDef());
         }
 
         [Fact]
         public void CanDestroyTopFixture()
         {
-            //arrange
-            var fixtureDef = new FixtureDef() { shape = new PolygonShape(1, 1) };
-            var fixture1 = sut.CreateFixture(fixtureDef);
-            var fixture2 = sut.CreateFixture(fixtureDef);
-            var fixture3 = sut.CreateFixture(fixtureDef);
+            FixtureDef fixtureDef = new FixtureDef() { shape = new PolygonShape(1, 1) };
+            Fixture fixture1 = body.CreateFixture(fixtureDef);
+            Fixture fixture2 = body.CreateFixture(fixtureDef);
+            Fixture fixture3 = body.CreateFixture(fixtureDef);
 
-            Assert.Equal(fixture3, sut.GetFixtureList()); //ensure that fixture3 is still the first in the linked list, per current implementation
+            // Ensure that fixture3 is still the first in the linked list,
+            // per current implementation
+            Assert.Equal(fixture3, body.GetFixtureList());
 
+            body.DestroyFixture(fixture3);
 
-            //act
-            sut.DestroyFixture(fixture3);
-
-
-            //assert
             Assert.Null(fixture3.Body);
             Assert.Null(fixture3.Next);
-            Assert.Equal(fixture2, sut.GetFixtureList());
+            Assert.Equal(fixture2, body.GetFixtureList());
             Assert.Equal(fixture1, fixture2.Next);
         }
 
         [Fact]
         public void CanDestroyMiddleFixture()
         {
-            //arrange
-            var fixtureDef = new FixtureDef() { shape = new PolygonShape(1, 1) };
-            var fixture1 = sut.CreateFixture(fixtureDef);
-            var fixture2 = sut.CreateFixture(fixtureDef);
-            var fixture3 = sut.CreateFixture(fixtureDef);
+            FixtureDef fixtureDef = new FixtureDef() { shape = new PolygonShape(1, 1) };
+            Fixture fixture1 = body.CreateFixture(fixtureDef);
+            Fixture fixture2 = body.CreateFixture(fixtureDef);
+            Fixture fixture3 = body.CreateFixture(fixtureDef);
 
-            Assert.Equal(fixture2, sut.GetFixtureList().Next); //ensure that fixture2 is the second in the linked list, per current implementation
+            // Ensure that fixture2 is the second in the linked list,
+            // per current implementation
+            Assert.Equal(fixture2, body.GetFixtureList().Next);
 
+            body.DestroyFixture(fixture2);
 
-            //act
-            sut.DestroyFixture(fixture2);
-
-
-            //assert
             Assert.Null(fixture2.Body);
             Assert.Null(fixture2.Next);
-            Assert.Equal(fixture3, sut.GetFixtureList());
+            Assert.Equal(fixture3, body.GetFixtureList());
             Assert.Equal(fixture1, fixture3.Next);
         }
 
         [Fact]
         public void CanDestroyLastFixture()
         {
-            //arrange
-            var fixtureDef = new FixtureDef() { shape = new PolygonShape(1, 1) };
-            var fixture1 = sut.CreateFixture(fixtureDef);
-            var fixture2 = sut.CreateFixture(fixtureDef);
-            var fixture3 = sut.CreateFixture(fixtureDef);
+            FixtureDef fixtureDef = new FixtureDef() { shape = new PolygonShape(1, 1) };
+            Fixture fixture1 = body.CreateFixture(fixtureDef);
+            Fixture fixture2 = body.CreateFixture(fixtureDef);
+            Fixture fixture3 = body.CreateFixture(fixtureDef);
 
-            Assert.Equal(fixture1, sut.GetFixtureList().Next.Next); //ensure that fixture1 is the third in the linked list, per current implementation
+            // Ensure that fixture1 is the third in the linked list,
+            // per current implementation
+            Assert.Equal(fixture1, body.GetFixtureList().Next.Next);
 
+            body.DestroyFixture(fixture1);
 
-            //act
-            sut.DestroyFixture(fixture1);
-
-
-            //assert
             Assert.Null(fixture1.Body);
             Assert.Null(fixture1.Next);
-            Assert.Equal(fixture3, sut.GetFixtureList());
+            Assert.Equal(fixture3, body.GetFixtureList());
             Assert.Equal(fixture2, fixture3.Next);
         }
     }

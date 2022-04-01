@@ -8,7 +8,7 @@ namespace Box2D.NetStandard.UnitTests
     public class AddPairTest
     {
         [Fact]
-        public void AddPairs()
+        public void Test()
         {
             for (int j = 0; j < 1; j++)
             {
