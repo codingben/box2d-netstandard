@@ -4,4 +4,5 @@ Box2D Examples in a simulation window. Use different worlds [here](https://githu
 
 ## Dependencies
 
-- [OpenTK.NetStandard](https://github.com/opentk/opentk)
+- [OpenTK.NetStandard](https://www.nuget.org/packages/OpenTK.NetStandard/)
+- [Box2D.NetStandard](https://www.nuget.org/packages/Box2D.NetStandard)
