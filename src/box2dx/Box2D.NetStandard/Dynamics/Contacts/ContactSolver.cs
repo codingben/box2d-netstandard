@@ -780,10 +780,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
                         {
                             Vector2 pointA = Common.Math.Mul(xfA, pc.localPoint);
                             Vector2 pointB = Common.Math.Mul(xfB, pc.localPoints[0]);
-                            if (pointA == pointB)
-                                normal = new Vector2(0, 1);
-                            else
-                                normal = Vector2.Normalize(pointB - pointA);
+                            normal = pointA == pointB ? Vector2.UnitY : Vector2.Normalize(pointB - pointA);
                             point = 0.5f * (pointA + pointB);
                             separation = Vector2.Dot(pointB - pointA, normal) - pc.radiusA - pc.radiusB;
                             break;
