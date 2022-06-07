@@ -25,7 +25,7 @@ In v1.0.x:
 
 In v2.4.x:
 - Code Optimisation must be enabled for things to work properly, and you **must not** have a debugger attached.
-- If you create two Bodies at the same Position, *Bad Things* will happen. It might crash. It might just poison the DynamicTree, or it might crash out completely. This could be fixed by checking *every* contact to make sure the objects are never in the exact same position, but this should never happen once the simulation is running, so the number of times the check would be useful is statistically insignificant. Just don't put things at the same place as other things. They only need to be different by float.Epsilon in either dimension.
+- If you create two Bodies at the same Position, *Bad Things* will happen. It might crash, or it might just poison the DynamicTree. This could be fixed by checking *every* contact to make sure the objects are never in the exact same position, but this should never happen once the simulation is running, so the number of times the check would be useful is statistically insignificant. Just don't put things at the same place as other things. They only need to be different by float.Epsilon in either dimension.
 
 ## Source
 
