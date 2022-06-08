@@ -88,7 +88,7 @@ Please read and follow the [contributing guidelines](CONTRIBUTING.md).
 ### System
 
 - Centralized tuning parameters.
-- Pure .NET Standard 2.0+ library.
+- Pure .NET Standard 2.1+ library.[^1]
 - Please [See .NET Implementation Support](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
 
 ## Documentation
@@ -100,3 +100,5 @@ Please read and follow the [contributing guidelines](CONTRIBUTING.md).
 ## License
 
 Original C++ Box2D is developed by Erin Catto, under the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
+
+[^1] .net standard 2.0 lacks System.MathF which is a dependency. System.Numerics.Vectors is not part of .net standard 2.0, but it is available as a Nuget package. There is a discussion [here](https://github.com/dotnet/runtime/issues/20113) about including System.MathF in System.Runtime.Extensions but it was decided not to do so.
