@@ -101,4 +101,4 @@ Please read and follow the [contributing guidelines](CONTRIBUTING.md).
 
 Original C++ Box2D is developed by Erin Catto, under the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
 
-[^1] .net standard 2.0 lacks System.MathF which is a dependency. System.Numerics.Vectors is not part of .net standard 2.0, but it is available as a Nuget package. There is a discussion [here](https://github.com/dotnet/runtime/issues/20113) about including System.MathF in System.Runtime.Extensions but it was decided not to do so.
+[^1] .net standard 2.0 lacks System.MathF which is a dependency. System.Numerics.Vectors is not part of .net standard 2.0, but it is available as a Nuget package. There is a discussion [here](https://github.com/dotnet/runtime/issues/20113) about including System.MathF in System.Runtime.Extensions but it was decided not to do so. We also use stackalloc, Span<T>, System.HashCode, Math.Clamp and range expressions, which are not supported in .net standard 2.0.
