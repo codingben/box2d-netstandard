@@ -625,13 +625,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 					xfA.p = cA - Vector2.Transform(localCenterA, xfA.q); // Common.Math.Mul(xfA.q, localCenterA);
 					xfB.p = cB - Vector2.Transform(localCenterB, xfB.q); // Common.Math.Mul(xfB.q, localCenterB);
 
-					var psm = new PositionSolverManifold();
-					psm.Initialize(pc, xfA, xfB, j);
-					Vector2 normal = psm.normal;
-
-					Vector2 point = psm.point;
-					float separation = psm.separation;
-
+					PositionSolverManifold.Solve(pc, xfA, xfB, j, out Vector2 normal, out Vector2 point, out float separation);
+					
 					Vector2 rA = point - cA;
 					Vector2 rB = point - cB;
 
@@ -718,12 +713,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 					xfA.p = cA - Vector2.Transform(localCenterA, xfA.q); // Common.Math.Mul(xfA.q, localCenterA);
 					xfB.p = cB - Vector2.Transform(localCenterB, xfB.q); // Common.Math.Mul(xfB.q, localCenterB);
 
-					var psm = new PositionSolverManifold();
-					psm.Initialize(pc, xfA, xfB, j);
-					Vector2 normal = psm.normal;
-
-					Vector2 point = psm.point;
-					float separation = psm.separation;
+					PositionSolverManifold.Solve(pc, xfA, xfB, j, out Vector2 normal, out Vector2 point, out float separation);
 
 					Vector2 rA = point - cA;
 					Vector2 rB = point - cB;
@@ -764,19 +754,16 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 			return minSeparation >= -1.5f * Settings.LinearSlop;
 		}
 
-		internal class PositionSolverManifold
+		internal static class PositionSolverManifold
 		{
-			internal Vector2 normal;
-			internal Vector2 point;
-			internal float separation;
-
-			internal void Initialize(ContactPositionConstraint pc, Transform xfA, Transform xfB, int index)
+			internal static void Solve(ContactPositionConstraint pc, Transform xfA, Transform xfB, int index, out Vector2 normal, out Vector2 point, out float separation)
 			{
 				//Debug.Assert(pc.pointCount > 0);
 
 				switch (pc.type)
 				{
-					case ManifoldType.Circles: {
+					case ManifoldType.Circles:
+					{
 						Vector2 pointA = Common.Math.Mul(xfA, pc.localPoint);
 						Vector2 pointB = Common.Math.Mul(xfB, pc.localPoints[0]);
 						normal = Vector2.Normalize(pointB - pointA);
@@ -784,7 +771,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 						separation = Vector2.Dot(pointB - pointA, normal) - pc.radiusA - pc.radiusB;
 						break;
 					}
-					case ManifoldType.FaceA: {
+					case ManifoldType.FaceA:
+					{
 						normal = Vector2.Transform(pc.localNormal, xfA.q); // Common.Math.Mul(xfA.q, pc.localNormal);
 						Vector2 planePoint = Common.Math.Mul(xfA, pc.localPoint);
 
@@ -795,7 +783,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 						break;
 					}
 
-					case ManifoldType.FaceB: {
+					case ManifoldType.FaceB:
+					{
 						normal = Vector2.Transform(pc.localNormal, xfB.q); // Common.Math.Mul(xfB.q, pc.localNormal);
 						Vector2 planePoint = Common.Math.Mul(xfB, pc.localPoint);
 
@@ -805,6 +794,12 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 
 						// Ensure normal points from A to B
 						normal = -normal;
+						break;
+					}
+					default:
+					{
+						normal = point = Vector2.Zero;
+						separation = 0;
 						break;
 					}
 				}

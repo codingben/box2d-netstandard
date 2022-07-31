@@ -34,6 +34,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Box2D.NetStandard.Common;
 using Math = System.Math;
+using Proxy = System.Int32;
 
 namespace Box2D.NetStandard.Collision
 {
@@ -43,57 +44,7 @@ namespace Box2D.NetStandard.Collision
 	/// <typeparam name="T"></typeparam>
 	internal sealed class DynamicTree
 	{
-		internal readonly struct Proxy : IEquatable<Proxy>, IComparable<Proxy>
-		{
-			private readonly int _value;
-
-			public static readonly Proxy Free = -1; 
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public Proxy(int v) => _value = v;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(Proxy other)
-				=> _value == other._value;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public int CompareTo(Proxy other)
-				=> _value.CompareTo(other._value);
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object? obj)
-				=> obj is Proxy other && Equals(other);
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override int GetHashCode() => _value;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static implicit operator int(Proxy n) => n._value;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static implicit operator Proxy(int v) => new Proxy(v);
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static bool operator ==(Proxy a, Proxy b) => a._value == b._value;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static bool operator !=(Proxy a, Proxy b) => a._value != b._value;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static bool operator >(Proxy a, Proxy b) => a._value > b._value;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static bool operator <(Proxy a, Proxy b) => a._value < b._value;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static bool operator >=(Proxy a, Proxy b) => a._value >= b._value;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static bool operator <=(Proxy a, Proxy b) => a._value <= b._value;
-
-			public override string ToString()
-				=> _value.ToString();
-		}
+		private const Proxy ProxyFree = -1;
 		
 		private struct Node
 		{
@@ -110,7 +61,7 @@ namespace Box2D.NetStandard.Collision
 			public bool IsLeaf
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get => Child2 == Proxy.Free;
+				get => Child2 == ProxyFree;
 			}
 
 			public bool IsFree
@@ -120,7 +71,7 @@ namespace Box2D.NetStandard.Collision
 			}
 
 			public override string ToString()
-				=> $@"Parent: {(Parent == Proxy.Free ? "None" : Parent.ToString())}, {
+				=> $@"Parent: {(Parent == ProxyFree ? "None" : Parent.ToString())}, {
 					(IsLeaf
 						 ? Height == 0
 							   ? $"Leaf: {UserData}"
@@ -139,7 +90,7 @@ namespace Box2D.NetStandard.Collision
 		public int Height
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _root == Proxy.Free ? 0 : _nodes[_root].Height;
+			get => _root == ProxyFree ? 0 : _nodes[_root].Height;
 		}
 
 		public int NodeCount => _nodeCount;
@@ -173,7 +124,7 @@ namespace Box2D.NetStandard.Collision
 		{
 			[MethodImpl(MethodImplOptions.NoInlining)]
 			get {
-				if (_root == Proxy.Free)
+				if (_root == ProxyFree)
 				{
 					return 0;
 				}
@@ -206,7 +157,7 @@ namespace Box2D.NetStandard.Collision
 
 		public DynamicTree()
 		{
-			_root = Proxy.Free;
+			_root = ProxyFree;
 			_nodes = new Node[256];
 
 			// Build a linked list for the free list.
@@ -221,7 +172,7 @@ namespace Box2D.NetStandard.Collision
 
 			ref var lastNode = ref _nodes[^1];
 
-			lastNode.Parent = Proxy.Free;
+			lastNode.Parent = ProxyFree;
 			lastNode.Height = -1;
 		}
 
@@ -233,7 +184,7 @@ namespace Box2D.NetStandard.Collision
 		private ref Node AllocateNode(out Proxy proxy)
 		{
 			// Expand the node pool as needed.
-			if (_freeNodes == Proxy.Free)
+			if (_freeNodes == ProxyFree)
 			{
 				// Separate method to aid inlining since this is a cold path.
 				Expand();
@@ -245,9 +196,9 @@ namespace Box2D.NetStandard.Collision
 			Assert(allocNode.IsFree);
 			_freeNodes = allocNode.Parent;
 			Assert(_freeNodes == -1 || _nodes[_freeNodes].IsFree);
-			allocNode.Parent = Proxy.Free;
-			allocNode.Child1 = Proxy.Free;
-			allocNode.Child2 = Proxy.Free;
+			allocNode.Parent = ProxyFree;
+			allocNode.Child1 = ProxyFree;
+			allocNode.Child2 = ProxyFree;
 			allocNode.Height = 0;
 			++_nodeCount;
 			proxy = alloc;
@@ -283,7 +234,7 @@ namespace Box2D.NetStandard.Collision
 				}
 
 				ref var lastNode = ref _nodes[l];
-				lastNode.Parent = Proxy.Free;
+				lastNode.Parent = ProxyFree;
 				lastNode.Height = -1;
 				_freeNodes = (Proxy) _nodeCount;
 			}
@@ -299,8 +250,8 @@ namespace Box2D.NetStandard.Collision
 			node.Parent = _freeNodes;
 			node.Height = -1;
 #if DEBUG_DYNAMIC_TREE
-            node.Child1 = Proxy.Free;
-            node.Child2 = Proxy.Free;
+            node.Child1 = ProxyFree;
+            node.Child2 = ProxyFree;
 #endif
 			node.UserData = default;
 			_freeNodes = proxy;
@@ -437,7 +388,7 @@ namespace Box2D.NetStandard.Collision
 		{
 			if (leaf == _root)
 			{
-				_root = Proxy.Free;
+				_root = ProxyFree;
 				return;
 			}
 
@@ -452,7 +403,7 @@ namespace Box2D.NetStandard.Collision
 
 			ref var siblingNode = ref _nodes[sibling];
 
-			if (grandParent != Proxy.Free)
+			if (grandParent != ProxyFree)
 			{
 				// Destroy parent and connect sibling to grandParent.
 				ref var grandParentNode = ref _nodes[grandParent];
@@ -474,7 +425,7 @@ namespace Box2D.NetStandard.Collision
 			else
 			{
 				_root = sibling;
-				siblingNode.Parent = Proxy.Free;
+				siblingNode.Parent = ProxyFree;
 				FreeNode(parent);
 			}
 
@@ -483,10 +434,10 @@ namespace Box2D.NetStandard.Collision
 
 		private void InsertLeaf(Proxy leaf)
 		{
-			if (_root == Proxy.Free)
+			if (_root == ProxyFree)
 			{
 				_root = leaf;
-				_nodes[_root].Parent = Proxy.Free;
+				_nodes[_root].Parent = ProxyFree;
 				return;
 			}
 
@@ -557,7 +508,7 @@ namespace Box2D.NetStandard.Collision
 			newParentNode.Height = 1 + siblingNode.Height;
 
 			ref var proxyNode = ref _nodes[leaf];
-			if (oldParent != Proxy.Free)
+			if (oldParent != ProxyFree)
 			{
 				// The sibling was not the root.
 				ref var oldParentNode = ref _nodes[oldParent];
@@ -609,7 +560,7 @@ namespace Box2D.NetStandard.Collision
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private void Balance(Proxy index)
 		{
-			while (index != Proxy.Free)
+			while (index != ProxyFree)
 			{
 				index = BalanceStep(index);
 
@@ -618,8 +569,8 @@ namespace Box2D.NetStandard.Collision
 				var child1 = indexNode.Child1;
 				var child2 = indexNode.Child2;
 
-				Assert(child1 != Proxy.Free);
-				Assert(child2 != Proxy.Free);
+				Assert(child1 != ProxyFree);
+				Assert(child2 != ProxyFree);
 
 				ref var child1Node = ref _nodes[child1];
 				ref var child2Node = ref _nodes[child2];
@@ -677,7 +628,7 @@ namespace Box2D.NetStandard.Collision
 				c.Parent = a.Parent;
 				a.Parent = iC;
 
-				if (c.Parent == Proxy.Free)
+				if (c.Parent == ProxyFree)
 				{
 					_root = iC;
 				}
@@ -741,7 +692,7 @@ namespace Box2D.NetStandard.Collision
 				b.Parent = a.Parent;
 				a.Parent = iB;
 
-				if (b.Parent == Proxy.Free)
+				if (b.Parent == ProxyFree)
 				{
 					_root = iB;
 				}
@@ -830,7 +781,7 @@ namespace Box2D.NetStandard.Collision
 				var proxy = (Proxy) i;
 				if (node.IsLeaf)
 				{
-					node.Parent = Proxy.Free;
+					node.Parent = ProxyFree;
 					proxies[count++] = proxy;
 				}
 				else
@@ -878,7 +829,7 @@ namespace Box2D.NetStandard.Collision
 				parentNode.Child2 = child2;
 				parentNode.Height = Math.Max(child1Node.Height, child2Node.Height) + 1;
 				parentNode.Aabb = AABB.Combine(child1Node.Aabb, child2Node.Aabb);
-				parentNode.Parent = Proxy.Free;
+				parentNode.Parent = ProxyFree;
 
 				child1Node.Parent = parent;
 				child2Node.Parent = parent;
@@ -913,7 +864,7 @@ namespace Box2D.NetStandard.Collision
 			while (stack._count != 0)
 			{
 				var nodeId = stack.Pop();
-				if (nodeId == Proxy.Free)
+				if (nodeId == ProxyFree)
 				{
 					continue;
 				}
@@ -970,7 +921,7 @@ namespace Box2D.NetStandard.Collision
 			while (stack._count != 0)
 			{
 				var nodeId = stack.Pop();
-				if (nodeId == Proxy.Free)
+				if (nodeId == ProxyFree)
 				{
 					continue;
 				}
@@ -1030,7 +981,7 @@ namespace Box2D.NetStandard.Collision
 
 			var freeCount = 0;
 			var freeIndex = _freeNodes;
-			while (freeIndex != Proxy.Free)
+			while (freeIndex != ProxyFree)
 			{
 				Assert(0 <= freeIndex);
 				Assert(freeIndex < Capacity);
@@ -1046,13 +997,13 @@ namespace Box2D.NetStandard.Collision
 		[Conditional("DEBUG")]
 		private void Validate(Proxy proxy)
 		{
-			if (proxy == Proxy.Free) return;
+			if (proxy == ProxyFree) return;
 
 			ref var node = ref _nodes[proxy];
 
 			if (proxy == _root)
 			{
-				Assert(node.Parent == Proxy.Free);
+				Assert(node.Parent == ProxyFree);
 			}
 
 			var child1 = node.Child1;
@@ -1060,8 +1011,8 @@ namespace Box2D.NetStandard.Collision
 
 			if (node.IsLeaf)
 			{
-				Assert(child1 == Proxy.Free);
-				Assert(child2 == Proxy.Free);
+				Assert(child1 == ProxyFree);
+				Assert(child2 == ProxyFree);
 				Assert(node.Height == 0);
 				return;
 			}
@@ -1095,7 +1046,7 @@ namespace Box2D.NetStandard.Collision
 		[Conditional("DEBUG_DYNAMIC_TREE")]
 		private void ValidateHeight(Proxy proxy)
 		{
-			if (proxy == Proxy.Free)
+			if (proxy == ProxyFree)
 			{
 				return;
 			}

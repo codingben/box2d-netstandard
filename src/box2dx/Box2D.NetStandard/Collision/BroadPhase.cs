@@ -178,7 +178,7 @@ namespace Box2D.NetStandard.Collision
 		// call Commit to finalize the proxy pairs (for your time step).
 		public void MoveProxy(int proxyId, in AABB aabb, in Vector2 displacement)
 		{
-			bool buffer = m_tree.MoveProxy((DynamicTree.Proxy)proxyId, aabb, displacement);
+			bool buffer = m_tree.MoveProxy(proxyId, aabb, displacement);
 			if (buffer)
 			{
 				BufferMove(proxyId);
