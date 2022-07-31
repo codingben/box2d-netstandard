@@ -25,6 +25,7 @@ In v1.0.x:
 
 In v2.4.x:
 - Code Optimisation must be enabled for things to work properly, and you **must not** have a debugger attached.
+- If you create two Bodies at the same Position, *Bad Things* will happen. It might crash, or it might just poison the DynamicTree. This could be fixed by checking *every* contact to make sure the objects are never in the exact same position, but this should never happen once the simulation is running, so the number of times the check would be useful is statistically insignificant. Just don't put things at the same place as other things. They only need to be different by float.Epsilon in either dimension.
 
 ## Source
 
@@ -87,7 +88,7 @@ Please read and follow the [contributing guidelines](CONTRIBUTING.md).
 ### System
 
 - Centralized tuning parameters.
-- Pure .NET Standard 2.0+ library.
+- Pure .NET Standard 2.1+ library.[^1]
 - Please [See .NET Implementation Support](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
 
 ## Documentation
@@ -99,3 +100,5 @@ Please read and follow the [contributing guidelines](CONTRIBUTING.md).
 ## License
 
 Original C++ Box2D is developed by Erin Catto, under the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
+
+[^1] .net standard 2.0 lacks System.MathF which is a dependency. System.Numerics.Vectors is not part of .net standard 2.0, but it is available as a Nuget package. There is a discussion [here](https://github.com/dotnet/runtime/issues/20113) about including System.MathF in System.Runtime.Extensions but it was decided not to do so. We also use stackalloc, Span<T>, System.HashCode, Math.Clamp and range expressions, which are not supported in .net standard 2.0.
