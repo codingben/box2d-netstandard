@@ -25,11 +25,13 @@
 // SOFTWARE.
 */
 
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Box2D.NetStandard.Common;
 using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Joints.Distance;
+using Box2D.NetStandard.Dynamics.Joints.Friction;
 using Box2D.NetStandard.Dynamics.Joints.Gear;
 using Box2D.NetStandard.Dynamics.Joints.Mouse;
 using Box2D.NetStandard.Dynamics.Joints.Prismatic;
@@ -192,16 +194,18 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		internal static Joint Create(JointDef def)
 		{
 			return def switch
-			       {
-				       DistanceJointDef d  => new DistanceJoint(d),
-				       MouseJointDef d     => new MouseJoint(d),
-				       PrismaticJointDef d => new PrismaticJoint(d),
-				       RevoluteJointDef d  => new RevoluteJoint(d),
-				       PulleyJointDef d    => new PulleyJoint(d),
-				       GearJointDef d      => new GearJoint(d),
-				       WheelJointDef d     => new WheelJoint(d),
-				       WeldJointDef d     => new WeldJoint(d)
-			       };
+            {
+                DistanceJointDef d  => new DistanceJoint(d),
+                MouseJointDef d     => new MouseJoint(d),
+                PrismaticJointDef d => new PrismaticJoint(d),
+                RevoluteJointDef d  => new RevoluteJoint(d),
+                PulleyJointDef d    => new PulleyJoint(d),
+                GearJointDef d      => new GearJoint(d),
+                WheelJointDef d     => new WheelJoint(d),
+                WeldJointDef d      => new WeldJoint(d),
+				FrictionJointDef d  => new FrictionJoint(d),
+                _ => throw new NotImplementedException($"JointDef '{def.GetType().Name}' is not implemented.")
+            };
 		}
 
 		internal abstract void InitVelocityConstraints(in SolverData data);

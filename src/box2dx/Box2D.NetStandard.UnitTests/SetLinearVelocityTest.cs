@@ -62,7 +62,6 @@ namespace Box2D.NetStandard.UnitTests
             Assert.True((starting1.Y - ending1.Y) < 0.01f);
             // It should have moved left
             Assert.True(ending1.X < starting1.X);
-
             // Body 2 should not have moved
             Assert.Equal(starting2, ending2);
         }

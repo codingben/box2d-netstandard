@@ -1,10 +1,14 @@
-name: Build
+name: Box2D Build & Unit Tests
 
 on:
   push:
     branches: [v2.4]
     paths:
-      - src/box2dx/Box2D.NetStandard/**
+      - src/**
+  pull_request:
+    branches: [v2.4]
+    paths:
+      - src/**
 
 jobs:
   build:
@@ -16,5 +20,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "5.0.x"
-      - name: Box2D Build
-        run: dotnet build src/box2dx/Box2D.NetStandard -c Release
+      - name: Build
+        run: dotnet build src/ -c Release
+      - name: Unit Tests
+        run: dotnet test src/ -c Release
