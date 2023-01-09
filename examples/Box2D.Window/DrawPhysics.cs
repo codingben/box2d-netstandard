@@ -18,27 +18,27 @@ namespace Box2D.Window
             this.window = window;
         }
 
-        public override void DrawPolygon(in Vec2[] vertices, int vertexCount, in Color color)
+        public override void DrawPolygon(in Vector2[] vertices, int vertexCount, in Color color)
         {
             window.DrawPolygon(vertices, vertexCount, color);
         }
 
-        public override void DrawSolidPolygon(in Vec2[] vertices, int vertexCount, in Color color)
+        public override void DrawSolidPolygon(in Vector2[] vertices, int vertexCount, in Color color)
         {
             window.DrawSolidPolygon(vertices, vertexCount, color);
         }
 
-        public override void DrawCircle(in Vec2 center, float radius, in Color color)
+        public override void DrawCircle(in Vector2 center, float radius, in Color color)
         {
             window.DrawCircle(center, radius, color);
         }
 
-        public override void DrawSolidCircle(in Vec2 center, float radius, in Vec2 axis, in Color color)
+        public override void DrawSolidCircle(in Vector2 center, float radius, in Vector2 axis, in Color color)
         {
             window.DrawSolidCircle(center, radius, axis, color);
         }
 
-        public override void DrawSegment(in Vec2 p1, in Vec2 p2, in Color color)
+        public override void DrawSegment(in Vector2 p1, in Vector2 p2, in Color color)
         {
             window.DrawSegment(p1, p2, color);
         }

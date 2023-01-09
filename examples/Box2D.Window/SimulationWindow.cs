@@ -180,7 +180,7 @@ namespace Box2D.Window
             return vertical;
         }
 
-        public void DrawPolygon(Vec2[] vertices, int vertexCount, Color color)
+        public void DrawPolygon(System.Numerics.Vector2[] vertices, int vertexCount, Color color)
         {
             drawActions.Enqueue(() =>
             {
@@ -198,7 +198,7 @@ namespace Box2D.Window
             });
         }
 
-        public void DrawSolidPolygon(Vec2[] vertices, int vertexCount, Color color)
+        public void DrawSolidPolygon(System.Numerics.Vector2[] vertices, int vertexCount, Color color)
         {
             drawActions.Enqueue(() =>
             {
@@ -216,7 +216,7 @@ namespace Box2D.Window
             });
         }
 
-        public void DrawCircle(Vec2 center, float radius, Color color)
+        public void DrawCircle(System.Numerics.Vector2 center, float radius, Color color)
         {
             drawActions.Enqueue(() =>
             {
@@ -234,7 +234,7 @@ namespace Box2D.Window
                 {
                     var x = (float)Math.Cos(theta);
                     var y = (float)Math.Sin(theta);
-                    var vertex = center + (radius * new Vec2(x, y));
+                    var vertex = center + (radius * new System.Numerics.Vector2(x, y));
 
                     GL.Vertex2(vertex.X, vertex.Y);
 
@@ -245,7 +245,7 @@ namespace Box2D.Window
             });
         }
 
-        public void DrawSolidCircle(Vec2 center, float radius, Vec2 axis, Color color)
+        public void DrawSolidCircle(System.Numerics.Vector2 center, float radius, System.Numerics.Vector2 axis, Color color)
         {
             drawActions.Enqueue(() =>
             {
@@ -263,7 +263,7 @@ namespace Box2D.Window
                 {
                     var x = (float)Math.Cos(theta);
                     var y = (float)Math.Sin(theta);
-                    var vertex = center + (radius * new Vec2(x, y));
+                    var vertex = center + (radius * new System.Numerics.Vector2(x, y));
 
                     GL.Vertex2(vertex.X, vertex.Y);
 
@@ -276,7 +276,7 @@ namespace Box2D.Window
             });
         }
 
-        public void DrawSegment(Vec2 p1, Vec2 p2, Color color)
+        public void DrawSegment(System.Numerics.Vector2 p1, System.Numerics.Vector2 p2, Color color)
         {
             drawActions.Enqueue(() =>
             {

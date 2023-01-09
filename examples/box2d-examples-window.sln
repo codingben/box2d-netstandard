@@ -3,21 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.WindowTests", "Box2D.WindowTests\Box2D.WindowTests.csproj", "{C7CCB31C-2A88-416E-B449-0A13D9CE84AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Box2D.WindowTests", "Box2D.WindowTests\Box2D.WindowTests.csproj", "{C7CCB31C-2A88-416E-B449-0A13D9CE84AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.Window", "Box2D.Window\Box2D.Window.csproj", "{78472121-1376-471D-8801-6C67882B28AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Box2D.Window", "Box2D.Window\Box2D.Window.csproj", "{78472121-1376-471D-8801-6C67882B28AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.WorldTests", "Box2D.WorldTests\Box2D.WorldTests.csproj", "{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Box2D.WorldTests", "Box2D.WorldTests\Box2D.WorldTests.csproj", "{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{CFFED500-BB9F-11EA-AA17-6D586A78C909}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Box2D.NetStandard", "..\src\box2dx\Box2D.NetStandard\Box2D.NetStandard.csproj", "{19A91C82-AF22-4BE9-8904-E6D6D371DC45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{28D959E6-5CA9-435D-8990-70A1E4BB1F77}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "box2dx", "box2dx", "{A2E36F60-8750-46B5-B7BE-81AF0B75E594}"
+EndProject
 Global
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {DEC97AC1-1CC5-4EBF-9C1C-D828FA639573}
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -63,10 +63,30 @@ Global
 		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|x64.Build.0 = Release|Any CPU
 		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|x86.ActiveCfg = Release|Any CPU
 		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C}.Release|x86.Build.0 = Release|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Debug|x64.Build.0 = Debug|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Debug|x86.Build.0 = Debug|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Release|x64.ActiveCfg = Release|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Release|x64.Build.0 = Release|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Release|x86.ActiveCfg = Release|Any CPU
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C} = {CFFED500-BB9F-11EA-AA17-6D586A78C909}
 		{C7CCB31C-2A88-416E-B449-0A13D9CE84AA} = {CFFED500-BB9F-11EA-AA17-6D586A78C909}
 		{78472121-1376-471D-8801-6C67882B28AD} = {CFFED500-BB9F-11EA-AA17-6D586A78C909}
+		{D20B0AE3-3FC0-4B04-923F-61A2A928F97C} = {CFFED500-BB9F-11EA-AA17-6D586A78C909}
+		{19A91C82-AF22-4BE9-8904-E6D6D371DC45} = {A2E36F60-8750-46B5-B7BE-81AF0B75E594}
+		{A2E36F60-8750-46B5-B7BE-81AF0B75E594} = {28D959E6-5CA9-435D-8990-70A1E4BB1F77}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DEC97AC1-1CC5-4EBF-9C1C-D828FA639573}
 	EndGlobalSection
 EndGlobal
