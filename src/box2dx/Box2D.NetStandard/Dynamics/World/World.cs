@@ -1238,7 +1238,7 @@ namespace Box2D.NetStandard.Dynamics.World
                             vertices[i] = Math.Mul(xf, localVertices[i]);
                         }
 
-                        m_debugDraw.DrawSolidPolygon(Vec2.ConvertArray(vertices), vertexCount, color);
+                        m_debugDraw.DrawSolidPolygon(in vertices, vertexCount, color);
                     }
                     break;
 
@@ -1330,11 +1330,13 @@ namespace Box2D.NetStandard.Dynamics.World
                         {
                             FixtureProxy proxy = f.m_proxies[i];
                             AABB aabb = bp.GetFatAABB(proxy.proxyId);
-                            var vs = new Vec2[4];
-                            vs[0] = new Vec2(aabb.lowerBound.X, aabb.lowerBound.Y);
-                            vs[1] = new Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
-                            vs[2] = new Vec2(aabb.upperBound.X, aabb.upperBound.Y);
-                            vs[3] = new Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
+                            var vs = new[]
+                            {
+                                new Vector2(aabb.lowerBound.X, aabb.lowerBound.Y),
+                                new Vector2(aabb.upperBound.X, aabb.lowerBound.Y),
+                                new Vector2(aabb.upperBound.X, aabb.upperBound.Y),
+                                new Vector2(aabb.lowerBound.X, aabb.upperBound.Y)
+                            };
 
                             m_debugDraw.DrawPolygon(vs, 4, color);
                         }
@@ -1358,9 +1360,9 @@ namespace Box2D.NetStandard.Dynamics.World
             {
                 case CircleShape circle:
                     {
-                        Vec2 center = Math.Mul(xf, circle.m_p);
-                        float radius = circle.m_radius;
-                        Vec2 axis = Vector2.Transform(new Vector2(1.0f, 0.0f), xf.q); // Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
+                        var center = Math.Mul(xf, circle.m_p);
+                        var radius = circle.m_radius;
+                        var axis = Vector2.Transform(new Vector2(1.0f, 0.0f), xf.q); // Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
 
                         m_debugDraw.DrawSolidCircle(center, radius, axis, color);
                     }
@@ -1400,7 +1402,7 @@ namespace Box2D.NetStandard.Dynamics.World
                 case PolygonShape poly:
                     {
                         int vertexCount = poly.m_count;
-                        var vertices = new Vec2[Settings.MaxPolygonVertices];
+                        var vertices = new Vector2[Settings.MaxPolygonVertices];
 
                         for (var i = 0; i < vertexCount; ++i)
                         {
