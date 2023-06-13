@@ -910,7 +910,7 @@ namespace Box2DX.Dynamics
 
 				for (Contact c = _contactList; c != null; c = c._next)
 				{
-					if ((int)(c._flags & (Contact.CollisionFlags.Slow | Contact.CollisionFlags.NonSolid)) == 1)
+					if ((int)(c._flags & (Contact.CollisionFlags.Slow | Contact.CollisionFlags.NonSolid)) != 0)
 					{
 						continue;
 					}
